@@ -1,0 +1,28 @@
+Package: sgeQC
+Title: A R package for SGE QC
+Version: 0.1
+Authors@R: 
+    person("Fei", "Sang", , "fei.sang@sanger.ac.uk", 
+            role = c("aut", "cre"),
+            comment = c(ORCID = "YOUR-ORCID-ID"))
+    person("Mark", "Thomas", , "mt4@sanger.ac.uk", 
+            role = c("aut", "cre"),
+            comment = c(ORCID = "YOUR-ORCID-ID"))   
+Description: A R package for SGE QC.
+License: `use_mit_license()`
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Depends: 
+    R (>= 4.2.3),
+    data.table (>= 1.14.8),
+    Ckmeans.1d.dp (>= 4.3.4),
+    gplots (>= 3.1.3),
+    ggplot2 (>= 3.4.2),
+    DESeq2 (>= 1.38.3),
+    DEGreport (>= 1.34.0),
+    apeglm (>= 1.20.0),
+    corrplot (>= 0.92),
+    ggbeeswarm (>= 0.7.2)
+Imports:
+    reshape2 (>= 1.4.4)
