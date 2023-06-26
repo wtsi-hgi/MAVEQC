@@ -1,5 +1,5 @@
 <div align="center">
-<h1 align="center">sgeQC</h1>
+<h1 align="center">MAVE-QC</h1>
   <p align="center">A R package of quality control on SGE data</p>
 </div>
 
@@ -125,7 +125,8 @@ qcout_sampleqc_stats(samqc, "/path/to/out/files")
 Reference samples must be assigned. You can use ```select_objects()``` to get this done. ```c(2,5,8)``` is used to point the positions of reference samples in your sample sheet, like 2nd, 5th, 8th line here, or you can use the sample names instead, like ```c("hgsm3_d4_r1","hgsm3_d4_r2","hgsm3_d4_r3")```
 
 ```R
-samqc@samples_ref <- select_objects(sge_objs, c(2,5,8))
+samples <- c(2,5,8)
+samqc@samples_ref <- select_objects(sge_objs, samples)
 samqc <- run_sample_qc(samqc, "screen")
 
 qcplot_readlens(samqc, "/path/to/out/plots")
@@ -135,6 +136,31 @@ qcplot_position(samqc, "/path/to/out/plots")
 
 qcout_bad_seqs(samqc, "/path/to/out/files")
 qcout_sampleqc_stats(samqc, "/path/to/out/files")
+```
+
+#### coldata example:
+| sample_name | replicate | condition |
+| - | - | - |
+| hgsm3_d4_r1 | R1 | D4 |
+| hgsm3_d7_r1 | R1 | D7 |
+| hgsm3_d15_r1 | R1 | D15 |
+| hgsm3_d4_r2 | R2 | D4 |
+| hgsm3_d7_r2 | R2 | D7 |
+| hgsm3_d15_r2 | R2 | D15 |
+| hgsm3_d4_r3 | R3 | D4 |
+| hgsm3_d7_r3 | R3 | D7 |
+| hgsm3_d15_r3 | R3 | D15 |
+
+
+```R
+coldata <- read.table("sample_coldata.tsv", header = T, row.names = 1)
+samqc <- run_sample_qc_deseq2(samqc, coldata, "D4")
+qcplot_dist_samples(samqc, "/path/to/out/plots")
+qcplot_pca_samples(samqc, coldata, ntop = 500, "/path/to/out/plots")
+
+samples <- c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3")
+qcplot_position_anno(samqc, samples, type = "lof", major_cut = 0.005, "/path/to/out/plots")
+qcplot_deseq_fc(samqc, plotdir = "/path/to/out/plots")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
