@@ -1,4 +1,4 @@
-Package: MAVE-QC
+Package: MAVEQC
 Title: A R package for SGE QC
 Version: 0.1
 Authors@R: 

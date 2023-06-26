@@ -1,5 +1,5 @@
 <div align="center">
-<h1 align="center">MAVE-QC</h1>
+<h1 align="center">MAVEQC</h1>
   <p align="center">A R package of quality control on SGE data</p>
 </div>
 
@@ -46,13 +46,13 @@ Install from github
 install.packages("devtools")
 
 library(devtools)
-install_github("wtsi-hgi/sgeQC")
+install_github("wtsi-hgi/MAVEQC")
 ```
 Or
 
 Install from source file
 ```R
-install.packages("/path/of/sgeQC.tar.gz", type = "source")
+install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
