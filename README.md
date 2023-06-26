@@ -81,11 +81,16 @@ library("Ckmeans.1d.dp")
 library("reshape2")
 library("ggplot2")
 library("gplots")
+library("DESeq2")
+library("DEGreport")
+library("apeglm")
+library("corrplot")
+library("ggbeeswarm")
 ```
 
 #### Import files
 ```R
-library(sgeQC)
+library(MAVEQC)
 
 sge_objs <- import_sge_files("/path/to/input/directory", "sample_sheet.tsv")
 samqc <- create_sampleqc_object(sge_objs)
