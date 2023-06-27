@@ -1,5 +1,5 @@
 <div align="center">
-<h1 align="center">MAVEQC</h1>
+<h1 align="center">MAVE-QC</h1>
   <p align="center">A R package of quality control on SGE data</p>
 </div>
 
@@ -33,12 +33,12 @@ install.packages("ggplot2")
 install.packages("gplots")
 install.packages("corrplot")
 install.packages("ggbeeswarm")
+install.packages("see")
 
 install.packages("BiocManager")
 BiocManager::install("DESeq2")
 BiocManager::install("DEGreport")
 BiocManager::install("apeglm")
-
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -51,13 +51,13 @@ Install from github
 install.packages("devtools")
 
 library(devtools)
-install_github("wtsi-hgi/MAVEQC")
+install_github("wtsi-hgi/sgeQC")
 ```
 Or
 
 Install from source file
 ```R
-install.packages("/path/of/MAVEQC.tar.gz", type = "source")
+install.packages("/path/of/sgeQC.tar.gz", type = "source")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -86,16 +86,17 @@ library("Ckmeans.1d.dp")
 library("reshape2")
 library("ggplot2")
 library("gplots")
+library("corrplot")
+library("ggbeeswarm")
 library("DESeq2")
 library("DEGreport")
 library("apeglm")
-library("corrplot")
-library("ggbeeswarm")
+library("see")
 ```
 
 #### Import files
 ```R
-library(MAVEQC)
+library(sgeQC)
 
 sge_objs <- import_sge_files("/path/to/input/directory", "sample_sheet.tsv")
 samqc <- create_sampleqc_object(sge_objs)
