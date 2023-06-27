@@ -523,36 +523,51 @@ setMethod(
         }
 
         sample_dist <- as.matrix(dist(t(object@deseq_rlog)))
+        sample_rlog <- as.matrix(object@deseq_rlog)
 
-        png(paste0(plotdir, "/", "sample_qc_distance_samples.heatmap.png"), width = 1200, height = 1200, res = 200)
+        min_rlog <- round(min(sample_rlog))
+        max_rlog <- round(max(sample_rlog))
+
+        pwidth <- 100 * ncol(sample_rlog)
+        png(paste0(plotdir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
         lmat <- rbind(c(4, 3), c(2, 1))
         lhei <- c(3, 8)
         lwid <- c(3, 8)
 
-        heatmap.2(sample_dist,
-                  distfun=function(x) dist(x, method = "euclidean"),
-                  hclustfun=function(x) hclust(x, method = "ward.D2"),
+        heatmap.2(sample_rlog,
+                  distfun = function(x) dist(x, method = "euclidean"),
+                  hclustfun = function(x) hclust(x, method = "ward.D2"),
                   col = colorpanel(100, "royalblue", "ivory", "tomato"),
                   na.color = "grey",
-                  breaks = seq(0, 10, length.out = 101),
+                  breaks = seq(min_rlog, max_rlog, length.out = 101),
                   density.info = "none", trace = "none", dendrogram = "both",
-                  Rowv = TRUE, Colv = TRUE,
+                  Rowv = TRUE, Colv = TRUE, labRow = FALSE,
                   cexCol = 0.6, cexRow = 0.6,
-                  key.xlab = "distance", key.title = "", key.par = list(cex.lab = 1),
-                  margins = c(8, 8),
-                  rowsep = 1:nrow(sample_dist),
+                  key.xlab = "deseq rlog", key.title = "", key.par = list(cex.lab = 1),
+                  margins = c(8, 1),
                   colsep = 1:ncol(sample_dist),
                   sepwidth=c(0.01, 0.01),
                   lmat = lmat, lhei = lhei, lwid = lwid)
         dev.off()
 
+        sample_corr <- cor(scale(sample_rlog))
+        min_corr <- floor(min(sample_corr) * 10) / 10
+
         png(paste0(plotdir, "/", "sample_qc_distance_samples.corr.png"), width = 1200, height = 1200, res = 200)
-        corrplot(cor(scale(sample_dist)),
+        corrplot(sample_corr,
+                 method = "color",
                  order = "hclust",
-                 addrect = 3,
                  col = colorpanel(100, "royalblue", "ivory", "tomato"),
+                 col.lim = c(min_corr, 1),
+                 is.corr = FALSE,
+                 addrect = 3,
+                 rect.col = "black",
+                 rect.lwd = 1.5,
+                 addgrid.col = "white",
+                 tl.col = "black",
+                 tl.cex = 0.75,
                  addCoef.col = "black",
-                 number.cex = 0.5)
+                 number.cex = 0.75)
         dev.off()
     }
 )
