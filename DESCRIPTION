@@ -1,4 +1,4 @@
-Package: sgeQC
+Package: MAVEQC
 Title: A R package for SGE QC
 Version: 0.1
 Authors@R: 
@@ -8,7 +8,7 @@ Authors@R:
     person("Mark", "Thomas", , "mt4@sanger.ac.uk", 
             role = c("aut", "cre"),
             comment = c(ORCID = "YOUR-ORCID-ID"))   
-Description: A R package for SGE QC.
+Description: A R package for MAVE QC.
 License: `use_mit_license()`
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

@@ -1,5 +1,5 @@
 <div align="center">
-<h1 align="center">MAVE-QC</h1>
+<h1 align="center">MAVEQC</h1>
   <p align="center">A R package of quality control on SGE data</p>
 </div>
 
@@ -9,14 +9,15 @@
 
 1. [Dependencies](#dependencies)
 2. [Installation](#installation)
-3. [Import Data](#import-data)
-4. [Plasmid QC](#plasmid-qc)
+3. [File Format](#file-format)
+4. [Import Data](#import-data)
+5. [Plasmid QC](#plasmid-qc)
     - [QC 1: ](#pqc1)
     - [QC 2: ](#pqc2)
-5. [Screen QC](#screen-qc)
+6. [Screen QC](#screen-qc)
     - [QC 1: ](#sqc1)
     - [QC 2: ](#sqc2)
-6. [Others](#others)
+7. [Others](#others)
     - [Test datasets](#test)
     - [Conda](#conda)
 
@@ -51,33 +52,64 @@ Install from github
 install.packages("devtools")
 
 library(devtools)
-install_github("wtsi-hgi/sgeQC")
+install_github("wtsi-hgi/MAVEQC")
 ```
 Or
 
 Install from source file
 ```R
-install.packages("/path/of/sgeQC.tar.gz", type = "source")
+install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
 
-<!-- Import Data-->
+<!-- File Format-->
+## File Format
+
+### sample sheet -- tsv
+| sample_name  | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | library_name | library_type|
+| - | - | - | - | - | - | - | - | - |
+| sample1 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | vep_anno.tsv | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
+| sample2 | s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | vep_anno.tsv | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
+| sample3 | s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | vep_anno.tsv | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
+
+* *please use the same headers in the example*
+* *adapt5 and adapt3 are required if you don't provide the ref seq and pam seq*
+* *vep_anno, library_name and library_type are not necessary, leave them blank if not available*
+
+### library dependent counts -- tsv or tsv.gz
+| ID | NAME | SEQUENCE | COUNT | UNIQUE | SAMPLE |
+| - | - | - | - | - | - |
+| id1 | name1 | ACTTTTCT | 32 | 1 | sample1 | 
+| id2 | name2 | ATCTTTCT | 132 | 0 | sample1 | 
+| id3 | name3 | ATTCTTCT | 2 | 1 | sample1 | 
+
+* *please use the same headers in the example*
+* *please make sure library dependent sequences match with valiant meta file, and sorted by the position in the meta file*
+
+### library independent counts -- tsv or tsv.gz
+| SEQUENCE | LENGTH | COUNT |
+| - | - | - |
+| ACTTTTCT | 276 | 32 | 
+| ATCTTTCT | 275 | 132 | 
+| ATTCTTCT | 275 | 2 | 
+
+* *please use the same headers in the example*
+
+### valiant meta file
+Please use the valiant output file
+
+### vep annotation file
+Please use one to one mapping file
+
+
+<p align="right">(<a href="#top">TOP</a>)</p>
+
+<!-- Import Data -->
 ## Import Data
 
 ### Import from a directory:
 All the files are in the same directory including library dependent counts, library independent counts, valiant meta csv, vep annotation and the sample sheet.
-
-#### Sample sheet format -- tsv
-| sample_name  | library_independent_count | library_dependent_count | valiant_meta | adapt5 | adapt3 | library_name | library_type|
-| - | - | - | - | - | - | - | - |
-| sample1 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
-| sample2 | s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
-| sample3 | s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
-
-* *please use the same headers in the example*
-* *adapt5 and adapt3 are required if you don't provide the ref seq and pam seq*
-* *vep_anno, library_name and library_type are not necessary, let them blank if not available*
 
 #### Load dependencies if required
 ```
