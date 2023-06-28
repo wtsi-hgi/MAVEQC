@@ -239,11 +239,13 @@ setMethod(
         df_cov <- object@stats[, c("total_reads", "effective_reads", "effective_cov")]
         df_cov$samples <- rownames(df_cov)
 
-        p3 <- ggplot(df_cov,  aes(x = total_reads, y = effective_reads, size = effective_cov, color = samples)) +
-                geom_point(alpha = 0.7) +
+        p3 <- ggplot(df_cov,  aes(x = total_reads, y = effective_reads, color = samples)) +
+                geom_point(alpha = 0.7, aes(size = effective_cov)) +
+                geom_text(size = 3, color = "black", aes(label = effective_cov)) +
                 labs(x = "total reads", y = "effective reads", title = "Sample QC Stats") +
                 scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
                 scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+                scale_size_continuous(range = c(6, 12)) +
                 theme(legend.position = "right") +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                 theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
