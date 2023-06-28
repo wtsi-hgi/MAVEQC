@@ -128,7 +128,7 @@ library("see")
 
 #### Import files
 ```R
-library(sgeQC)
+library(MAVEQC)
 
 sge_objs <- import_sge_files("/path/to/input/directory", "sample_sheet.tsv")
 samqc <- create_sampleqc_object(sge_objs)
