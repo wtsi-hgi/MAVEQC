@@ -10,6 +10,8 @@ A class representing a primary qc object
 \section{Slots}{
 
 \describe{
+\item{\code{cutoffs}}{a data frame of cutoffs using in sample QC}
+
 \item{\code{samples}}{a list of SGE objects}
 
 \item{\code{samples_ref}}{a list of SGE objects which are the references for screen QC}
@@ -20,26 +22,30 @@ A class representing a primary qc object
 
 \item{\code{seq_clusters}}{a list of dataframes of sequences and cluster IDs}
 
-\item{\code{filtered_seqs}}{a vector of sequences with counts > clustering cutoff for screen QC in the references}
+\item{\code{accepted_seqs}}{a list of sequences with counts > clustering cutoff for screen QC in the references}
 
-\item{\code{filtered_counts}}{a data frame of filtered counts of all the samples}
+\item{\code{accepted_counts}}{a list of filtered counts of all the samples}
 
-\item{\code{effective_counts}}{a data frame of effective counts of all the samples}
+\item{\code{library_counts}}{a list of library counts of all the samples}
 
-\item{\code{effective_counts_pos}}{a data frame of effective counts of all the samples sorted by position}
+\item{\code{unmapped_counts}}{a list of unmapped counts against meta library sequences of all the samples}
 
-\item{\code{effective_counts_anno}}{a data frame of effective counts of all the samples, annotated with consequences}
+\item{\code{library_counts_chr}}{a list of chromosomes for library counts}
 
-\item{\code{effective_counts_pos_anno}}{a data frame of effective counts of all the samples, annotated with consequences, sorted by position}
+\item{\code{library_counts_pos}}{a list of library counts of all the samples sorted by position in meta}
+
+\item{\code{library_counts_anno}}{a data frame of library counts of all the samples, annotated with consequences}
+
+\item{\code{library_counts_pos_anno}}{a data frame of library counts of all the samples, annotated with consequences, sorted by position}
 
 \item{\code{stats}}{a data frame of samples and stats, eg. total no, filtered no.}
 
+\item{\code{bad_seqs_bycluster}}{a list of filter-out sequences by cluster}
+
+\item{\code{bad_seqs_bydepth}}{a list of filter-out sequences by depth}
+
+\item{\code{bad_seqs_bylib}}{a list of filter-out sequences by library mapping}
+
 \item{\code{filtered_samples}}{a vector of filtered sample names}
-
-\item{\code{bad_seqs}}{a list of filter-out sequences}
-
-\item{\code{deseq_rlog}}{a data frame of deseq rlog counts of all the samples using effective counts}
-
-\item{\code{deseq_res}}{a list of deseq results of all the comparison against reference}
 }}
 

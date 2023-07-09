@@ -4,7 +4,7 @@
 \alias{qcplot_position_anno,sampleQC-method}
 \title{create the position plot}
 \usage{
-\S4method{qcplot_position_anno}{sampleQC}(object, samples, type, major_cut = 0.005, plotdir)
+\S4method{qcplot_position_anno}{sampleQC}(object, samples = NULL, type = "lof", plotdir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
@@ -12,8 +12,6 @@
 \item{samples}{a vector of sample names}
 
 \item{type}{plot type, lof or all}
-
-\item{major_cut}{the qc cutoff of major variants}
 
 \item{plotdir}{the output plot directory}
 }

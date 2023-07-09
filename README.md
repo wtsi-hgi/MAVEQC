@@ -12,11 +12,11 @@
 3. [File Format](#file-format)
 4. [Import Data](#import-data)
 5. [Plasmid QC](#plasmid-qc)
-    - [QC 1: ](#pqc1)
-    - [QC 2: ](#pqc2)
+    - [QC 1: Sample QC](#pqc1)
+    - [QC 2: Experiment QC](#pqc2)
 6. [Screen QC](#screen-qc)
-    - [QC 1: ](#sqc1)
-    - [QC 2: ](#sqc2)
+    - [QC 1: Sample QC](#sqc1)
+    - [QC 2: Experiment QC](#sqc2)
 7. [Others](#others)
     - [Test datasets](#test)
     - [Conda](#conda)
@@ -32,9 +32,11 @@ install.packages("Ckmeans.1d.dp")
 install.packages("reshape2")
 install.packages("ggplot2")
 install.packages("gplots")
+install.packages("plotly")
 install.packages("corrplot")
-install.packages("ggbeeswarm")
+install.packages("ggcorrplot")
 install.packages("see")
+install.packages("reactable")
 
 install.packages("BiocManager")
 BiocManager::install("DESeq2")
@@ -69,9 +71,9 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 ### sample sheet -- tsv
 | sample_name  | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | library_name | library_type|
 | - | - | - | - | - | - | - | - | - |
-| sample1 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | vep_anno.tsv | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
-| sample2 | s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | vep_anno.tsv | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
-| sample3 | s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | vep_anno.tsv | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
+| sample1 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
+| sample2 | s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
+| sample3 | s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | libA | screen |
 
 * *please use the same headers in the example*
 * *adapt5 and adapt3 are required if you don't provide the ref seq and pam seq*
@@ -113,17 +115,20 @@ All the files are in the same directory including library dependent counts, libr
 
 #### Load dependencies if required
 ```
-library("data.table")
-library("Ckmeans.1d.dp")
-library("reshape2")
-library("ggplot2")
-library("gplots")
-library("corrplot")
-library("ggbeeswarm")
-library("DESeq2")
-library("DEGreport")
-library("apeglm")
-library("see")
+library(data.table)
+library(Ckmeans.1d.dp)
+library(reshape2)
+library(ggplot2)
+library(gplots)
+library(plotly)
+library(corrplot)
+library(ggcorrplot)
+library(ggbeeswarm)
+library(DESeq2)
+library(DEGreport)
+library(apeglm)
+library(see)
+library(reactable)
 ```
 
 #### Import files
@@ -145,12 +150,9 @@ samqc <- create_sampleqc_object(sge_objs)
 samqc <- run_sample_qc(samqc, "plasmid")
 
 qcplot_readlens(samqc, "/path/to/out/plots")
-qcplot_clusters(samqc, "plasmid", "/path/to/out/plots")
-qcplot_stats(samqc, "/path/to/out/plots")
-qcplot_position(samqc, "/path/to/out/plots")
-
-qcout_bad_seqs(samqc, "/path/to/out/files")
-qcout_sampleqc_stats(samqc, "/path/to/out/files")
+qcplot_stats_total(samqc, "plasmid", "/path/to/out/plots")
+qcplot_stats_accepted(samqc, "/path/to/out/plots")
+qcplot_position(samqc, "plasmid", "/path/to/out/plots")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -173,12 +175,10 @@ samqc@samples_ref <- select_objects(sge_objs, samples)
 samqc <- run_sample_qc(samqc, "screen")
 
 qcplot_readlens(samqc, "/path/to/out/plots")
-qcplot_clusters(samqc, "screen", "/path/to/out/plots")
-qcplot_stats(samqc, "/path/to/out/plots")
-qcplot_position(samqc, "/path/to/out/plots")
-
-qcout_bad_seqs(samqc, "/path/to/out/files")
-qcout_sampleqc_stats(samqc, "/path/to/out/files")
+qcplot_stats_total(samqc, "screen", "/path/to/out/plots")
+qcplot_stats_accepted(samqc, "/path/to/out/plots")
+qcplot_position(samqc, "screen", "/path/to/out/plots")
+qcplot_position_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", "/path/to/out/plots")
 ```
 
 #### coldata example:
@@ -197,19 +197,21 @@ qcout_sampleqc_stats(samqc, "/path/to/out/files")
 
 ```R
 coldata <- read.table("sample_coldata.tsv", header = T, row.names = 1)
-samqc <- run_sample_qc_deseq2(samqc, coldata, "D4")
-qcplot_dist_samples(samqc, "/path/to/out/plots")
-qcplot_pca_samples(samqc, coldata, ntop = 500, "/path/to/out/plots")
+expqc <- create_experimentqc_object(samqc, coldata, "D4")
+expqc <- run_experiment_qc(expqc)
 
-samples <- c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3")
-qcplot_position_anno(samqc, samples, type = "lof", major_cut = 0.005, "/path/to/out/plots")
-qcplot_deseq_fc(samqc, plotdir = "/path/to/out/plots")
+qcplot_dist_samples(expqc, plotdir = "/path/to/out/plots")
+qcplot_pca_samples(expqc, ntop = 500, plotdir = "/path/to/out/plots")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
 
 <a id="sqc2"></a>
 ### QC 2: Experimental QC
+
+```R
+qcplot_deseq_fc(expqc, plotdir = "/path/to/out/plots")
+```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
 

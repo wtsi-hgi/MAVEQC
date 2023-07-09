@@ -61,7 +61,7 @@ setMethod(
         #----------------------------#
         # 2. library dependent count #
         #----------------------------#
-        colnames(object@libcounts) <- c("id", "name", "sequence", "count", "unique", "sample")
+        #colnames(object@libcounts) <- c("id", "name", "sequence", "count", "unique", "sample")
 
         object@libcounts$is_ref <- unlist(lapply(object@libcounts$sequence, function(s) ifelse(s == object@refseq, 1, 0)))
         object@libcounts$is_pam <- unlist(lapply(object@libcounts$sequence, function(s) ifelse(s == object@pamseq, 1, 0)))
@@ -69,7 +69,7 @@ setMethod(
         #------------------------------#
         # 3. library independent count #
         #------------------------------#
-        colnames(object@allcounts) <- c("sequence", "length", "count")
+        #colnames(object@allcounts) <- c("sequence", "length", "count")
 
         object@allcounts$is_ref <- unlist(lapply(object@allcounts$sequence, function(s) ifelse(s == object@refseq, 1, 0)))
         object@allcounts$is_pam <- unlist(lapply(object@allcounts$sequence, function(s) ifelse(s == object@pamseq, 1, 0)))
@@ -79,10 +79,9 @@ setMethod(
         #--------------------------#
         # use library dependent sequences to get meta mseqs
         # may change as meta and counts will have the same seqs with adaptors
-        # assuming library dependent sequences have the same order with meta mseqs
+        # library dependent sequences are not unique
         tmp_mseqs <- unique(object@libcounts$sequence)
         object@meta_mseqs <- tmp_mseqs[tmp_mseqs %nin% c(object@refseq, object@pamseq)]
-
         object@missing_meta_seqs <- object@meta_mseqs[object@meta_mseqs %nin% object@allcounts$sequence]
 
         return(object)

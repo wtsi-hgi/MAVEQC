@@ -4,7 +4,7 @@
 \alias{qcplot_gini,sampleQC-method}
 \title{create the gini plot}
 \usage{
-\S4method{qcplot_gini}{sampleQC}(object, plotdir)
+\S4method{qcplot_gini}{sampleQC}(object, plotdir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}

@@ -174,3 +174,67 @@ cal_gini <- function(x, corr = FALSE, na.rm = TRUE) {
         return(G / n)
     }
 }
+
+#' merge a list of vector values into a data frame
+#' values may have different names in the list
+#'
+#' @export
+#' @param objects a list of vector values
+#' @return a data frame
+merge_list_to_df <- function(list_vals) {
+    dt_out <- data.table()
+
+    for (i in 1:length(list_vals)) {
+        dt_val <- as.data.table(list_vals[[i]])
+        dt_val$seq <- names(list_vals[[i]])
+
+        if (nrow(dt_out) == 0) {
+            dt_out <- dt_val[, c(2, 1)]
+            colnames(dt_out) <- c("seq", names(list_vals)[i])
+        } else {
+            cols <- colnames(dt_out)
+            dt_out <- merge(dt_out, dt_val, by = "seq", all = TRUE)
+            colnames(dt_out) <- c(cols, names(list_vals)[i])
+        }
+    }
+
+    df_out <- as.data.frame(dt_out)
+    rownames(df_out) <- df_out$seq
+    df_out <- subset(df_out, select = -seq)
+
+    return(df_out)
+}
+
+#' color blind friendly
+#'
+#' @export
+#' @param col_id a character to select colors
+#' @return a vector of colors
+select_colorblind <- function(col_id) {
+    col8 <- c("#D55E00", "#56B4E9", "#F0E442",
+              "#009E73", "#E69F00", "#0072B2",
+              "#CC79A7", "#000000")
+
+    col12 <- c("#88CCEE", "#CC6677", "#DDCC77",
+               "#117733", "#332288", "#AA4499",
+               "#44AA99", "#999933", "#882255",
+               "#661100", "#6699CC", "#888888")
+
+    col21 <- c("#560133", "#EF0096", "#000000",
+               "#65019F", "#DA00FD", "#FF92FD",
+               "#F60239", "#FF6E3A", "#FFDC3D",
+               "#005745", "#00AF8E", "#00EBC1",
+               "#00489E", "#0079FA", "#00E5F8",
+               "#005A01", "#009503", "#AFFF2A",
+               "#00F407", "#9900E6", "#009FFA")
+
+    if (col_id == "col8") {
+        return(col8)
+    } else if (col_id == "col12") {
+        return(col12)
+    } else if (col_id == "col21") {
+        return(col21)
+    } else {
+        stop(paste0("====> Error: wrong col_id"))
+    }
+}

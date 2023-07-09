@@ -50,9 +50,9 @@ read_sge_file <- function(file_path,
     }
 
     filedata <- data.frame(filedata)
-    # add header to dataframe
+    # add header to dataframe, and transfer to lower characters
     if (hline > 0) {
-        colnames(filedata) <- header
+        colnames(filedata) <- tolower(header)
     }
     # select columns
     if (length(colnums) > 0) {
@@ -116,11 +116,15 @@ import_sge_files <- function(dir_path,
     for (i in 1:nrow(samplesheet)) {
         cat("    |--> ", samplesheet[i, ]$sample_name, "\n", sep = "")
 
-        # vep is only required for screen qc
-        if (is.na(samplesheet[i, ]$vep_anno)) {
+        # leave the access in case user provides vep anno
+        if (is.null(samplesheet[i, ]$vep_anno)) {
             file_vep_anno <- NULL
         } else {
-            file_vep_anno <- paste0(dir_path, "/", samplesheet[i, ]$vep_anno)
+            if (is.na(samplesheet[i, ]$vep_anno)) {
+                file_vep_anno <- NULL
+            } else {
+                file_vep_anno <- paste0(dir_path, "/", samplesheet[i, ]$vep_anno)
+            }
         }
 
         tmp_obj <- create_sge_object(file_libcount = paste0(dir_path, "/", samplesheet[i, ]$library_dependent_count),

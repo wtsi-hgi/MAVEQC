@@ -2,23 +2,23 @@
 #'
 #' @export
 #' @name SGE
-#' @slot sample            the sample name
-#' @slot libname           library name
-#' @slot libtype           library type
-#' @slot adapt5            adaptor sequence at 5 prime end
-#' @slot adapt3            adaptor sequence at 3 prime end
-#' @slot refseq            reference sequence
-#' @slot pamseq            sequence with pam variants
-#' @slot libcounts         QUANTS library-dependent counts, per sequence per count
-#' @slot allcounts         QUANTS library-independent counts, per sequence per count
-#' @slot valiant_meta      VaLiAnT meta file
-#' @slot vep_anno          vep consequence annotation file
-#' @slot meta_mseqs        non-redundant mseq in VaLiAnT meta file
-#' @slot missing_meta_seqs missing sequenced in library compared to VaLiAnT meta file
-#' @slot libstats          summaries of library dependent counts
-#' @slot allstats          summaries of library independent counts
-#' @slot libstats_qc       qc stats of library dependent counts
-#' @slot allstats_qc       qc stats of library independent counts
+#' @slot sample             the sample name
+#' @slot libname            library name
+#' @slot libtype            library type
+#' @slot adapt5             adaptor sequence at 5 prime end
+#' @slot adapt3             adaptor sequence at 3 prime end
+#' @slot refseq             reference sequence
+#' @slot pamseq             sequence with pam variants
+#' @slot libcounts          QUANTS library-dependent counts, per sequence per count
+#' @slot allcounts          QUANTS library-independent counts, per sequence per count
+#' @slot valiant_meta       VaLiAnT meta file
+#' @slot vep_anno           vep consequence annotation file
+#' @slot meta_mseqs         non-redundant mseq in VaLiAnT meta file
+#' @slot missing_meta_seqs  missing sequenced in library compared to VaLiAnT meta file
+#' @slot libstats           summaries of library dependent counts
+#' @slot allstats           summaries of library independent counts
+#' @slot libstats_qc        qc stats of library dependent counts
+#' @slot allstats_qc        qc stats of library independent counts
 setClass("SGE",
     slots = list(
         sample = "character",
@@ -64,18 +64,18 @@ setClass("SGE",
 #'
 #' @export
 #' @name create_sge_object
-#' @param file_libcount           QUANTS library-dependent count file, per sequence per count
-#' @param file_allcount           QUANTS library-independent count file, per sequence per count
-#' @param file_valiant_meta       VaLiAnT meta file
-#' @param file_vep_anno           vep annotation file
-#' @param file_libcount_hline     line number of header in library-dependent count file
-#' @param file_allcount_hline     line number of header in library-independent count file
-#' @param file_valiant_meta_hline line number of header in VaLiAnT meta file
-#' @param file_vep_anno_hline     line number of header in vep annotation file
-#' @param file_libcount_cols      a vector of numbers of selected columns in library-dependent count file, default is none
-#' @param file_allcount_cols      a vector of numbers of selected columns in library-independent count file, default is none
-#' @param file_valiant_meta_cols  a vector of numbers of selected columns in VaLiAnT meta file, default is none
-#' @param file_vep_anno_cols      a vector of numbers of selected columns in vep annotation file, default is none
+#' @param file_libcount            QUANTS library-dependent count file, per sequence per count
+#' @param file_allcount            QUANTS library-independent count file, per sequence per count
+#' @param file_valiant_meta        VaLiAnT meta file
+#' @param file_vep_anno            vep annotation file
+#' @param file_libcount_hline      line number of header in library-dependent count file
+#' @param file_allcount_hline      line number of header in library-independent count file
+#' @param file_valiant_meta_hline  line number of header in VaLiAnT meta file
+#' @param file_vep_anno_hline      line number of header in vep annotation file
+#' @param file_libcount_cols       a vector of numbers of selected columns in library-dependent count file, default is none
+#' @param file_allcount_cols       a vector of numbers of selected columns in library-independent count file, default is none
+#' @param file_valiant_meta_cols   a vector of numbers of selected columns in VaLiAnT meta file, default is none
+#' @param file_vep_anno_cols       a vector of numbers of selected columns in vep annotation file, default is none
 #' @return An object of class SGE
 create_sge_object <- function(file_libcount,
                               file_allcount,
@@ -99,6 +99,14 @@ create_sge_object <- function(file_libcount,
         vep_anno <- data.frame()
     } else {
         vep_anno <- read_sge_file(file_vep_anno, file_vep_anno_hline, file_vep_anno_cols)
+
+        if (vep_anno[1, ]$unique_oligo_name %nin% valiant_meta$oligo_name) {
+            vep_anno$unique_oligo_name <- sapply(vep_anno$unique_oligo_name, function (x) paste(head(unlist(strsplit(x, "_")), -2), collapse = "_"))
+        }
+
+        if (vep_anno[1, ]$seq %nin% libcounts$sequence) {
+            vep_anno$seq <- sapply(vep_anno$seq, function (x) revcomp(x))
+        }
     }
 
     # initializing
@@ -177,58 +185,67 @@ create_sge_object <- function(file_libcount,
 #'
 #' @export
 #' @name sampleQC
-#' @slot samples                   a list of SGE objects
-#' @slot samples_ref               a list of SGE objects which are the references for screen QC
-#' @slot counts                    a list of sample counts
-#' @slot lengths                   a list of sequence lengths
-#' @slot seq_clusters              a list of dataframes of sequences and cluster IDs
-#' @slot filtered_seqs             a vector of sequences with counts > clustering cutoff for screen QC in the references
-#' @slot filtered_counts           a data frame of filtered counts of all the samples
-#' @slot effective_counts          a data frame of effective counts of all the samples
-#' @slot effective_counts_pos      a data frame of effective counts of all the samples sorted by position
-#' @slot effective_counts_anno     a data frame of effective counts of all the samples, annotated with consequences
-#' @slot effective_counts_pos_anno a data frame of effective counts of all the samples, annotated with consequences, sorted by position
-#' @slot stats                     a data frame of samples and stats, eg. total no, filtered no.
-#' @slot filtered_samples          a vector of filtered sample names
-#' @slot bad_seqs                  a list of filter-out sequences
-#' @slot deseq_rlog                a data frame of deseq rlog counts of all the samples using effective counts
-#' @slot deseq_res                 a list of deseq results of all the comparison against reference
+#' @slot cutoffs                  a data frame of cutoffs using in sample QC
+#' @slot samples                  a list of SGE objects
+#' @slot samples_ref              a list of SGE objects which are the references for screen QC
+#' @slot counts                   a list of sample counts
+#' @slot lengths                  a list of sequence lengths
+#' @slot seq_clusters             a list of dataframes of sequences and cluster IDs
+#' @slot accepted_seqs            a list of sequences with counts > clustering cutoff for screen QC in the references
+#' @slot accepted_counts          a list of filtered counts of all the samples
+#' @slot library_counts           a list of library counts of all the samples
+#' @slot unmapped_counts          a list of unmapped counts against meta library sequences of all the samples
+#' @slot library_counts_chr       a list of chromosomes for library counts
+#' @slot library_counts_pos       a list of library counts of all the samples sorted by position in meta
+#' @slot library_counts_anno      a data frame of library counts of all the samples, annotated with consequences
+#' @slot library_counts_pos_anno  a data frame of library counts of all the samples, annotated with consequences, sorted by position
+#' @slot stats                    a data frame of samples and stats, eg. total no, filtered no.
+#' @slot bad_seqs_bycluster       a list of filter-out sequences by cluster
+#' @slot bad_seqs_bydepth         a list of filter-out sequences by depth
+#' @slot bad_seqs_bylib           a list of filter-out sequences by library mapping
+#' @slot filtered_samples         a vector of filtered sample names
 setClass("sampleQC",
     slots = list(
+        cutoffs = "data.frame",
         samples = "list",
         samples_ref = "list",
         counts = "list",
         lengths = "list",
         seq_clusters = "list",
-        filtered_seqs = "character",
-        filtered_counts = "data.frame",
-        effective_counts = "data.frame",
-        effective_counts_pos = "data.frame",
-        effective_counts_anno = "data.frame",
-        effective_counts_pos_anno = "data.frame",
+        accepted_seqs = "list",
+        accepted_counts = "list",
+        library_counts = "list",
+        unmapped_counts = "list",
+        library_counts_chr = "list",
+        library_counts_pos = "list",
+        library_counts_anno = "data.frame",
+        library_counts_pos_anno = "data.frame",
         stats = "data.frame",
-        filtered_samples = "character",
-        bad_seqs = "list",
-        deseq_rlog = "data.frame",
-        deseq_res = "list"
+        bad_seqs_bycluster = "list",
+        bad_seqs_bydepth = "list",
+        bad_seqs_bylib = "list",
+        filtered_samples = "character"
     ),
     prototype = list(
+        cutoffs = data.frame(),
         samples = list(),
         samples_ref = list(),
         counts = list(),
         lengths = list(),
         seq_clusters = list(),
-        filtered_seqs = character(),
-        filtered_counts = data.frame(),
-        effective_counts = data.frame(),
-        effective_counts_pos = data.frame(),
-        effective_counts_anno = data.frame(),
-        effective_counts_pos_anno = data.frame(),
+        accepted_seqs = list(),
+        accepted_counts = list(),
+        library_counts = list(),
+        unmapped_counts = list(),
+        library_counts_chr = list(),
+        library_counts_pos = list(),
+        library_counts_anno = data.frame(),
+        library_counts_pos_anno = data.frame(),
         stats = data.frame(),
-        filtered_samples = character(),
-        bad_seqs = list(),
-        deseq_rlog = data.frame(),
-        deseq_res = list()
+        bad_seqs_bycluster = list(),
+        bad_seqs_bydepth = list(),
+        bad_seqs_bylib = list(),
+        filtered_samples = character()
     )
 )
 
@@ -270,24 +287,25 @@ create_sampleqc_object <- function(samples) {
     }
 
     cols <- c("total_reads",
-              "failed_reads",
-              "filtered_reads",
+              "excluded_reads",
+              "accepted_reads",
+              "library_seqs",
               "missing_meta_seqs",
-              "effective_reads",
-              "per_effective_reads",
+              "library_reads",
+              "per_library_reads",
               "unmapped_reads",
               "per_unmapped_reads",
               "ref_reads",
               "per_ref_reads",
               "pam_reads",
               "per_pam_reads",
-              "effective_cov",
+              "library_cov",
               "gini_coeff_before_qc",
               "gini_coeff_after_qc",
-              "qcpass_filtered_reads",
+              "qcpass_accepted_reads",
               "qcpass_mapping_per",
-              "qcpass_effective_per",
-              "qcpass_effective_cov",
+              "qcpass_library_per",
+              "qcpass_library_cov",
               "qcpass")
     df_stats <- data.frame(matrix(NA, num_samples, length(cols)))
     rownames(df_stats) <- sample_names
@@ -302,4 +320,93 @@ create_sampleqc_object <- function(samples) {
 
     # Return the object
     return(sampleqc_object)
+}
+
+#' A class representing a primary qc object
+#'
+#' @export
+#' @name experimentQC
+#' @slot samples                  a list of SGE objects
+#' @slot coldata                  a data frame of coldata for DESeq2
+#' @slot ref_condition            the reference condition, like D4, others VS D4 in DESeq2
+#' @slot library_counts_anno      a data frame of library counts of all the samples, annotated with consequences
+#' @slot library_counts_pos_anno  a data frame of library counts of all the samples, annotated with consequences, sorted by position
+#' @slot comparisons              a list of comparisons for degComps
+#' @slot deseq_rlog               a data frame of deseq rlog counts of all the samples using library counts
+#' @slot deseq_res                a list of deseq results of all the comparison against reference
+setClass("experimentQC",
+    slots = list(
+        samples = "list",
+        coldata = "data.frame",
+        ref_condition = "character",
+        library_counts_anno = "data.frame",
+        library_counts_pos_anno = "data.frame",
+        comparisons = "list",
+        deseq_rlog = "data.frame",
+        deseq_res = "list"
+    ),
+    prototype = list(
+        samples = list(),
+        coldata = data.frame(),
+        ref_condition = character(),
+        library_counts_anno = data.frame(),
+        library_counts_pos_anno = data.frame(),
+        comparisons = list(),
+        deseq_rlog = data.frame(),
+        deseq_res = list()
+    )
+)
+
+#' Create a new experimentQC object
+#'
+#' @export
+#' @name create_experimentqc_object
+#' @param samqc_obj a sampleQC object
+#' @param coldata   a data frame of coldata for DESeq2
+#' @param refcond   the reference condition, eg. D4
+#' @return An object of class sampleQC
+create_experimentqc_object <- function(samqc_obj,
+                                       coldata = NULL,
+                                       refcond) {
+    # checking
+    if (is.null(coldata)) {
+         stop(paste0("====> Error: no coldata found in the input!"))
+    }
+
+    if (refcond %nin% coldata$condition) {
+        stop(paste0("====> Error: reference condition is not in the coldata!"))
+    }
+
+    # initializing
+    if ("condition" %nin% colnames(coldata)) {
+        stop(paste0("====> Error: coldata must have condition values!"))
+    } else {
+        coldata <- as.data.frame(coldata)
+
+        coldata$condition <- factor(coldata$condition)
+        coldata$condition <- factor(coldata$condition, levels = mixsort(levels(coldata$condition)))
+
+        coldata$replicate <- factor(coldata$replicate)
+        coldata$replicate <- factor(coldata$replicate, levels = mixsort(levels(coldata$replicate)))
+    }
+
+    conds <- levels(coldata$condition)
+    ds_contrast <- list()
+    for (i in 1:length(conds)) {
+        if (conds[i] != refcond) {
+            ds_contrast <- append(ds_contrast, paste0("condition_", conds[i], "_vs_", refcond))
+        }
+    }
+
+    # Create the object
+    experimentqc_object <- new("experimentQC",
+        samples = samqc_obj@samples,
+        coldata = coldata,
+        ref_condition = refcond,
+        library_counts_anno = samqc_obj@library_counts_anno,
+        library_counts_pos_anno = samqc_obj@library_counts_pos_anno,
+        comparisons = ds_contrast)
+
+    # Return the object
+    return(experimentqc_object)
 }

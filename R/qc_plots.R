@@ -6,21 +6,19 @@ setGeneric("qcplot_readlens", function(object, ...) {
 #' create the read length plot
 #'
 #' @export
-#' @param object  sampleQC object
+#' @param object   sampleQC object
+#' @param len_bins the bins of length distribution
 #' @param plotdir the output plot directory
 setMethod(
     "qcplot_readlens",
     signature = "sampleQC",
     definition = function(object,
-                          plotdir) {
-        if (length(plotdir) == 0) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
-        }
-
+                          len_bins = seq(0, 300, 50),
+                          plotdir = NULL) {
         read_lens <- data.table()
         for (i in 1:length(object@lengths)) {
             tmp_lens <- object@lengths[[i]][, "length", drop = FALSE]
-            tmp_lens$samples <- names(object@lengths)[i]
+            tmp_lens$sample <- names(object@lengths)[i]
             tmp_lens <- as.data.table(tmp_lens)
 
             if (nrow(read_lens) == 0) {
@@ -30,22 +28,46 @@ setMethod(
             }
         }
 
+        sample_names <- vector()
+        for (s in object@samples) {
+            sample_names <- append(sample_names, s@sample)
+        }
+
         read_lens <- as.data.frame(read_lens)
-        read_lens$samples <- factor(read_lens$samples, levels = colnames(object@effective_counts))
+        read_lens$sample <- factor(read_lens$sample, levels = sample_names)
 
-        p1 <- ggplot(read_lens, aes(x = factor(samples), y = length)) +
-                geom_violinhalf(alpha = 0.3, scale = "width", color = "royalblue", fill = t_col("royalblue", 0.5)) +
-                coord_flip() +
-                labs(x = "read length", y = "frequency", title = "Sample QC read lengths") +
+        p1 <- ggplot(read_lens, aes(x = length)) +
+                geom_histogram(aes(y = after_stat(width * density)), breaks = len_bins, color = "black", fill = "grey") +
+                geom_hline(yintercept = c(0.25, 0.5, 0.75, 1), linetype = "dashed", color = "yellowgreen", linewidth = 0.3) +
+                scale_y_continuous(labels = scales::percent) +
+                coord_trans(y = "sqrt") +
+                labs(x = "Length Distribution", y = "Composition Percentage", title = "Sample QC read lengths") +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16,face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16,face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 10, face = "bold"))
+                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
+                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
+                theme(axis.text = element_text(size = 8, face = "bold")) +
+                facet_wrap(~sample, scales = "free", dir = "v", ncol = 4)
 
-        pheight <- 150 * length(object@lengths)
-        png(paste0(plotdir, "/", "sample_qc_read_length.violin.png"), width = 1200, height = pheight, res = 200)
-        print(p1)
-        dev.off()
+        p2 <- ggplot(read_lens, aes(x = length)) +
+                geom_histogram(aes(y = after_stat(width * density)), breaks = len_bins, color = "black", fill = "grey") +
+                geom_hline(yintercept = c(0.25, 0.5, 0.75, 1), linetype = "dashed", color = "yellowgreen", linewidth = 0.3) +
+                scale_y_continuous(labels = scales::percent) +
+                labs(x = "Length Distribution", y = "Composition Percentage", title = "Sample QC read lengths") +
+                theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
+                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
+                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
+                theme(axis.text = element_text(size = 8, face = "bold")) +
+                facet_wrap(~sample, scales = "free", dir = "v", ncol = 4)
+
+        pheight <- 400 * as.integer((length(sample_names) / 3))
+
+        if (is.null(plotdir)) {
+            ggplotly(p2)
+        } else {
+            png(paste0(plotdir, "/", "sample_qc_read_length.png"), width = 1200, height = pheight, res = 200)
+            print(p1)
+            dev.off()
+        }
     }
 )
 
@@ -64,63 +86,33 @@ setMethod(
     "qcplot_clusters",
     signature = "sampleQC",
     definition = function(object,
-                          qctype,
-                          plotdir) {
-        if (length(qctype) == 0) {
-            stop(paste0("====> Error: qctype is not provided, plasmid or screen."))
-        } else {
-            if (qctype %nin% c("plasmid", "screen")) {
+                          qctype = "screen",
+                          plotdir = NULL) {
+        if (qctype %nin% c("plasmid", "screen")) {
                 stop(paste0("====> Error: wrong qctype, plasmid or screen."))
-            } else {
-                if (qctype == "screen") {
-                    if (is.null(object@seq_clusters[["ref"]])) {
-                        stop(paste0("====> Error: selected wrong qctype, no ref in object seq_clusters."))
-                    }
-                }
-            }
-        }
-
-        if (length(plotdir) == 0) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
         }
 
         if (qctype == "screen") {
-            seq_clusters <- object@seq_clusters[["ref"]]
-            seq_clusters_1 <- seq_clusters[seq_clusters$cluster==1, ]
-            seq_clusters_2 <- seq_clusters[seq_clusters$cluster==2, ]
+            seq_clusters <- object@seq_clusters[[1]]
+            seq_clusters_1 <- seq_clusters[seq_clusters$cluster == 1, ]
+            seq_clusters_2 <- seq_clusters[seq_clusters$cluster == 2, ]
             seq_clusters_new <- rbind(seq_clusters_1, seq_clusters_2)
+
+            select_colors <- select_colorblind("col8")[1:2]
+            fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
 
             p1 <- ggplot(seq_clusters_new, aes(x = 1:dim(seq_clusters_new)[1], y = count_log2, color = factor(cluster))) +
                     geom_point(shape = 21, size = 1, aes(fill = factor(cluster), color = factor(cluster))) +
-                    scale_fill_manual(values = c(t_col("tomato", 0.5), t_col("royalblue", 0.5))) +
-                    scale_color_manual(values = c("tomato", "royalblue")) +
+                    scale_fill_manual(values = fill_colors) +
+                    scale_color_manual(values = select_colors) +
                     labs(x = "sequence index", y = "log2(count+1)", title = "Sample QC clusters") +
                     theme(legend.position = "none", panel.grid.major = element_blank()) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                     theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 12, face = "bold"))
-
-            png(paste0(plotdir, "/", "sample_qc_seq_clusters.point.png"), width = 1200, height = 1200, res = 200)
-            print(p1)
-            dev.off()
+                    theme(axis.text = element_text(size = 8, face = "bold"))
 
             p2 <- ggplot(seq_clusters_new, aes(x = count_log2, color = factor(cluster))) +
-                    geom_histogram(aes(fill = factor(cluster), color = factor(cluster))) +
-                    scale_fill_manual(values = c(t_col("tomato", 0.5), t_col("royalblue", 0.5))) +
-                    scale_color_manual(values = c("tomato", "royalblue")) +
-                    labs(x = "log2(count+1)", y = "frequency", title = "Sample QC clusters") +
-                    theme(legend.position = "none", panel.grid.major = element_blank()) +
-                    theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 12, face = "bold"))
-
-            #png(paste0(plotdir, "/", "sample_qc_seq_clusters.hist.png"), width = 1200, height = 1200, res = 200)
-            #print(p2)
-            #dev.off()
-
-            p3 <- ggplot(seq_clusters_new, aes(x = count_log2, color = factor(cluster))) +
                     geom_density(aes(fill = factor(cluster), color = factor(cluster))) +
                     scale_fill_manual(values = c(t_col("tomato", 0.5), t_col("royalblue", 0.5))) +
                     scale_color_manual(values = c("tomato", "royalblue")) +
@@ -130,34 +122,39 @@ setMethod(
                     theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 12, face = "bold"))
-
-            png(paste0(plotdir, "/", "sample_qc_seq_clusters.density.png"), width = 1200, height = 1200, res = 200)
-            print(p3)
-            dev.off()
         } else {
             seq_clusters <- data.table()
             for (i in 1:length(object@seq_clusters)) {
                 tmp_cluster <- object@seq_clusters[[i]][, c("count_log2", "cluster")]
                 tmp_cluster$samples <- names(object@seq_clusters)[i]
                 tmp_cluster <- as.data.table(tmp_cluster)
+                tmp_cluster$samples <- object@samples[[i]]@sample
+                tmp_cluster[cluster == 1, group := "low-count cluster"]
+                tmp_cluster[cluster == 2, group := "high-count cluster"]
 
                 if (nrow(seq_clusters) == 0) {
                     seq_clusters <- tmp_cluster
                 } else {
-                    seq_clusters <- rbind(clusters, tmp_cluster)
+                    seq_clusters <- rbind(seq_clusters, tmp_cluster)
                 }
             }
 
-            p1 <- ggplot(seq_clusters, aes(x = count_log2, color = samples, fill = samples)) +
-                    geom_density(alpha = 0.2) +
+            p1 <- ggplot(seq_clusters, aes(x = count_log2, color = samples)) +
+                    geom_density() +
                     labs(x = "log2(count+1)", y = "frequency", title = "Sample QC clusters") +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                     theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 12, face = "bold")) +
-                    facet_wrap(~cluster, scales = "free")
+                    facet_wrap(~group, scales = "free", dir = "v")
 
-            png(paste0(plotdir, "/", "sample_qc_seq_clusters.density.png"), width = 1200, height = 1200, res = 200)
+            p2 <- p1
+        }
+
+        if (is.null(plotdir)) {
+            ggplotly(p2)
+        } else {
+            png(paste0(plotdir, "/", "sample_qc_seq_clusters.png"), width = 1200, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -165,8 +162,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_stats", function(object, ...) {
-  standardGeneric("qcplot_stats")
+setGeneric("qcplot_stats_total", function(object, ...) {
+  standardGeneric("qcplot_stats_total")
 })
 
 #' create the stats plot
@@ -175,86 +172,134 @@ setGeneric("qcplot_stats", function(object, ...) {
 #' @param object  sampleQC object
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_stats",
+    "qcplot_stats_total",
     signature = "sampleQC",
     definition = function(object,
-                          plotdir) {
-        if (length(plotdir) == 0) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
-        }
-
-        df_total <- object@stats[, c("failed_reads", "filtered_reads")]
+                          plotdir = NULL) {
+        df_total <- object@stats[, c("excluded_reads", "accepted_reads")]
         df_total$samples <- rownames(df_total)
         dt_total <- reshape2::melt(as.data.table(df_total), id.vars = "samples", variable.name = "types", value.name = "counts")
 
         dt_total$samples <- factor(dt_total$samples, levels = df_total$samples)
 
+        select_colors <- select_colorblind("col8")[1:2]
+        fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
+
         p1 <- ggplot(dt_total,  aes(x = samples, y = counts, fill = types)) +
                 geom_bar(stat = "identity") +
-                scale_fill_manual(values = c(t_col("tomato", 0.5), t_col("royalblue", 0.5))) +
-                scale_color_manual(values = c("tomato", "royalblue")) +
+                scale_fill_manual(values = fill_colors) +
+                scale_color_manual(values = select_colors) +
                 labs(x = "samples", y = "counts", title = "Sample QC Stats") +
                 scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
                 theme(legend.position = "right", legend.title = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                 theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                 theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 12, face = "bold")) +
+                theme(axis.text = element_text(size = 8, face = "bold")) +
                 theme(axis.text.x = element_text(angle = 90))
 
         pwidth <- 150 * nrow(df_total)
-        png(paste0(plotdir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
-        print(p1)
-        dev.off()
 
-        df_filtered <- object@stats[, c("per_unmapped_reads", "per_ref_reads", "per_pam_reads", "per_effective_reads")]
-        colnames(df_filtered) <- c("unmapped_reads", "ref_reads", "pam_reads", "effective_reads")
-        df_filtered <- round(df_filtered*100, 1)
-        df_filtered$samples <- rownames(df_filtered)
-        dt_filtered <- reshape2::melt(as.data.table(df_filtered), id.vars = "samples", variable.name = "types", value.name = "percent")
+        if (is.null(plotdir)) {
+            ggplotly(p1)
+        } else {
+            png(paste0(plotdir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
+            print(p1)
+            dev.off()
+        }
+    }
+)
 
-        dt_filtered$samples <- factor(dt_filtered$samples, levels = df_filtered$samples)
+#' initialize function
+setGeneric("qcplot_stats_accepted", function(object, ...) {
+  standardGeneric("qcplot_stats_accepted")
+})
 
-        gg_colors_fill <- c(t_col("tomato", 0.5), t_col("grey", 0.5), t_col("yellowgreen", 0.5), t_col("royalblue", 0.5))
-        gg_colors <- c(c("tomato", "grey", "yellowgreen", "royalblue"))
-        p2 <- ggplot(dt_filtered,  aes(x = samples, y = percent, fill = types)) +
+#' create the stats plot
+#'
+#' @export
+#' @param object  sampleQC object
+#' @param plotdir the output plot directory
+setMethod(
+    "qcplot_stats_accepted",
+    signature = "sampleQC",
+    definition = function(object,
+                          plotdir = NULL) {
+        df_accepted <- object@stats[, c("per_unmapped_reads", "per_ref_reads", "per_pam_reads", "per_library_reads")]
+        colnames(df_accepted) <- c("unmapped_reads", "ref_reads", "pam_reads", "library_reads")
+        df_accepted <- round(df_accepted * 100, 1)
+        df_accepted$samples <- rownames(df_accepted)
+        dt_filtered <- reshape2::melt(as.data.table(df_accepted), id.vars = "samples", variable.name = "types", value.name = "percent")
+
+        dt_filtered$samples <- factor(dt_filtered$samples, levels = df_accepted$samples)
+
+        df_cov <- object@stats[, c("total_reads", "library_reads", "library_cov")]
+        colnames(df_cov) <- c("num_total_reads", "num_library_reads", "library_cov")
+        df_cov$samples <- rownames(df_cov)
+
+        select_colors <- select_colorblind("col8")[1:4]
+        fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
+
+        y_scale <- max(df_cov$library_cov) * 2
+
+        p1 <- ggplot(dt_filtered,  aes(x = samples, y = percent, fill = types)) +
                 geom_bar(stat = "identity", position = "fill") +
-                scale_fill_manual(values = gg_colors_fill) +
-                scale_color_manual(values = gg_colors) +
+                geom_line(data = df_cov, aes(x = samples, y = library_cov / y_scale, group = 1, linetype = "coverage"), linetype = "dashed", color = "red", inherit.aes = FALSE) +
+                geom_point(data = df_cov, aes(x = samples, y = library_cov / y_scale, group = 1), shape = 18, color = "red", size = 2, inherit.aes = FALSE) +
+                scale_y_continuous(labels = scales::percent, sec.axis = sec_axis(~. * y_scale, name = "library coverage")) +
+                scale_fill_manual(values = fill_colors) +
+                scale_color_manual(values = select_colors, guide = guide_legend(override.aes = list(fill = NA))) +
                 labs(x = "samples", y = "percent", title = "Sample QC Stats") +
-                scale_y_continuous(labels = scales::percent) +
                 theme(legend.position = "right", legend.title = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                 theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                 theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 12, face = "bold")) +
+                theme(axis.text = element_text(size = 8, face = "bold")) +
                 theme(axis.text.x = element_text(angle = 90)) +
-                geom_text(aes(label = paste0(percent, "%")), position = position_fill(vjust = 0.5), size = 3)
+                geom_text(aes(label = percent), position = position_fill(vjust = 0.5), size = 3)
 
-        pwidth <- 150 * nrow(df_filtered)
-        png(paste0(plotdir, "/", "sample_qc_stats_filtered.png"), width = pwidth, height = 1200, res = 200)
-        print(p2)
-        dev.off()
+        pwidth <- 150 * nrow(df_accepted)
 
-        df_cov <- object@stats[, c("total_reads", "effective_reads", "effective_cov")]
-        df_cov$samples <- rownames(df_cov)
+        if (is.null(plotdir)) {
+            dt_filtered$types <- factor(dt_filtered$types, levels = rev(levels(dt_filtered$types)))
 
-        p3 <- ggplot(df_cov,  aes(x = total_reads, y = effective_reads, color = samples)) +
-                geom_point(alpha = 0.7, aes(size = effective_cov)) +
-                geom_text(size = 3, color = "black", aes(label = effective_cov)) +
-                labs(x = "total reads", y = "effective reads", title = "Sample QC Stats") +
-                scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
-                scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
-                scale_size_continuous(range = c(6, 12)) +
-                theme(legend.position = "right") +
-                theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 12, face = "bold"))
+            ay <- list(overlaying = "y",
+                       side = "right",
+                       title = "Library Coverage")
 
-        png(paste0(plotdir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
-        print(p3)
-        dev.off()
+            mk <- list(size = 12,
+                       symbol = "diamond",
+                       color = "red")
+            
+            plot_ly(data = dt_filtered, x = ~samples, y = ~percent, color = ~types, type = "bar", colors = rev(fill_colors)) %>%
+                layout(barmode = "stack") %>%
+                add_markers(data = df_cov, x = ~samples, y = ~library_cov, inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
+                layout(yaxis2 = ay)
+        } else {
+            png(paste0(plotdir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 200)
+            print(p1)
+            dev.off()
+        }
+
+        # bubble plot, may be useful, leave it here
+
+        # p2 <- ggplot(df_cov,  aes(x = total_reads, y = library_reads, color = samples)) +
+        #         geom_point(alpha = 0.7, aes(size = library_cov)) +
+        #         geom_text(size = 2, color = "black", aes(label = library_cov)) +
+        #         geom_text(size = 2, color = "black", vjust = -1, aes(label = samples)) +
+        #         labs(x = "total reads", y = "library reads", title = "Sample QC Stats") +
+        #         scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+        #         scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+        #         scale_size_continuous(range = c(6, 12)) +
+        #         theme(legend.position = "right") +
+        #         theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
+        #         theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
+        #         theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
+        #         theme(axis.text = element_text(size = 12, face = "bold"))
+
+        # png(paste0(plotdir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
+        # print(p2)
+        # dev.off()
     }
 )
 
@@ -272,11 +317,7 @@ setMethod(
     "qcplot_gini",
     signature = "sampleQC",
     definition = function(object,
-                          plotdir) {
-        if (length(plotdir) == 0) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
-        }
-
+                          plotdir = NULL) {
         sample_names <- character()
         all_gini <- character()
         for (s in object@samples) {
@@ -317,9 +358,14 @@ setMethod(
                 scale_y_continuous(limits = c(0, 1))
 
         pwidth <- 150 * num_samples
-        png(paste0(plotdir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 200)
-        print(p1)
-        dev.off()
+
+        if (is.null(plotdir)) {
+            ggplotly(p1)
+        } else {
+            png(paste0(plotdir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 200)
+            print(p1)
+            dev.off()
+        }
     }
 )
 
@@ -332,67 +378,86 @@ setGeneric("qcplot_position", function(object, ...) {
 #'
 #' @export
 #' @param object  sampleQC object
+#' @param qctype  plot type, screen or plasmid
 #' @param plotdir the output plot directory
 setMethod(
     "qcplot_position",
     signature = "sampleQC",
     definition = function(object,
-                          plotdir) {
-        if (length(plotdir) == 0) {
+                          qctype = "screen",
+                          plotdir = NULL) {
+        if (is.null(plotdir)) {
             stop(paste0("====> Error: plotdir is not provided, no output directory."))
         }
 
-        # normalisation?
-        effcounts_pos <- object@effective_counts_pos
-        effcounts_pos <- apply(effcounts_pos, 2, function(x) x / (sum(x, na.rm = TRUE) / 1000000))
-        effcounts_pos_log <- log2(effcounts_pos + 1)
-
-        sample_names <- character()
-        for (s in object@samples) {
-            sample_names <- append(sample_names, s@sample)
+        if (qctype %nin% c("plasmid", "screen")) {
+            stop(paste0("====> Error: wrong qctype, plasmid or screen."))
         }
 
-        pheight <- 100 * length(sample_names)
-        png(paste0(plotdir, "/", "sample_qc_position_cov.heatmap.png"), width = 2400, height = pheight, res = 200)
-        lmat <- rbind(c(3, 4), c(2, 1))
-        lhei <- c(2, 8)
-        lwid <- c(2, 8)
+        sample_names <- vector()
+        libcounts_pos <- data.table()
+        for (s in object@samples) {
+            sample_names <- append(sample_names, s@sample)
 
-        heatmap.2(t(as.matrix(effcounts_pos_log)),
-                  distfun=function(x) dist(x, method = "euclidean"),
-                  hclustfun=function(x) hclust(x, method = "ward.D2"),
-                  col = colorpanel(100, "royalblue", "ivory", "tomato"),
-                  na.color = "grey",
-                  breaks = seq(0, 10, length.out = 101),
-                  density.info = "none", trace = "none", dendrogram = "none",
-                  Rowv = FALSE, Colv = FALSE,
-                  labCol = FALSE, cexRow = 1,
-                  key = FALSE,
-                  #key.xlab = "Log2(count+1)", key.title = "", key.par = list(cex.lab = 1.2),
-                  margins = c(4, 8), rowsep = 1:length(sample_names),
-                  lmat = lmat, lhei = lhei, lwid = lwid)
-        dev.off()
+            tmp_counts <- object@library_counts_pos[[s@sample]][, c("seq", "position", "count")]
+            tmp_counts <- as.data.table(tmp_counts)
+            tmp_counts[, sample := s@sample]
 
-        rownames(effcounts_pos_log) <- 1:nrow(effcounts_pos_log)
-        dt_effcounts_pos_log <- reshape2::melt(effcounts_pos_log)
-        colnames(dt_effcounts_pos_log) <- c("index", "samples", "log_counts")
+            if (nrow(libcounts_pos) == 0) {
+                libcounts_pos <- tmp_counts
+            } else {
+                libcounts_pos <- rbind(libcounts_pos, tmp_counts)
+            }
+        }
+        libcounts_pos[, log2p1 := log2(count+1)]
 
-        dt_effcounts_pos_log$samples <- factor(dt_effcounts_pos_log$samples, levels = sample_names)
+        if (qctype == "plasmid") {
+            libcounts_dependent_pos <- data.table()
 
-        p1 <- ggplot(dt_effcounts_pos_log, aes(x = index, y = log_counts)) +
+            for (s in object@samples) {
+                tmp_counts <- s@libcounts[, c("name", "count")]
+                colnames(tmp_counts) <- c("oligo_name", "count")
+                tmp_counts <- as.data.table(tmp_counts)
+                tmp_counts[, sample := s@sample]
+
+                tmp_meta <- s@valiant_meta[, c("oligo_name", "mut_position")]
+                tmp_meta <- as.data.table(tmp_meta)
+
+                tmp_counts[tmp_meta, position := i.mut_position, on = .(oligo_name)]
+                setorder(tmp_counts, cols = "position")
+
+                if (nrow(libcounts_dependent_pos) == 0) {
+                libcounts_dependent_pos <- tmp_counts
+                } else {
+                    libcounts_dependent_pos <- rbind(libcounts_dependent_pos, tmp_counts)
+                }
+            }
+
+            libcounts_pos <- libcounts_dependent_pos
+            libcounts_pos[, log2p1 := log2(count+1)]
+        }
+
+        p1 <- ggplot(libcounts_pos, aes(x = position, y = log2p1)) +
                 geom_point(shape = 16, size = 0.5, color = "tomato", alpha = 0.8) +
-                labs(x = "sequence position index", y = "log2(count+1)", title = "Sample QC position coverage") +
+                geom_hline(yintercept = object@cutoffs$seq_low_count, linetype = "dashed", color = "springgreen4", size = 0.4) +
+                labs(x = "Genomic Coordinate", y = "log2(count+1)", title = "Sample QC position coverage") +
                 theme(legend.position = "none", panel.grid.major = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                 theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                 theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 6, face = "bold")) +
-                facet_wrap(~samples, dir = "v", ncol = 2)
+                theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+                facet_wrap(~sample, dir = "v", ncol = 4)
 
-        pheight <- 300 * length(sample_names)
-        png(paste0(plotdir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 200)
-        print(p1)
-        dev.off()
+        pheight <- 400 * as.integer((length(sample_names) / 3))
+
+        if (is.null(plotdir)) {
+            stop(paste0("====> Error: plotdir is not provided, no output directory."))
+        } else {
+            png(paste0(plotdir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 200)
+            print(p1)
+            dev.off()
+        }
     }
 )
 
@@ -407,42 +472,45 @@ setGeneric("qcplot_position_anno", function(object, ...) {
 #' @param object    sampleQC object
 #' @param samples   a vector of sample names
 #' @param type      plot type, lof or all
-#' @param major_cut the qc cutoff of major variants
 #' @param plotdir   the output plot directory
 setMethod(
     "qcplot_position_anno",
     signature = "sampleQC",
     definition = function(object,
-                          samples,
-                          type,
-                          major_cut = 0.005,
-                          plotdir) {
-        if (length(plotdir) == 0) {
+                          samples = NULL,
+                          type = "lof",
+                          plotdir = NULL) {
+        if (is.null(plotdir)) {
             stop(paste0("====> Error: plotdir is not provided, no output directory."))
+        }
+
+        if (is.null(samples)) {
+            stop(paste0("====> Error: please provide samples, a vector."))
         }
 
         if (type %nin% c("lof", "all")) {
             stop(paste0("====> Error: wrong type, please use lof or all."))
         }
 
-        effcounts_pos <- object@effective_counts_pos_anno
-        effcounts_pos <- effcounts_pos[, c(samples, "consequence")]
+        libcounts_pos <- as.data.frame(object@library_counts_pos_anno)
+        libcounts_pos <- libcounts_pos[, c(samples, "position", "consequence")]
 
         if (type == "lof") {
-            effcounts_pos$consequence <- ifelse(effcounts_pos$consequence == "lof", "lof", "others")
-            effcounts_pos[, samples] <- effcounts_pos[, samples] / object@stats[samples, ]$filtered_reads * 100
+            libcounts_pos$consequence <- ifelse(libcounts_pos$consequence == "LOF", "LOF", "Others")
 
-            dt_effcounts_pos <- reshape2::melt(effcounts_pos, id.vars = "consequence", variable.name = "samples", value.name = "counts")
-            dt_effcounts_pos$index <- 1:nrow(effcounts_pos)
-            dt_effcounts_pos$samples <- factor(dt_effcounts_pos$samples, levels = samples)
+            # be careful, df / vec is by row, not column
+            libcounts_pos[, samples] <- t(t(libcounts_pos[, samples]) / object@stats[samples, ]$accepted_reads * 100)
 
-            dt_effcounts_pos[dt_effcounts_pos == 0] <- NA
+            df_libcounts_pos <- reshape2::melt(libcounts_pos, id.vars = c("consequence", "position"), variable.name = "samples", value.name = "counts")
+            df_libcounts_pos$samples <- factor(df_libcounts_pos$samples, levels = samples)
 
-            p1 <- ggplot(dt_effcounts_pos, aes(x = index, y = counts)) +
-                    geom_point(shape = 19, size = 0.5, aes(fill = factor(consequence), color = factor(consequence))) +
-                    geom_hline(yintercept = major_cut, linetype = "dashed", color = "springgreen4", size = 0.4) +
-                    scale_color_manual(values = c(t_col("red", 1), t_col("royalblue", 0.2))) +
-                    labs(x = "sequence position", y = "percentage", title = "Sample QC position percentage") +
+            tmp_cutoff <- object@cutoffs$low_abundance_per * 100
+
+            p1 <- ggplot(df_libcounts_pos, aes(x = position, y = counts)) +
+                    geom_point(shape = 19, size = 0.5, aes(color = factor(consequence))) +
+                    geom_hline(yintercept = tmp_cutoff, linetype = "dashed", color = "springgreen4", size = 0.4) +
+                    scale_color_manual(values = c(t_col("red", 1), t_col("royalblue", 0.2)), labels = c("LOF", "Others")) +
+                    labs(x = "Genomic Coordinate", y = "Percentage", title = "Sample QC position percentage", color = "Type") +
                     coord_trans(y = "log2") +
                     scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
@@ -453,24 +521,27 @@ setMethod(
                     facet_wrap(~samples, dir = "v")
 
             pheight <- 300 * length(samples)
-            png(paste0(plotdir, "/", "sample_qc_position_anno.lof_dots.png"), width = 2400, height = pheight, res = 200)
-            print(p1)
-            dev.off()
+
+            if (is.null(plotdir)) {
+                stop(paste0("====> Error: plotdir is not provided, no output directory."))
+            } else {
+                png(paste0(plotdir, "/", "sample_qc_position_anno.lof_dots.png"), width = 1200, height = pheight, res = 200)
+                print(p1)
+                dev.off()
+            }
         } else {
-            effcounts_pos[, samples] <- effcounts_pos[, samples] / object@stats[samples, ]$filtered_reads * 100
+            libcounts_pos[, samples] <- t(t(libcounts_pos[, samples]) / object@stats[samples, ]$accepted_reads * 100)
 
-            dt_effcounts_pos <- reshape2::melt(effcounts_pos, id.vars = "consequence", variable.name = "samples", value.name = "counts")
-            dt_effcounts_pos$index <- 1:nrow(effcounts_pos)
-            dt_effcounts_pos$samples <- factor(dt_effcounts_pos$samples, levels = samples)
+            df_libcounts_pos <- reshape2::melt(libcounts_pos, id.vars = c("consequence", "position"), variable.name = "samples", value.name = "counts")
+            df_libcounts_pos$samples <- factor(df_libcounts_pos$samples, levels = samples)
 
-            dt_effcounts_pos[dt_effcounts_pos == 0] <- NA
+            df_libcounts_pos[df_libcounts_pos == 0] <- NA
 
-            default_colors <- c("tomato", "royalblue", "yellowgreen", "orange",
-                                "pink", "purple", "coral", "cyan",
-                                "violet", "springgreen", "skyblue", "lightgrey")
-            select_colors <- default_colors[1:length(unique(effcounts_pos$consequence))]
+            num_colors <- length(unique(libcounts_pos$consequence))
+            index_colors <- sample(seq(1, length(select_colorblind("col21"))), num_colors)
+            select_colors <- select_colorblind("col21")[index_colors]
 
-            freq_cons <- table(effcounts_pos$consequence)
+            freq_cons <- table(libcounts_pos$consequence)
             names(select_colors) <- names(freq_cons)
 
             freq_cons <- sort(freq_cons, decreasing = TRUE)
@@ -483,11 +554,13 @@ setMethod(
             }
             select_colors <- as.vector(select_colors)
 
-            p1 <- ggplot(dt_effcounts_pos, aes(x = index, y = counts)) +
-                    geom_point(shape = 19, size = 0.5, aes(fill = factor(consequence), color = factor(consequence))) +
-                    geom_hline(yintercept = major_cut, linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
+            tmp_cutoff <- object@cutoffs$low_abundance_per * 100
+
+            p1 <- ggplot(df_libcounts_pos, aes(x = position, y = counts)) +
+                    geom_point(shape = 19, size = 0.5, aes(color = factor(consequence))) +
+                    geom_hline(yintercept = tmp_cutoff, linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                     scale_color_manual(values = select_colors) +
-                    labs(x = "sequence position", y = "percentage", title = "Sample QC position percentage") +
+                    labs(x = "Genomic Coordinate", y = "Percentage", title = "Sample QC position percentage", color = "Type") +
                     coord_trans(y = "log2") +
                     scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
@@ -498,9 +571,14 @@ setMethod(
                     facet_wrap(~samples, dir = "v")
 
             pheight <- 300 * length(samples)
-            png(paste0(plotdir, "/", "sample_qc_position_anno.all_dots.png"), width = 2400, height = pheight, res = 200)
-            print(p1)
-            dev.off()
+
+            if (is.null(plotdir)) {
+                stop(paste0("====> Error: plotdir is not provided, no output directory."))
+            } else {
+                png(paste0(plotdir, "/", "sample_qc_position_anno.all_dots.png"), width = 1200, height = pheight, res = 200)
+                print(p1)
+                dev.off()
+            }
         }
     }
 )
@@ -513,64 +591,84 @@ setGeneric("qcplot_dist_samples", function(object, ...) {
 #' create the heatmap of samples
 #'
 #' @export
-#' @param object  sampleQC object
+#' @param object  experimentQC object
 #' @param plotdir the output plot directory
 setMethod(
     "qcplot_dist_samples",
-    signature = "sampleQC",
+    signature = "experimentQC",
     definition = function(object,
-                          plotdir) {
-        if (length(plotdir) == 0) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
-        }
-
+                          plotdir = NULL) {
         sample_dist <- as.matrix(dist(t(object@deseq_rlog)))
         sample_rlog <- as.matrix(object@deseq_rlog)
 
         min_rlog <- round(min(sample_rlog))
         max_rlog <- round(max(sample_rlog))
 
-        pwidth <- 100 * ncol(sample_rlog)
-        png(paste0(plotdir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
-        lmat <- rbind(c(4, 3), c(2, 1))
-        lhei <- c(3, 8)
-        lwid <- c(3, 8)
+        # heatmap, leave it temporarily
 
-        heatmap.2(sample_rlog,
-                  distfun = function(x) dist(x, method = "euclidean"),
-                  hclustfun = function(x) hclust(x, method = "ward.D2"),
-                  col = colorpanel(100, "royalblue", "ivory", "tomato"),
-                  na.color = "grey",
-                  breaks = seq(min_rlog, max_rlog, length.out = 101),
-                  density.info = "none", trace = "none", dendrogram = "both",
-                  Rowv = TRUE, Colv = TRUE, labRow = FALSE,
-                  cexCol = 0.6, cexRow = 0.6,
-                  key.xlab = "deseq rlog", key.title = "", key.par = list(cex.lab = 1),
-                  margins = c(8, 1),
-                  colsep = 1:ncol(sample_dist),
-                  sepwidth=c(0.01, 0.01),
-                  lmat = lmat, lhei = lhei, lwid = lwid)
-        dev.off()
+        # pwidth <- 100 * ncol(sample_rlog)
+        # png(paste0(plotdir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
+        # lmat <- rbind(c(4, 3), c(2, 1))
+        # lhei <- c(3, 8)
+        # lwid <- c(3, 8)
+
+        # heatmap.2(sample_rlog,
+        #           distfun = function(x) dist(x, method = "euclidean"),
+        #           hclustfun = function(x) hclust(x, method = "ward.D2"),
+        #           col = colorpanel(100, "royalblue", "ivory", "tomato"),
+        #           na.color = "grey",
+        #           breaks = seq(min_rlog, max_rlog, length.out = 101),
+        #           density.info = "none", trace = "none", dendrogram = "both",
+        #           Rowv = TRUE, Colv = TRUE, labRow = FALSE,
+        #           cexCol = 0.6, cexRow = 0.6,
+        #           key.xlab = "deseq rlog", key.title = "", key.par = list(cex.lab = 1),
+        #           margins = c(8, 1),
+        #           colsep = 1:ncol(sample_dist),
+        #           sepwidth=c(0.01, 0.01),
+        #           lmat = lmat, lhei = lhei, lwid = lwid)
+        # dev.off()
 
         sample_corr <- cor(scale(sample_rlog))
         min_corr <- floor(min(sample_corr) * 10) / 10
 
-        png(paste0(plotdir, "/", "sample_qc_distance_samples.corr.png"), width = 1200, height = 1200, res = 200)
-        corrplot(sample_corr,
-                 method = "color",
-                 order = "hclust",
-                 col = colorpanel(100, "royalblue", "ivory", "tomato"),
-                 col.lim = c(min_corr, 1),
-                 is.corr = FALSE,
-                 addrect = 3,
-                 rect.col = "black",
-                 rect.lwd = 1.5,
-                 addgrid.col = "white",
-                 tl.col = "black",
-                 tl.cex = 0.75,
-                 addCoef.col = "black",
-                 number.cex = 0.75)
-        dev.off()
+        p <- ggcorrplot(sample_corr,
+                        method = "square",
+	                    hc.method = "ward.D2",
+                        hc.order = TRUE,
+  		                lab = TRUE,
+  		                lab_col = "black",
+  		                lab_size = 3,
+		                p.mat = cor_pmat(sample_corr),
+		                sig.level = 0.05,
+                        tl.col = "black",
+                        tl.cex = 12)
+        p1 <- p + scale_fill_gradient2(limit = c(min_corr, 1),
+                                       low = "royalblue",
+                                       high =  "tomato",
+                                       mid = "ivory",
+                                       midpoint = (1 + min_corr) / 2,
+                                       name = "correlation")
+
+        if (is.null(plotdir)) {
+            ggplotly(p1)
+        } else {
+            png(paste0(plotdir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 200)
+            corrplot(sample_corr,
+                     method = "color",
+                     order = "hclust",
+                     col = colorpanel(100, "royalblue", "ivory", "tomato"),
+                     col.lim = c(min_corr, 1),
+                     is.corr = FALSE,
+                     addrect = 3,
+                     rect.col = "black",
+                     rect.lwd = 1.5,
+                     addgrid.col = "white",
+                     tl.col = "black",
+                     tl.cex = 0.75,
+                     addCoef.col = "black",
+                     number.cex = 0.75)
+            dev.off()
+        }
     }
 )
 
@@ -582,31 +680,17 @@ setGeneric("qcplot_pca_samples", function(object, ...) {
 #' create the pca of samples
 #'
 #' @export
-#' @param object     sampleQC object
-#' @param ds_coldata deseq coldata
+#' @param object     experimentQC object
 #' @param ntop       the number of top variances
 #' @param plotdir    the output plot directory
 setMethod(
     "qcplot_pca_samples",
-    signature = "sampleQC",
+    signature = "experimentQC",
     definition = function(object,
-                          ds_coldata,
                           ntop = 500,
-                          plotdir) {
-        if (length(plotdir) == 0) {
+                          plotdir = NULL) {
+        if (is.null(plotdir)) {
             stop(paste0("====> Error: plotdir is not provided, no output directory."))
-        }
-
-        if ("condition" %nin% colnames(ds_coldata)) {
-            stop(paste0("====> Error: coldata must have condition values!"))
-        } else {
-            ds_coldata <- as.data.frame(ds_coldata)
-
-            ds_coldata$condition <- factor(ds_coldata$condition)
-            ds_coldata$condition <- factor(ds_coldata$condition, levels = mixsort(levels(ds_coldata$condition)))
-
-            ds_coldata$replicate <- factor(ds_coldata$replicate)
-            ds_coldata$replicate <- factor(ds_coldata$replicate, levels = mixsort(levels(ds_coldata$replicate)))
         }
 
         pca_input <- as.matrix(object@deseq_rlog)
@@ -621,6 +705,7 @@ setMethod(
         pc2_set <- c((min(pca$x[, 2]) - sd(pca$x[, 2])), (max(pca$x[, 2]) + sd(pca$x[, 2])))
         pc3_set <- c((min(pca$x[, 3]) - sd(pca$x[, 3])), (max(pca$x[, 3]) + sd(pca$x[, 3])))
 
+        ds_coldata <- object@coldata
         # mark conditions
         default_colors <- c("tomato", "royalblue", "yellowgreen", "orange", "pink", "purple", "coral", "cyan")
         select_colors <- default_colors[1:length(levels(ds_coldata$condition))]
@@ -651,7 +736,7 @@ setMethod(
         b <- barplot(percentVar, col = t_col("royalblue", 0.5), border = "royalblue", ylim = c(0, 105))
         text(b, percentVar + 5, paste0(percentVar, "%"), cex = 0.6)
         legend("topright", legend = levels(ds_coldata$replicate), pch = select_pchs, cex = 1, bty = "n")
-        legend("right", legend = levels(ds_coldata$condition), pch = 19, col = select_colors, cex = 1, bty = "n")
+        legend("top", legend = levels(ds_coldata$condition), pch = 19, col = select_colors, cex = 1, bty = "n")
         dev.off()
     }
 )
@@ -664,7 +749,7 @@ setGeneric("qcplot_deseq_fc", function(object, ...) {
 #' create fold change and consequence plot
 #'
 #' @export
-#' @param object  sampleQC object
+#' @param object  experimentQC object
 #' @param cons    a vector of consequences showed in the figure
 #' @param pcut    the padj cutoff
 #' @param dcut    the depleted cutoff
@@ -672,13 +757,13 @@ setGeneric("qcplot_deseq_fc", function(object, ...) {
 #' @param plotdir the output plot directory
 setMethod(
     "qcplot_deseq_fc",
-    signature = "sampleQC",
+    signature = "experimentQC",
     definition = function(object,
-                          cons = c("synonymous", "lof", "missense"),
+                          cons = c("Synonymous_Variant", "LOF", "Missense_Variant"),
                           pcut = 0.05,
                           dcut = 0,
                           ecut = 0,
-                          plotdir) {
+                          plotdir = NULL) {
         if (length(plotdir) == 0) {
             stop(paste0("====> Error: plotdir is not provided, no output directory."))
         }
@@ -688,7 +773,10 @@ setMethod(
             res <- object@deseq_res[[i]]$shrunken[, c("log2FoldChange", "padj")]
             res <- as.data.frame(res)
 
-            res$consequence <- object@effective_counts_anno[rownames(res), ]$consequence
+            tmp_anno <- as.data.frame(object@library_counts_anno)
+            rownames(tmp_anno) <- tmp_anno$seq
+
+            res$consequence <- tmp_anno[rownames(res), ]$consequence
             res$stat <- "no impact"
             res[(res$padj < pcut) & (res$log2FoldChange > ecut), ]$stat <- "enriched"
             res[(res$padj < pcut) & (res$log2FoldChange < dcut), ]$stat <- "depleted"
@@ -697,57 +785,48 @@ setMethod(
             res_cons$stat <- factor(res_cons$stat, levels = c("no impact", "enriched", "depleted"))
 
             p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
-                    geom_violin(trim = FALSE, scale = "width", fill = 'white', color = "yellowgreen") +
-                    geom_quasirandom(size = 1, varwidth = TRUE, method = "tukeyDense", aes(color = factor(stat))) +
-                    scale_color_manual(values = c(t_col("grey", 0.3), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
-                    labs(y = "log2FoldChange", title = comparisions[i]) +
-                    theme(legend.position = "right", panel.grid.major = element_blank()) +
-                    theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 8, face = "bold")) +
-                    ylim(-4, 1)
-
-            pwidth <- 300 * length(cons)
-            png(paste0(plotdir, "/", "sample_qc_deseq_fc.", comparisions[i], ".beeswarm.png"), width = pwidth, height = 1200, res = 200)
-            print(p1)
-            dev.off()
-
-            p2 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
                     geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen", position = position_nudge(x = .2, y = 0)) +
                     geom_jitter(width = 0.15, size = 0.75, aes(color = factor(stat))) +
                     scale_color_manual(values = c(t_col("grey", 0.3), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
-                    labs(y = "log2FoldChange", title = comparisions[1]) +
+                    ylim(-4, 1) +
+                    coord_flip() +
+                    labs(x = "log2FoldChange", title = comparisions[i], color = "Type") +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
+                    theme(axis.title.y = element_blank(), axis.title.x = element_text(size = 12, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 8, face = "bold")) +
-                    ylim(-4, 1)
+                    theme(axis.text = element_text(size = 8, face = "bold"))
 
-            pwidth <- 300 * length(cons)
-            png(paste0(plotdir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = pwidth, height = 1200, res = 200)
-            print(p2)
-            dev.off()
+            pheight <- 200 * length(cons)
 
-            res_cons_volcano <- res_cons
-            res_cons_volcano$padj <- -log10(res_cons_volcano$padj)
-            p3 <- ggplot(res_cons_volcano, aes(x = log2FoldChange, y = padj)) +
-                    geom_point(shape = 19, size = 0.5, aes(color = factor(stat))) +
-                    scale_color_manual(values = c(t_col("grey", 0.3), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
-                    labs(x = "log2FoldChange", y = "-log10(padj)", title = comparisions[i]) +
-                    theme(legend.position = "right", panel.grid.major = element_blank()) +
-                    theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 12, face = "bold")) +
-                    xlim(-2, 2) +
-                    facet_wrap(~consequence, dir = "v")
+            if (is.null(plotdir)) {
+                stop(paste0("====> Error: plotdir is not provided, no output directory."))
+            } else {
+                png(paste0(plotdir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
+                print(p1)
+                dev.off()
+            }
 
-            pheight <- 300 * length(cons)
-            png(paste0(plotdir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
-            print(p3)
-            dev.off()
+            # volcano plot has pvaj, may be useful
+
+            # res_cons_volcano <- res_cons
+            # res_cons_volcano$padj <- -log10(res_cons_volcano$padj)
+            # p2 <- ggplot(res_cons_volcano, aes(x = log2FoldChange, y = padj)) +
+            #         geom_point(shape = 19, size = 0.5, aes(color = factor(stat))) +
+            #         scale_color_manual(values = c(t_col("grey", 0.3), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
+            #         labs(x = "log2FoldChange", y = "-log10(padj)", title = comparisions[i]) +
+            #         theme(legend.position = "right", panel.grid.major = element_blank()) +
+            #         theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
+            #         theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
+            #         theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
+            #         theme(axis.text = element_text(size = 12, face = "bold")) +
+            #         xlim(-2, 2) +
+            #         facet_wrap(~consequence, dir = "v")
+
+            # pheight <- 300 * length(cons)
+            # png(paste0(plotdir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
+            # print(p2)
+            # dev.off()
         }
     }
 )

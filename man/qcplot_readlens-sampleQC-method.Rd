@@ -4,10 +4,12 @@
 \alias{qcplot_readlens,sampleQC-method}
 \title{create the read length plot}
 \usage{
-\S4method{qcplot_readlens}{sampleQC}(object, plotdir)
+\S4method{qcplot_readlens}{sampleQC}(object, len_bins = seq(0, 300, 50), plotdir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
+
+\item{len_bins}{the bins of length distribution}
 
 \item{plotdir}{the output plot directory}
 }

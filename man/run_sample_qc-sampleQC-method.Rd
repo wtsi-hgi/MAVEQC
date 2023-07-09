@@ -7,12 +7,14 @@
 \S4method{run_sample_qc}{sampleQC}(
   object,
   qc_type,
-  effect_count = 5,
-  effect_per = 0.25,
+  cutoff_low_count = 5,
+  cutoff_low_sample_per = 0.25,
   cutoff_filtered = 1e+06,
-  cutoff_mapping = 0.6,
-  cutoff_effect = 0.4,
-  cutoff_cov = 100
+  cutoff_mapping_per = 0.6,
+  cutoff_library_per = 0.4,
+  cutoff_library_cov = 100,
+  cutoff_low_per = 5e-05,
+  cutoff_low_lib_per = 0.7
 )
 }
 \arguments{
@@ -20,17 +22,21 @@
 
 \item{qc_type}{plasmid or screen}
 
-\item{effect_count}{count cutoff of effective reads}
+\item{cutoff_low_count}{count cutoff of library reads}
 
-\item{effect_per}{sample percentage cutoff of effective reads}
+\item{cutoff_low_sample_per}{sample percentage cutoff of library reads}
 
 \item{cutoff_filtered}{qc cutoff of the total filtered reads}
 
-\item{cutoff_mapping}{qc cutoff of mapping percentage (ref + pam + effect)}
+\item{cutoff_mapping_per}{qc cutoff of mapping percentage (ref + pam + library)}
 
-\item{cutoff_effect}{qc cutoff of effective reads percentage}
+\item{cutoff_library_per}{qc cutoff of library reads percentage}
 
-\item{cutoff_cov}{qc cutoff of effective coverage}
+\item{cutoff_library_cov}{qc cutoff of library coverage}
+
+\item{cutoff_low_per}{qc cutoff of low abundance percentage for LOF plot}
+
+\item{cutoff_low_lib_per}{qc cutoff of the percentage of library sequences with low abundance for LOF plot}
 }
 \value{
 object

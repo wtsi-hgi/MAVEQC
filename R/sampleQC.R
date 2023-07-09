@@ -6,26 +6,30 @@ setGeneric("run_sample_qc", function(object, ...) {
 #' run sample QC for the list of samples
 #'
 #' @export
-#' @param object          sampleQC object
-#' @param qc_type         plasmid or screen
-#' @param effect_count    count cutoff of effective reads
-#' @param effect_per      sample percentage cutoff of effective reads
-#' @param cutoff_filtered qc cutoff of the total filtered reads
-#' @param cutoff_mapping  qc cutoff of mapping percentage (ref + pam + effect)
-#' @param cutoff_effect   qc cutoff of effective reads percentage
-#' @param cutoff_cov      qc cutoff of effective coverage
+#' @param object                 sampleQC object
+#' @param qc_type                plasmid or screen
+#' @param cutoff_low_count       count cutoff of library reads
+#' @param cutoff_low_sample_per  sample percentage cutoff of library reads
+#' @param cutoff_filtered        qc cutoff of the total filtered reads
+#' @param cutoff_mapping_per     qc cutoff of mapping percentage (ref + pam + library)
+#' @param cutoff_library_per     qc cutoff of library reads percentage
+#' @param cutoff_library_cov     qc cutoff of library coverage
+#' @param cutoff_low_per         qc cutoff of low abundance percentage for LOF plot
+#' @param cutoff_low_lib_per     qc cutoff of the percentage of library sequences with low abundance for LOF plot
 #' @return object
 setMethod(
     "run_sample_qc",
     signature = "sampleQC",
     definition = function(object,
                           qc_type,
-                          effect_count = 5,
-                          effect_per = 0.25,
+                          cutoff_low_count = 5,
+                          cutoff_low_sample_per = 0.25,
                           cutoff_filtered = 1000000,
-                          cutoff_mapping = 0.6,
-                          cutoff_effect = 0.4,
-                          cutoff_cov = 100) {
+                          cutoff_mapping_per = 0.6,
+                          cutoff_library_per = 0.4,
+                          cutoff_library_cov = 100,
+                          cutoff_low_per = 0.00005,
+                          cutoff_low_lib_per = 0.7) {
         #----------#
         # checking #
         #----------#
@@ -46,6 +50,26 @@ setMethod(
                 stop(paste0("====> Error: wrong QC type! Please use plasmid or screen."))
             }
         }
+
+        cols <- c("total_reads",
+                  "seq_low_count",
+                  "seq_low_sample_per",
+                  "library_percent",
+                  "library_cov",
+                  "low_abundance_per",
+                  "low_abundance_lib_per")
+        df_cutoffs <- data.frame(matrix(NA, 1, length(cols)))
+        colnames(df_cutoffs) <- cols
+
+        df_cutoffs$total_reads <- cutoff_filtered
+        df_cutoffs$seq_low_count <- cutoff_low_count
+        df_cutoffs$seq_low_sample_per <- cutoff_low_sample_per
+        df_cutoffs$library_percent <- cutoff_library_per
+        df_cutoffs$library_cov <- cutoff_library_cov
+        df_cutoffs$low_abundance_per <- cutoff_low_per
+        df_cutoffs$low_abundance_lib_per <- cutoff_low_lib_per
+
+        object@cutoffs <- df_cutoffs
 
         #-------------------------------------------#
         # 1. Filtering by the total number of reads #
@@ -73,7 +97,6 @@ setMethod(
         if (qc_type == "screen") {
             cat("    |--> Creating k-means clusters...", "\n", sep = "")
 
-            # merging reference counts, data.table() to speed up
             ref_counts <- data.table()
             for (s in object@samples_ref) {
                 tmp_counts <- s@allcounts[, c("sequence", "count")]
@@ -81,13 +104,11 @@ setMethod(
 
                 if (nrow(ref_counts) == 0) {
                     ref_counts <- tmp_counts
+                    colnames(ref_counts) <- c("sequence", s@sample)
                 } else {
+                    tmp_cols <- colnames(ref_counts)
                     ref_counts <- merge(ref_counts, tmp_counts, by = "sequence", all = TRUE)
-                    tmp_cols <- vector()
-                    for (i in 1:(ncol(ref_counts) - 1)) {
-                        tmp_cols <- c(tmp_cols, paste0("ref", i))
-                    }
-                    colnames(ref_counts) <- c("sequence", tmp_cols)
+                    colnames(ref_counts) <- c(tmp_cols, s@sample)
                 }
             }
             ref_counts <- as.data.frame(ref_counts)
@@ -103,40 +124,30 @@ setMethod(
             colnames(ref_clusters) <- c("count", "count_log2", "cluster")
             ref_clusters <- data.frame(ref_clusters)
 
-            object@seq_clusters[["ref"]] <- ref_clusters
-            object@filtered_seqs <- rownames(ref_clusters[ref_clusters$cluster == 2, ])
-            object@bad_seqs$by_cluster <- rownames(ref_clusters[ref_clusters$cluster == 1, ])
-
             cat("    |--> Filtering using clusters...", "\n", sep = "")
 
             # filtering sequences on input samples by filtered set
-            unfiltered_counts <- data.table()
             for (s in object@samples) {
                 cat("        |--> Filtering on ", s@sample, "\n", sep = "")
 
-                tmp_counts <- s@allcounts[, c("sequence", "count")]
-                tmp_counts <- as.data.table(tmp_counts)
+                unfiltered_counts <- s@allcounts$count
+                names(unfiltered_counts) <- s@allcounts$sequence
 
-                if (nrow(unfiltered_counts) == 0) {
-                    unfiltered_counts <- tmp_counts
-                } else {
-                    unfiltered_counts <- merge(unfiltered_counts, tmp_counts, by = "sequence", all = TRUE)
-                    tmp_cols <- vector()
-                    for (i in 1:(ncol(unfiltered_counts) - 1)) {
-                        tmp_cols <- c(tmp_cols, paste0("un", i))
-                    }
-                    colnames(unfiltered_counts) <- c("sequence", tmp_cols)
-                }
+                object@seq_clusters[[s@sample]] <- ref_clusters
+                object@accepted_seqs[[s@sample]] <- rownames(ref_clusters[ref_clusters$cluster == 2, ])
+
+                # considering missing seqs
+                name_check <- names(unfiltered_counts) %in% object@accepted_seqs[[s@sample]]
+                object@accepted_counts[[s@sample]] <- unfiltered_counts[name_check]
+
+                object@bad_seqs_bycluster[[s@sample]] <- rownames(ref_clusters[ref_clusters$cluster == 1, ])
             }
-            unfiltered_counts <- as.data.frame(unfiltered_counts)
-            rownames(unfiltered_counts) <- unfiltered_counts$sequence
-            unfiltered_counts <- subset(unfiltered_counts, select = -sequence)
-            colnames(unfiltered_counts) <- sample_names
-
-            filtered_counts <- unfiltered_counts[object@filtered_seqs, ]
         } else {
-            filtered_counts <- data.table()
+            cat("    |--> Creating k-means clusters...", "\n", sep = "")
+
             for (s in object@samples) {
+                cat("        |--> Filtering on ", s@sample, "\n", sep = "")
+
                 tmp_counts <- s@allcounts$count
                 names(tmp_counts) <- s@allcounts$sequence
 
@@ -147,37 +158,11 @@ setMethod(
                 tmp_clusters <- data.frame(tmp_clusters)
 
                 object@seq_clusters[[s@sample]] <- tmp_clusters
+                object@accepted_seqs[[s@sample]] <- rownames(tmp_clusters[tmp_clusters$cluster == 2, ])
+                object@accepted_counts[[s@sample]] <- tmp_counts[object@accepted_seqs[[s@sample]]]
 
-                tmp_counts_filtered <- tmp_clusters[tmp_clusters$cluster == 2, "count", drop = FALSE]
-                tmp_counts_filtered$sequence <- rownames(tmp_counts_filtered)
-                tmp_counts_filtered <- as.data.table(tmp_counts_filtered)
-
-                if (nrow(filtered_counts) == 0) {
-                    filtered_counts <- tmp_counts_filtered
-                } else {
-                    filtered_counts <- merge(filtered_counts, tmp_counts_filtered, by = "sequence", all = TRUE)
-                    tmp_cols <- vector()
-                    for (i in 1:(ncol(filtered_counts) - 1)) {
-                        tmp_cols <- c(tmp_cols, paste0("fil", i))
-                    }
-                    colnames(filtered_counts) <- c("sequence", tmp_cols)
-                }
+                object@bad_seqs_bycluster[[s@sample]] <- rownames(tmp_clusters[tmp_clusters$cluster == 1, ])
             }
-            filtered_counts <- as.data.frame(filtered_counts)
-            rownames(filtered_counts) <- filtered_counts$sequence
-            filtered_counts <- subset(filtered_counts, select = -sequence)
-            colnames(filtered_counts) <- sample_names
-
-            tmp_seqs <- data.frame()
-            for (s in object@seq_clusters) {
-                if (nrow(tmp_seqs) == 0) {
-                    tmp_seqs <- rownames(s[s$cluster == 1, ])
-                } else {
-                    tmp_seqs <- cbind_fill(tmp_seqs, rownames(s[s$cluster == 1, ]))
-                }
-            }
-            colnames(tmp_seqs) <- sample_names
-            object@bad_seqs$by_cluster <- tmp_seqs
         }
 
         #-------------------------------------#
@@ -185,103 +170,122 @@ setMethod(
         #    a) count >= X                    #
         #    b) in >= X% of samples           #
         #-------------------------------------#
-        cat("Filtering by depth and samples...", "\n", sep = "")
 
-        filtered_counts_final <- cbind(filtered_counts, rowSums(filtered_counts >= effect_count, na.rm = TRUE))
-        filtered_counts_final <- cbind(filtered_counts_final, filtered_counts_final[, ncol(filtered_counts_final)] / length(sample_names))
-        colnames(filtered_counts_final) <- c(sample_names, "sample_number", "sample_percentage")
+        # if plasmid qc, don't apply percentage filtering as samples have different seqs
+        if (qc_type == "screen") {
+            cat("Filtering by depth and percentage in samples...", "\n", sep = "")
 
-        object@filtered_counts <- filtered_counts_final[filtered_counts_final$sample_percentage >= effect_per, sample_names]
+            # note library independent counts may have different sequences
+            accepted_counts <- merge_list_to_df(object@accepted_counts)
+            accepted_counts_depth <- cbind(accepted_counts, rowSums(accepted_counts >= cutoff_low_count, na.rm = TRUE))
+            accepted_counts_depth <- cbind(accepted_counts_depth, accepted_counts_depth[, ncol(accepted_counts_depth)] / length(sample_names))
+            colnames(accepted_counts_depth) <- c(sample_names, "sample_number", "sample_percentage")
 
-        tmp_seqs <- rownames(filtered_counts)
-        object@bad_seqs$by_count <- tmp_seqs[tmp_seqs %nin% rownames(object@filtered_counts)]
+            accepted_counts_final <- accepted_counts_depth[accepted_counts_depth$sample_percentage >= cutoff_low_sample_per, sample_names]
 
-        #--------------------------------------#
-        # 4. Filtering by effective mapping    #
-        #    a) reads mapped to VaLiAnT output #
-        #--------------------------------------#
-        cat("Filtering by effective mapping...", "\n", sep = "")
+            for (s in object@samples) {
+                tmp_counts <- accepted_counts_final[, s@sample]
+                names(tmp_counts) <- rownames(accepted_counts_final)
+                object@accepted_counts[[s@sample]] <- tmp_counts[!is.na(tmp_counts)]
 
-        ref_seqs <- vector()
-        pam_seqs <- vector()
-        meta_mseqs <- vector()
-        for (s in object@samples) {
-            ref_seqs <- c(ref_seqs, s@refseq)
-            pam_seqs <- c(pam_seqs, s@pamseq)
-            meta_mseqs <- c(meta_mseqs, s@meta_mseqs)
-        }
-        ref_seqs <- unique(ref_seqs)
-        pam_seqs <- unique(pam_seqs)
-        meta_mseqs <- unique(meta_mseqs)
+                f_per <- accepted_counts_depth$sample_percentage < cutoff_low_sample_per
+                f_na <- !is.na(accepted_counts_depth[, s@sample])
+                accepted_counts_bad <- accepted_counts_depth[f_per & f_na, s@sample, drop = FALSE]
+                object@bad_seqs_bydepth[[s@sample]] <- rownames(accepted_counts_bad)
+            }
+        } else {
+            cat("Filtering by depth...", "\n", sep = "")
 
-        # mapped to valiant but not ref/pam
-        effective_counts <- object@filtered_counts[rownames(object@filtered_counts)%in%meta_mseqs, ]
-        effective_counts <- effective_counts[rownames(effective_counts)%nin%c(ref_seqs, pam_seqs), ]
-        object@effective_counts <- effective_counts
+            for (s in object@samples) {
+                tmp_counts <- object@accepted_counts[[s@sample]]
+                object@accepted_counts[[s@sample]] <- tmp_counts[tmp_counts >= cutoff_low_count]
 
-        # not mapped to valiant but not ref/pam
-        unmapped_counts <- object@filtered_counts[rownames(object@filtered_counts)%nin%meta_mseqs, ]
-        unmapped_counts <- unmapped_counts[rownames(unmapped_counts)%nin%c(ref_seqs, pam_seqs), ]
-
-        object@bad_seqs$by_effect <- rownames(unmapped_counts)
-
-        for (s in object@samples) {
-            samplename <- s@sample
-            object@stats[samplename, ]$filtered_reads <- sum(object@filtered_counts[, samplename], na.rm = TRUE)
-            object@stats[samplename, ]$effective_reads <- sum(object@effective_counts[, samplename], na.rm = TRUE)
-            object@stats[samplename, ]$unmapped_reads <- sum(unmapped_counts[, samplename], na.rm = TRUE)
-            object@stats[samplename, ]$failed_reads <- object@stats[samplename, ]$total_reads - object@stats[samplename, ]$filtered_reads
-
-            object@stats[samplename, ]$per_effective_reads <- object@stats[samplename, ]$effective_reads / object@stats[samplename, ]$filtered_reads
-            object@stats[samplename, ]$per_unmapped_reads <- object@stats[samplename, ]$unmapped_reads / object@stats[samplename, ]$filtered_reads
-            object@stats[samplename, ]$per_ref_reads <- object@stats[samplename, ]$ref_reads / object@stats[samplename, ]$filtered_reads
-            object@stats[samplename, ]$per_pam_reads <- object@stats[samplename, ]$pam_reads / object@stats[samplename, ]$filtered_reads
-
-            object@stats[samplename, ]$missing_meta_seqs <- length(s@missing_meta_seqs)
-        }
-
-        #----------------------------------------#
-        # 5. Filtering by effective coverage     #
-        #    a) effective reads / oligos in meta #
-        #----------------------------------------#
-        cat("Filtering by effective coverage...", "\n", sep = "")
-
-        for (s in object@samples) {
-            samplename <- s@sample
-            object@stats[samplename, ]$effective_cov <- object@stats[samplename, ]$effective_reads / length(s@meta_mseqs)
-        }
-        object@stats$effective_cov <- as.integer(object@stats$effective_cov)
-
-        #--------------------- -------------------#
-        # 6. Sorting effective counts by position #
-        #-----------------------------------------#
-        cat("Sorting effective counts by position...", "\n", sep = "")
-
-        effcounts_pos <- data.frame()
-        for (s in object@samples) {
-            obj_effcounts <- object@effective_counts[, s@sample, drop = FALSE]
-            obj_effcounts <- obj_effcounts[!is.na(obj_effcounts[, 1]), 1, drop = FALSE]
-
-            tmp_effcounts <- data.frame(matrix(NA, length(s@meta_mseqs), 1))
-            colnames(tmp_effcounts) <- s@sample
-            rownames(tmp_effcounts) <- s@meta_mseqs
-            tmp_effcounts[, 1] <- 0
-
-            tmp_effcounts[rownames(obj_effcounts), 1] <- obj_effcounts[, 1]
-            rownames(tmp_effcounts) <- 1:length(s@meta_mseqs)
-
-            if (nrow(effcounts_pos) == 0) {
-                effcounts_pos <- tmp_effcounts
-            } else {
-                effcounts_pos <- cbind_fill(effcounts_pos, tmp_effcounts)
+                object@bad_seqs_bydepth[[s@sample]] <- names(tmp_counts[tmp_counts < cutoff_low_count])
             }
         }
-        # cbind_fill ignores rownames
-        # assuming all the samples have the same meta sheet
-        rownames(effcounts_pos) <- object@samples[[1]]@meta_mseqs
-        colnames(effcounts_pos) <- sample_names
 
-        object@effective_counts_pos <- as.data.frame(effcounts_pos)
+        #--------------------------------------#
+        # 4. Filtering by library mapping      #
+        #    a) reads mapped to VaLiAnT output #
+        #--------------------------------------#
+        cat("Filtering by library mapping...", "\n", sep = "")
+
+        for (s in object@samples) {
+            tmp_counts <- object@accepted_counts[[s@sample]]
+
+            # meta_mseqs without ref and pam by format_count
+            # accepted_counts have ref and pam
+            object@library_counts[[s@sample]] <- tmp_counts[names(tmp_counts) %in% s@meta_mseqs]
+            object@unmapped_counts[[s@sample]] <- tmp_counts[names(tmp_counts) %nin% c(s@meta_mseqs, s@refseq, s@pamseq)]
+
+            object@bad_seqs_bylib[[s@sample]] <- names(object@unmapped_counts[[s@sample]])
+        }
+
+        #--------------------------------------#
+        # 5. Filtering by library coverage     #
+        #    a) library reads / oligos in meta #
+        #--------------------------------------#
+        cat("Filtering by library coverage...", "\n", sep = "")
+
+        for (s in object@samples) {
+            sample_name <- s@sample
+            object@stats[sample_name, ]$accepted_reads <- sum(object@accepted_counts[[sample_name]], na.rm = TRUE)
+            object@stats[sample_name, ]$excluded_reads <- object@stats[sample_name, ]$total_reads - object@stats[sample_name, ]$accepted_reads
+            object@stats[sample_name, ]$library_reads <- sum(object@library_counts[[sample_name]], na.rm = TRUE)
+            object@stats[sample_name, ]$unmapped_reads <- sum(object@unmapped_counts[[sample_name]], na.rm = TRUE)
+
+            object@stats[sample_name, ]$per_library_reads <- object@stats[sample_name, ]$library_reads / object@stats[sample_name, ]$accepted_reads
+            object@stats[sample_name, ]$per_unmapped_reads <- object@stats[sample_name, ]$unmapped_reads / object@stats[sample_name, ]$accepted_reads
+            object@stats[sample_name, ]$per_ref_reads <- object@stats[sample_name, ]$ref_reads / object@stats[sample_name, ]$accepted_reads
+            object@stats[sample_name, ]$per_pam_reads <- object@stats[sample_name, ]$pam_reads / object@stats[sample_name, ]$accepted_reads
+
+            object@stats[sample_name, ]$missing_meta_seqs <- length(s@missing_meta_seqs)
+
+            object@stats[sample_name, ]$library_seqs <- length(s@meta_mseqs)
+            object@stats[sample_name, ]$library_cov <- as.integer(object@stats[sample_name, ]$library_reads / length(s@meta_mseqs))
+        }
+
+        #--------------------- -----------------#
+        # 6. Sorting library counts by position #
+        #---------------------------------------#
+        cat("Sorting library counts by position...", "\n", sep = "")
+
+        # main issue:
+        # meta seqs are not right
+        # oligo names are not unique
+        # a seq has a consequence, but has many names, don't know which name is right
+
+        for (s in object@samples) {
+            cat("    |--> Sorting on ", s@sample, "\n", sep = "")
+
+            tmp_meta <- s@valiant_meta[, c("oligo_name", "mut_position")]
+            tmp_meta <- as.data.table(tmp_meta)
+
+            # fecth oligo name using library dependent counts
+            tmp_map <- s@libcounts[, c("name", "sequence")]
+            colnames(tmp_map) <- c("oligo_name", "seq")
+            tmp_map <- as.data.table(tmp_map)
+
+            tmp_lib <- object@library_counts[[s@sample]]
+            libcounts_pos <- cbind(tmp_lib, rep(0, length(tmp_lib)))
+            libcounts_pos <- as.data.frame(libcounts_pos)
+            colnames(libcounts_pos) <- c("count", "position")
+            libcounts_pos$seq <- names(tmp_lib)
+            libcounts_pos <- as.data.table(libcounts_pos)
+
+            # multiple oligo names have the same seq and the same position
+            # so here is fine, but need to refine
+            # oligo name may not right, but position is good
+            libcounts_pos[tmp_map, oligo_name := i.oligo_name, on = .(seq)]
+            libcounts_pos[tmp_meta, position := i.mut_position, on = .(oligo_name)]
+            setorder(libcounts_pos, cols = "position")
+
+            object@library_counts_pos[[s@sample]] <- libcounts_pos
+            object@library_counts_chr[[s@sample]] <- c(unique(s@valiant_meta$ref_chr),
+                                                       unique(s@valiant_meta$ref_strand),
+                                                       unique(s@valiant_meta$ref_start),
+                                                       unique(s@valiant_meta$ref_end))
+        }
 
         #------------------------#
         # 7. Gini coeff after qc #
@@ -289,19 +293,20 @@ setMethod(
         cat("Calculating gini coefficiency...", "\n", sep = "")
 
         for (s in object@samples) {
-            gini_coeff <- cal_gini(object@effective_counts[, s@sample], corr = FALSE, na.rm = TRUE)
+            gini_coeff <- cal_gini(object@library_counts[[s@sample]], corr = FALSE, na.rm = TRUE)
             object@stats[s@sample, ]$gini_coeff_after_qc <- round(gini_coeff, 3)
         }
 
         #------------------#
         # 8. QC results    #
         #------------------#
-        object@stats$qcpass_filtered_reads <- unlist(lapply(object@stats$filtered_reads, function(x) ifelse(x >= cutoff_filtered, TRUE, FALSE)))
-        object@stats$qcpass_mapping_per <- unlist(lapply(object@stats$per_unmapped_reads, function(x) ifelse(x < (1 - cutoff_mapping), TRUE, FALSE)))
-        object@stats$qcpass_effective_per <- unlist(lapply(object@stats$per_effective_reads, function(x) ifelse(x >= cutoff_effect, TRUE, FALSE)))
-        object@stats$qcpass_effective_cov <- unlist(lapply(object@stats$effective_cov, function(x) ifelse(x >= cutoff_cov, TRUE, FALSE)))
 
-        qc_lables <- c("qcpass_filtered_reads", "qcpass_mapping_per", "qcpass_effective_per", "qcpass_effective_cov")
+        object@stats$qcpass_accepted_reads <- unlist(lapply(object@stats$accepted_reads, function(x) ifelse(x >= cutoff_filtered, TRUE, FALSE)))
+        object@stats$qcpass_mapping_per <- unlist(lapply(object@stats$per_unmapped_reads, function(x) ifelse(x < (1 - cutoff_mapping_per), TRUE, FALSE)))
+        object@stats$qcpass_library_per <- unlist(lapply(object@stats$per_library_reads, function(x) ifelse(x >= cutoff_library_per, TRUE, FALSE)))
+        object@stats$qcpass_library_cov <- unlist(lapply(object@stats$library_cov, function(x) ifelse(x >= cutoff_library_cov, TRUE, FALSE)))
+
+        qc_lables <- c("qcpass_accepted_reads", "qcpass_mapping_per", "qcpass_library_per", "qcpass_library_cov")
         object@stats$qcpass <- apply(object@stats[, qc_lables], 1, function(x) all(x))
 
         #------------------------#
@@ -310,128 +315,54 @@ setMethod(
 
         object@filtered_samples <- rownames(object@stats[object@stats$qcpass == TRUE, ])
 
-        return(object)
-    }
-)
+        #-------------------------#
+        # 10. map vep consequence #
+        #-------------------------#
 
-#' initialize function
-setGeneric("run_sample_qc_deseq2", function(object, ...) {
-  standardGeneric("run_sample_qc_deseq2")
-})
+        # main issue:
+        # meta_consequence seqs are reverse complement, fix it in create_sge_object
+        # but it may change later
+        # oligo names are not unique to sequence, cannot use as reference
+        # a seq has a consequence, but has many names, don't which name is right
+        # so, vep must have right seq, otherwise cannot determine the consequence
 
-#' run DESeq2 for the list of samples
-#'
-#' @export
-#' @param object     sampleQC object
-#' @param ds_coldata a data frame of col data for deseq2
-#' @param ds_ref     the reference condition, eg. D4
-#' @return object
-setMethod(
-    "run_sample_qc_deseq2",
-    signature = "sampleQC",
-    definition = function(object,
-                          ds_coldata,
-                          ds_ref) {
-        #----------#
-        # checking #
-        #----------#
-        if (length(object@filtered_samples) == 0) {
-            stop(paste0("====> Error: please run run_sample_qc first!"))
-        }
+        # if plasmid qc, don't apply
+        if (qc_type == "screen") {
+            cat("Mapping consequencing annotation...", "\n", sep = "")
 
-        if (nrow(object@samples[[1]]@vep_anno) == 0) {
-            stop(paste0("====> Error: no consequence annotation found!"))
-        }
+            # assuming all the samples have the sample library sequences and corresponding consequences
+            # using sequences in vep annotation to identify consequences
+            vep_anno <- object@samples[[1]]@vep_anno[, c("unique_oligo_name", "seq", "summary_plot")]
+            colnames(vep_anno) <- c("oligo_name", "seq", "consequence")
+            vep_anno <- as.data.table(vep_anno)
 
-        if ("condition" %nin% colnames(ds_coldata)) {
-            stop(paste0("====> Error: coldata must have condition values!"))
-        } else {
-            ds_coldata <- as.data.frame(ds_coldata)
+            # merge counts, but use data table in case rownames of data frame is not unique
+            library_counts_anno <- merge_list_to_df(object@library_counts)
+            library_counts_anno[is.na(library_counts_anno)] <- 0
 
-            ds_coldata$condition <- factor(ds_coldata$condition)
-            ds_coldata$condition <- factor(ds_coldata$condition, levels = mixsort(levels(ds_coldata$condition)))
+            library_counts_anno$seq <- rownames(library_counts_anno)
+            library_counts_anno <- as.data.table(library_counts_anno)
 
-            ds_coldata$replicate <- factor(ds_coldata$replicate)
-            ds_coldata$replicate <- factor(ds_coldata$replicate, levels = mixsort(levels(ds_coldata$replicate)))
-        }
+            library_counts_anno[vep_anno, consequence := i.consequence, on = .(seq)]
+            object@library_counts_anno <- library_counts_anno
 
-        #------------------------#
-        # 1. map vep consequence #
-        #------------------------#
-        cat("Mapping consequencing annotation...", "\n", sep = "")
+            # merge all the sorted library counts
+            library_counts_pos_anno <- data.table()
+            for (s in object@samples) {
+                tmp_pos <- object@library_counts_pos[[s@sample]]
+                tmp_pos <- tmp_pos[, c("seq", "position", "count")]
+                colnames(tmp_pos) <- c("seq", "position", s@sample)
 
-        # assuming all the samples have the same vep annotations
-        vep_anno <- object@samples[[1]]@vep_anno
-        rownames(vep_anno) <- vep_anno$Seq # may change
-
-        # effective counts
-        effective_counts_anno <- object@effective_counts[, object@filtered_samples]
-        effective_counts_anno[is.na(effective_counts_anno)] <- 0
-
-        effective_counts_anno$consequence <- vep_anno[rownames(effective_counts_anno), ]$assigned # may change
-        rownames(effective_counts_anno) <- vep_anno[rownames(effective_counts_anno), ]$unique_oligo_name # may change
-
-        object@effective_counts_anno <- effective_counts_anno
-
-        # sorted effective counts
-        effective_counts_pos_anno <- object@effective_counts_pos[, object@filtered_samples]
-        effective_counts_pos_anno[is.na(effective_counts_pos_anno)] <- 0
-
-        effective_counts_pos_anno$consequence <- vep_anno[rownames(effective_counts_pos_anno), ]$assigned # may change
-        # careful: not all the meta mseqs have consequence annotation, so they don't have IDs in vep
-        #rownames(effective_counts_pos_anno) <- vep_anno[rownames(effective_counts_pos_anno), ]$unique_oligo_name # may change
-
-        object@effective_counts_pos_anno <- effective_counts_pos_anno
-
-        #-------------------#
-        # 2. DESeq2 process #
-        #-------------------#
-
-        # run control
-        cat("Running control deseq2 to get size factor...", "\n", sep = "")
-
-        syn_counts <- effective_counts_anno[effective_counts_anno$consequence == "synonymous", rownames(ds_coldata)]
-
-        syn_ds_obj <- DESeqDataSetFromMatrix(countData = syn_counts, colData = ds_coldata, design = ~condition)
-        syn_ds_obj <- syn_ds_obj[rowSums(counts(syn_ds_obj)) > 0, ]
-        syn_ds_obj$condition <- factor(syn_ds_obj$condition, levels = mixsort(levels(syn_ds_obj$condition)))
-        syn_ds_obj$condition <- relevel(syn_ds_obj$condition, ref = ds_ref)
-        syn_ds_obj <- estimateSizeFactors(syn_ds_obj)
-
-        # run all
-        cat("Running deseq2 on all the filtered samples...", "\n", sep = "")
-        deseq_counts <- effective_counts_anno[, rownames(ds_coldata)]
-
-        ds_obj <- DESeqDataSetFromMatrix(countData = deseq_counts, colData = ds_coldata, design = ~condition)
-        ds_obj <- ds_obj[rowSums(counts(ds_obj)) > 0, ]
-        ds_obj$condition <- factor(ds_obj$condition, levels = mixsort(levels(ds_obj$condition)))
-        ds_obj$condition <- relevel(ds_obj$condition, ref = ds_ref)
-        sizeFactors(ds_obj) <- sizeFactors(syn_ds_obj)
-
-        ds_obj <- DESeq(ds_obj, fitType = "local", quiet = TRUE)
-        ds_rlog <- rlog(ds_obj)
-
-        object@deseq_rlog <- as.data.frame(assay(ds_rlog))
-
-        cat("Creating comparision and calculating logFC...", "\n", sep = "")
-        conds <- levels(ds_coldata$condition)
-        ds_contrast <- list()
-        for (i in 1:length(conds)) {
-            if (conds[i] != ds_ref) {
-                ds_contrast <- append(ds_contrast, paste0("condition_", conds[i], "_vs_", ds_ref))
+                if (nrow(library_counts_pos_anno) == 0) {
+                    library_counts_pos_anno <- tmp_pos
+                } else {
+                    library_counts_pos_anno <- merge(library_counts_pos_anno, tmp_pos, by = c("seq", "position"), all = TRUE)
+                }
             }
+
+            library_counts_pos_anno[vep_anno, consequence := i.consequence, on = .(seq)]
+            object@library_counts_pos_anno <- library_counts_pos_anno
         }
-
-        ds_res <- degComps(ds_obj,
-                           combs = "condition",
-                           contrast = ds_contrast,
-                           alpha = 0.05,
-                           skip = FALSE,
-                           type = "apeglm",
-                           pairs = FALSE,
-                           fdr = "default")
-
-        object@deseq_res <- ds_res
 
         return(object)
     }

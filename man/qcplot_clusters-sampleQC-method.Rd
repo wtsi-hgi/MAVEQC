@@ -4,7 +4,7 @@
 \alias{qcplot_clusters,sampleQC-method}
 \title{create the sequence counts and clusters plot}
 \usage{
-\S4method{qcplot_clusters}{sampleQC}(object, qctype, plotdir)
+\S4method{qcplot_clusters}{sampleQC}(object, qctype = "screen", plotdir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
