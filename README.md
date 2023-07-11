@@ -80,14 +80,15 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 * *vep_anno, library_name and library_type are not necessary, leave them blank if not available*
 
 ### library dependent counts -- tsv or tsv.gz
-| ID | NAME | SEQUENCE | COUNT | UNIQUE | SAMPLE |
-| - | - | - | - | - | - |
-| id1 | name1 | ACTTTTCT | 32 | 1 | sample1 | 
-| id2 | name2 | ATCTTTCT | 132 | 0 | sample1 | 
-| id3 | name3 | ATTCTTCT | 2 | 1 | sample1 | 
+| ID | NAME | SEQUENCE | LENGTH | COUNT | UNIQUE | SAMPLE |
+| - | - | - | - | - | - | - |
+| id1 | name1 | ACTTTTCT | 276 | 32 | 1 | sample1 | 
+| id2 | name2 | ATCTTTCT | 275 | 132 | 0 | sample1 | 
+| id3 | name3 | ATTCTTCT | 275 | 2 | 1 | sample1 | 
 
 * *please use the same headers in the example*
-* *please make sure library dependent sequences match with valiant meta file, and sorted by the position in the meta file*
+* *please make sure library dependent sequences match with valiant meta file*
+* *please refer to [pyQUEST](https://github.com/cancerit/pyQUEST#library-dependent-counts)*
 
 ### library independent counts -- tsv or tsv.gz
 | SEQUENCE | LENGTH | COUNT |
@@ -97,9 +98,10 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 | ATTCTTCT | 275 | 2 | 
 
 * *please use the same headers in the example*
+* *please refer to [pyQUEST](https://github.com/cancerit/pyQUEST#library-dependent-counts)*
 
 ### valiant meta file
-Please use the valiant output file
+Please use the VaLiAnT output file, refer to [VaLiAnT](https://github.com/cancerit/VaLiAnt)
 
 ### vep annotation file
 Please use one to one mapping file
