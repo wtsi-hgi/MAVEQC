@@ -151,10 +151,10 @@ samqc <- create_sampleqc_object(sge_objs)
 ```R
 samqc <- run_sample_qc(samqc, "plasmid")
 
-qcplot_readlens(samqc, "/path/to/out/plots")
-qcplot_stats_total(samqc, "plasmid", "/path/to/out/plots")
-qcplot_stats_accepted(samqc, "/path/to/out/plots")
-qcplot_position(samqc, "plasmid", "/path/to/out/plots")
+qcplot_readlens(samqc, plotdir = "/path/to/out/plots")
+qcplot_stats_total(samqc, "plasmid", plotdir = "/path/to/out/plots")
+qcplot_stats_accepted(samqc, plotdir = "/path/to/out/plots")
+qcplot_position(samqc, "plasmid", plotdir = "/path/to/out/plots")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -176,11 +176,11 @@ samples <- c(2,5,8)
 samqc@samples_ref <- select_objects(sge_objs, samples)
 samqc <- run_sample_qc(samqc, "screen")
 
-qcplot_readlens(samqc, "/path/to/out/plots")
-qcplot_stats_total(samqc, "screen", "/path/to/out/plots")
-qcplot_stats_accepted(samqc, "/path/to/out/plots")
-qcplot_position(samqc, "screen", "/path/to/out/plots")
-qcplot_position_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", "/path/to/out/plots")
+qcplot_readlens(samqc, plotdir = "/path/to/out/plots")
+qcplot_stats_total(samqc, "screen", plotdir = "/path/to/out/plots")
+qcplot_stats_accepted(samqc, plotdir = "/path/to/out/plots")
+qcplot_position(samqc, "screen", plotdir = "/path/to/out/plots")
+qcplot_position_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", plotdir = "/path/to/out/plots")
 ```
 
 #### coldata example:
