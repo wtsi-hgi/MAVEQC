@@ -13,10 +13,11 @@
 4. [Import Data](#import-data)
 5. [Plasmid QC](#plasmid-qc)
     - [QC 1: Sample QC](#pqc1)
-    - [QC 2: Experiment QC](#pqc2)
+    - [Report](#pqc-report)
 6. [Screen QC](#screen-qc)
     - [QC 1: Sample QC](#sqc1)
     - [QC 2: Experiment QC](#sqc2)
+    - [Report](#sqc-report)
 7. [Others](#others)
     - [Test datasets](#test)
     - [Conda](#conda)
@@ -153,7 +154,7 @@ samqc <- create_sampleqc_object(sge_objs)
 samqc <- run_sample_qc(samqc, "plasmid")
 
 qcplot_readlens(samqc, plotdir = "/path/to/outdir")
-qcplot_stats_total(samqc, "plasmid", plotdir = "/path/to/outdir")
+qcplot_stats_total(samqc, plotdir = "/path/to/outdir")
 qcplot_stats_accepted(samqc, plotdir = "/path/to/outdir")
 qcplot_position(samqc, "plasmid", plotdir = "/path/to/outdir")
 
@@ -162,6 +163,15 @@ qcout_sampleqc_total(samqc, outdir = "/path/to/outdir")
 qcout_sampleqc_library(samqc, outdir = "/path/to/outdir")
 qcout_sampleqc_cov(samqc, outdir = "/path/to/outdir")
 qcout_sampleqc_pos_cov(samqc, outdir = "/path/to/outdir")
+```
+
+<p align="right">(<a href="#top">TOP</a>)</p>
+
+<a id="pqc-report"></a>
+### Report
+This creates a html report concatenating all the results including figures and tables
+```R
+create_qc_reports("/path/to/sample/sheet", "plasmid", "/path/to/qc/outdir")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -179,7 +189,7 @@ samqc@samples_ref <- select_objects(sge_objs, samples)
 samqc <- run_sample_qc(samqc, "screen")
 
 qcplot_readlens(samqc, plotdir = "/path/to/outdir")
-qcplot_stats_total(samqc, "screen", plotdir = "/path/to/outdir")
+qcplot_stats_total(samqc, plotdir = "/path/to/outdir")
 qcplot_stats_accepted(samqc, plotdir = "/path/to/outdir")
 qcplot_position(samqc, "screen", plotdir = "/path/to/outdir")
 qcplot_position_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", plotdir = "/path/to/outdir")
@@ -222,6 +232,15 @@ qcplot_pca_samples(expqc, ntop = 500, plotdir = "/path/to/outdir")
 
 ```R
 qcplot_deseq_fc(expqc, plotdir = "/path/to/outdir")
+```
+
+<p align="right">(<a href="#top">TOP</a>)</p>
+
+<a id="sqc-report"></a>
+### Report
+This creates a html report concatenating all the results including figures and tables
+```R
+create_qc_reports("/path/to/sample/sheet", "screen", "/path/to/qc/outdir")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
