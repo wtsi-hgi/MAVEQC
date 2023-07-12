@@ -1,0 +1,101 @@
+---
+title: "MAVE QC Report"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+
+## Introduction
+A R package of MAVE QC
+
+---
+
+## Analysis
+
+---
+
+### Screen QC
+<br>
+
+#### Sample Sheet
+
+```{r, echo = FALSE}
+library(reactable)
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/sample_sheet.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.75rem")))
+```
+<br>
+
+#### Run Sample QC
+
+* ##### Read Length Distrubtion
+
+![](/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sample_qc_read_length.png)
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sampleqc_read_length.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.75rem")))
+```
+<br>
+
+* ##### Total Reads
+
+![](/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sample_qc_stats_total.png)
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sampleqc_stats_total.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.75rem")))
+```
+<br>
+
+* ##### Accepted Reads
+
+![](/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sample_qc_stats_accepted.png)
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sampleqc_stats_accepted.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.75rem")))
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sampleqc_stats_coverage.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.75rem")))
+```
+<br>
+
+* ##### Genomic Coverage
+
+![](/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sample_qc_position_cov.dots.png)
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sampleqc_stats_pos_coverage.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.75rem")))
+```
+<br>
+
+* ##### Genomic Position Percentage
+
+![](/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sample_qc_position_anno.lof_dots.png)
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sampleqc_stats_pos_percentage.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.75rem")))
+```
+<br>
+
+#### Run Experiment QC
+
+* ##### Sample Correlations
+
+![](/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sample_qc_samples_corr.png)
+<br>
+
+* ##### Sample PCA
+
+![](/Users/fs18/Desktop/Sang/HGI/codesRep/sgeQC/test/screen/qc_outs/sample_qc_pca_samples.png)
+<br>
+

@@ -110,7 +110,7 @@ setMethod(
                         file = paste0(outdir, "/", "sampleqc_read_length.tsv"),
                         quote = FALSE,
                         sep = "\t",
-                        row.names = TRUE,
+                        row.names = FALSE,
                         col.names = TRUE)
         }
     }
@@ -185,7 +185,7 @@ setMethod(
                         file = paste0(outdir, "/", "sampleqc_stats_total.tsv"),
                         quote = FALSE,
                         sep = "\t",
-                        row.names = TRUE,
+                        row.names = FALSE,
                         col.names = TRUE)
         }
     }
@@ -255,10 +255,10 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sampleqc_stats_library.tsv"),
+                        file = paste0(outdir, "/", "sampleqc_stats_accepted.tsv"),
                         quote = FALSE,
                         sep = "\t",
-                        row.names = TRUE,
+                        row.names = FALSE,
                         col.names = TRUE)
         }
     }
@@ -326,7 +326,7 @@ setMethod(
                         file = paste0(outdir, "/", "sampleqc_stats_coverage.tsv"),
                         quote = FALSE,
                         sep = "\t",
-                        row.names = TRUE,
+                        row.names = FALSE,
                         col.names = TRUE)
         }
     }
@@ -428,7 +428,7 @@ setMethod(
                         file = paste0(outdir, "/", "sampleqc_stats_pos_percentage.tsv"),
                         quote = FALSE,
                         sep = "\t",
-                        row.names = TRUE,
+                        row.names = FALSE,
                         col.names = TRUE)
         }
     }
@@ -517,7 +517,7 @@ setMethod(
                         file = paste0(outdir, "/", "sampleqc_stats_pos_coverage.tsv"),
                         quote = FALSE,
                         sep = "\t",
-                        row.names = TRUE,
+                        row.names = FALSE,
                         col.names = TRUE)
         }
     }

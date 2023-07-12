@@ -177,6 +177,11 @@ create_sge_object <- function(file_libcount,
         libstats_qc = df_libstats_qc,
         allstats_qc = df_allstats_qc)
 
+    #sge_object@libcounts <- as.data.table(sge_object@libcounts)
+    #sge_object@allcounts <- as.data.table(sge_object@allcounts)
+    #sge_object@valiant_meta <- as.data.table(sge_object@valiant_meta)
+    #sge_object@vep_anno <- as.data.table(sge_object@vep_anno)
+
     # Return the object
     return(sge_object)
 }

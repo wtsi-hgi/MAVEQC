@@ -30,7 +30,7 @@ What's Screen QC?
 It may require to load dependecies, please refer to the installation in README.
 
 ```{r, message = FALSE, warning = FALSE}
-library(MAVEQC)
+library(sgeQC)
 ```
 
 <br>
