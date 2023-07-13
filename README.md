@@ -153,16 +153,17 @@ samqc <- create_sampleqc_object(sge_objs)
 ```R
 samqc <- run_sample_qc(samqc, "plasmid")
 
-qcplot_readlens(samqc, plotdir = "/path/to/outdir")
-qcplot_stats_total(samqc, plotdir = "/path/to/outdir")
-qcplot_stats_accepted(samqc, plotdir = "/path/to/outdir")
-qcplot_position(samqc, "plasmid", plotdir = "/path/to/outdir")
+qcplot_samqc_readlens(samqc, plotdir = "/path/to/outdir")
+qcplot_samqc_total(samqc, plotdir = "/path/to/outdir")
+qcplot_samqc_accepted(samqc, plotdir = "/path/to/outdir")
+qcplot_samqc_pos_cov(samqc, "plasmid", plotdir = "/path/to/outdir")
 
-qcout_sampleqc_length(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_total(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_library(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_cov(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_pos_cov(samqc, outdir = "/path/to/outdir")
+qcout_samqc_cutoffs(samqc, outdir = "/path/to/outdir")
+qcout_samqc_readlens(samqc, outdir = "/path/to/outdir")
+qcout_samqc_total(samqc, outdir = "/path/to/outdir")
+qcout_samqc_accepted(samqc, outdir = "/path/to/outdir")
+qcout_samqc_libcov(samqc, outdir = "/path/to/outdir")
+qcout_samqc_pos_cov(samqc, outdir = "/path/to/outdir")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -188,18 +189,19 @@ samples <- c(2,5,8)
 samqc@samples_ref <- select_objects(sge_objs, samples)
 samqc <- run_sample_qc(samqc, "screen")
 
-qcplot_readlens(samqc, plotdir = "/path/to/outdir")
-qcplot_stats_total(samqc, plotdir = "/path/to/outdir")
-qcplot_stats_accepted(samqc, plotdir = "/path/to/outdir")
-qcplot_position(samqc, "screen", plotdir = "/path/to/outdir")
-qcplot_position_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", plotdir = "/path/to/outdir")
+qcplot_samqc_readlens(samqc, plotdir = "/path/to/outdir")
+qcplot_samqc_total(samqc, plotdir = "/path/to/outdir")
+qcplot_samqc_accepted(samqc, plotdir = "/path/to/outdir")
+qcplot_samqc_pos_cov(samqc, "plasmid", plotdir = "/path/to/outdir")
+qcplot_samqc_pos_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", plotdir = "/path/to/outdir")
 
-qcout_sampleqc_length(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_total(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_library(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_cov(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_pos_per(samqc, outdir = "/path/to/outdir")
-qcout_sampleqc_pos_cov(samqc, outdir = "/path/to/outdir")
+qcout_samqc_cutoffs(samqc, outdir = "/path/to/outdir")
+qcout_samqc_readlens(samqc, outdir = "/path/to/outdir")
+qcout_samqc_total(samqc, outdir = "/path/to/outdir")
+qcout_samqc_accepted(samqc, outdir = "/path/to/outdir")
+qcout_samqc_libcov(samqc, outdir = "/path/to/outdir")
+qcout_samqc_pos_cov(samqc, outdir = "/path/to/outdir")
+qcout_samqc_pos_anno(samqc, outdir = "/path/to/outdir")
 ```
 
 #### coldata example:
@@ -221,8 +223,8 @@ coldata <- read.table("sample_coldata.tsv", header = T, row.names = 1)
 expqc <- create_experimentqc_object(samqc, coldata, "D4")
 expqc <- run_experiment_qc(expqc)
 
-qcplot_dist_samples(expqc, plotdir = "/path/to/outdir")
-qcplot_pca_samples(expqc, ntop = 500, plotdir = "/path/to/outdir")
+qcplot_expqc_sample_corr(expqc, plotdir = "/path/to/outdir")
+qcplot_expqc_sample_pca(expqc, ntop = 500, plotdir = "/path/to/outdir")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -231,7 +233,7 @@ qcplot_pca_samples(expqc, ntop = 500, plotdir = "/path/to/outdir")
 ### QC 2: Experimental QC
 
 ```R
-qcplot_deseq_fc(expqc, plotdir = "/path/to/outdir")
+qcplot_expqc_deseq_fc(expqc, plotdir = "/path/to/outdir")
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>

@@ -1,6 +1,6 @@
 #' initialize function
-setGeneric("qcout_bad_seqs", function(object, ...) {
-  standardGeneric("qcout_bad_seqs")
+setGeneric("qcout_samqc_cutoffs", function(object, ...) {
+  standardGeneric("qcout_samqc_cutoffs")
 })
 
 #' create output file of bad seqs which fail filtering
@@ -9,7 +9,35 @@ setGeneric("qcout_bad_seqs", function(object, ...) {
 #' @param object  sampleQC object
 #' @param outdir  the output directory
 setMethod(
-    "qcout_bad_seqs",
+    "qcout_samqc_cutoffs",
+    signature = "sampleQC",
+    definition = function(object,
+                          outdir) {
+        if (length(outdir) == 0) {
+            stop(paste0("====> Error: outdir is not provided, no output directory."))
+        }
+
+        write.table(object@cutoffs,
+                    file = paste0(outdir, "/", "sample_qc_cutoffs.tsv"),
+                    quote = FALSE,
+                    sep = "\t",
+                    row.names = FALSE,
+                    col.names = TRUE)
+    }
+)
+
+#' initialize function
+setGeneric("qcout_samqc_badseqs", function(object, ...) {
+  standardGeneric("qcout_samqc_badseqs")
+})
+
+#' create output file of bad seqs which fail filtering
+#'
+#' @export
+#' @param object  sampleQC object
+#' @param outdir  the output directory
+setMethod(
+    "qcout_samqc_badseqs",
     signature = "sampleQC",
     definition = function(object,
                           outdir) {
@@ -44,8 +72,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcout_sampleqc_length", function(object, ...) {
-  standardGeneric("qcout_sampleqc_length")
+setGeneric("qcout_samqc_readlens", function(object, ...) {
+  standardGeneric("qcout_samqc_readlens")
 })
 
 #' create output file of total reads stats
@@ -55,7 +83,7 @@ setGeneric("qcout_sampleqc_length", function(object, ...) {
 #' @param len_bins the bins of length distribution
 #' @param outdir   the output directory
 setMethod(
-    "qcout_sampleqc_length",
+    "qcout_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
                           len_bins = seq(0, 300, 50),
@@ -107,7 +135,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sampleqc_read_length.tsv"),
+                        file = paste0(outdir, "/", "sample_qc_read_length.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -117,8 +145,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcout_sampleqc_total", function(object, ...) {
-  standardGeneric("qcout_sampleqc_total")
+setGeneric("qcout_samqc_total", function(object, ...) {
+  standardGeneric("qcout_samqc_total")
 })
 
 #' create output file of total reads stats
@@ -127,7 +155,7 @@ setGeneric("qcout_sampleqc_total", function(object, ...) {
 #' @param object  sampleQC object
 #' @param outdir  the output directory
 setMethod(
-    "qcout_sampleqc_total",
+    "qcout_samqc_total",
     signature = "sampleQC",
     definition = function(object,
                           outdir = NULL) {
@@ -182,7 +210,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sampleqc_stats_total.tsv"),
+                        file = paste0(outdir, "/", "sample_qc_stats_total.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -192,8 +220,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcout_sampleqc_library", function(object, ...) {
-  standardGeneric("qcout_sampleqc_library")
+setGeneric("qcout_samqc_accepted", function(object, ...) {
+  standardGeneric("qcout_samqc_accepted")
 })
 
 #' create output file of library reads stats
@@ -202,7 +230,7 @@ setGeneric("qcout_sampleqc_library", function(object, ...) {
 #' @param object  sampleQC object
 #' @param outdir  the output directory
 setMethod(
-    "qcout_sampleqc_library",
+    "qcout_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
                           outdir = NULL) {
@@ -255,7 +283,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sampleqc_stats_accepted.tsv"),
+                        file = paste0(outdir, "/", "sample_qc_stats_accepted.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -265,8 +293,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcout_sampleqc_cov", function(object, ...) {
-  standardGeneric("qcout_sampleqc_cov")
+setGeneric("qcout_samqc_libcov", function(object, ...) {
+  standardGeneric("qcout_samqc_libcov")
 })
 
 #' create output file of library coverage
@@ -275,7 +303,7 @@ setGeneric("qcout_sampleqc_cov", function(object, ...) {
 #' @param object  sampleQC object
 #' @param outdir  the output directory
 setMethod(
-    "qcout_sampleqc_cov",
+    "qcout_samqc_libcov",
     signature = "sampleQC",
     definition = function(object,
                           outdir = NULL) {
@@ -323,7 +351,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sampleqc_stats_coverage.tsv"),
+                        file = paste0(outdir, "/", "sample_qc_stats_coverage.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -333,8 +361,97 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcout_sampleqc_pos_per", function(object, ...) {
-  standardGeneric("qcout_sampleqc_pos_per")
+setGeneric("qcout_samqc_pos_cov", function(object, ...) {
+  standardGeneric("qcout_samqc_pos_cov")
+})
+
+#' create output file of lof percentages
+#'
+#' @export
+#' @param object  sampleQC object
+#' @param qctype  screen or plasmid
+#' @param outdir  the output directory
+setMethod(
+    "qcout_samqc_pos_cov",
+    signature = "sampleQC",
+    definition = function(object,
+                          qctype = "screen",
+                          outdir = NULL) {
+        cols <- c("Group",
+                  "Sample",
+                  "Chromosome",
+                  "Strand",
+                  "Genomic Start",
+                  "Genomic End",
+                  "% Low Abundance",
+                  "Low Abundance cutoff",
+                  "Pass Threshold",
+                  "Pass")
+        df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
+        colnames(df_outs) <- cols
+
+        df_outs[, 1] <- object@samples[[1]]@libname
+        df_outs[, 2] <- rownames(object@stats)
+        df_outs[, 3] <- sapply(object@library_counts_chr, function (x) x[[1]])
+        df_outs[, 4] <- sapply(object@library_counts_chr, function (x) x[[2]])
+        df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[3]])
+        df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[4]])
+
+        low_per <- vector()
+        if (qctype == "screen") {
+            for (s in object@samples) {
+                tmp_num <- sum(object@library_counts_pos[[s@sample]]$count < object@cutoffs$seq_low_count)
+                low_per <- append(low_per, round(tmp_num / nrow(object@library_counts_pos[[s@sample]]) * 100, 2))
+            }
+        } else {
+            for (s in object@samples) {
+                tmp_num <- sum(s@libcounts$count < object@cutoffs$seq_low_count)
+                low_per <- append(low_per, round(tmp_num / nrow(object@library_counts_pos[[s@sample]]) * 100, 2))
+            }
+        }
+        df_outs[, 7] <- low_per
+
+        df_outs[, 8] <- object@cutoffs$seq_low_count
+        df_outs[, 9] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
+        df_outs[, 10] <- df_outs[, 7] < (1 - object@cutoffs$low_abundance_lib_per) * 100
+
+        if (length(outdir) == 0) {
+            reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+                      theme = reactableTheme(
+                          style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
+                      columns = list(
+                          "Group" = colDef(minWidth = 100),
+                          "Sample" = colDef(minWidth = 100),
+                          "Genomic Start" = colDef(format = colFormat(separators = TRUE)),
+                          "Genomic End" = colDef(format = colFormat(separators = TRUE)),
+                          "% Low Abundance" = colDef(minWidth = 200,
+                                                           style = function(value) {
+                                                                       if (value > (1 - object@cutoffs$low_abundance_lib_per) * 100) {
+                                                                           color <- "red"
+                                                                           fweight <- "bold"
+                                                                       } else {
+                                                                           color <- "forestgreen"
+                                                                           fweight <- "plain"
+                                                                       }
+                                                                       list(color = color, fontWeight = fweight)}),
+                          "Low Abundance cutoff" = colDef(minWidth = 200),
+                          "Pass" = colDef(cell = function(value) {
+                                                   if (value) "\u2705" else "\u274c" }))
+                     )
+        } else {
+            write.table(df_outs,
+                        file = paste0(outdir, "/", "sample_qc_stats_pos_coverage.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
+        }
+    }
+)
+
+#' initialize function
+setGeneric("qcout_samqc_pos_anno", function(object, ...) {
+  standardGeneric("qcout_samqc_pos_anno")
 })
 
 #' create output file of lof percentages
@@ -343,7 +460,7 @@ setGeneric("qcout_sampleqc_pos_per", function(object, ...) {
 #' @param object  sampleQC object
 #' @param outdir  the output directory
 setMethod(
-    "qcout_sampleqc_pos_per",
+    "qcout_samqc_pos_anno",
     signature = "sampleQC",
     definition = function(object,
                           outdir = NULL) {
@@ -425,96 +542,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sampleqc_stats_pos_percentage.tsv"),
-                        quote = FALSE,
-                        sep = "\t",
-                        row.names = FALSE,
-                        col.names = TRUE)
-        }
-    }
-)
-
-#' initialize function
-setGeneric("qcout_sampleqc_pos_cov", function(object, ...) {
-  standardGeneric("qcout_sampleqc_pos_cov")
-})
-
-#' create output file of lof percentages
-#'
-#' @export
-#' @param object  sampleQC object
-#' @param qctype  screen or plasmid
-#' @param outdir  the output directory
-setMethod(
-    "qcout_sampleqc_pos_cov",
-    signature = "sampleQC",
-    definition = function(object,
-                          qctype = "screen",
-                          outdir = NULL) {
-        cols <- c("Group",
-                  "Sample",
-                  "Chromosome",
-                  "Strand",
-                  "Genomic Start",
-                  "Genomic End",
-                  "% Low Abundance",
-                  "Low Abundance cutoff",
-                  "Pass Threshold",
-                  "Pass")
-        df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
-        colnames(df_outs) <- cols
-
-        df_outs[, 1] <- object@samples[[1]]@libname
-        df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- sapply(object@library_counts_chr, function (x) x[[1]])
-        df_outs[, 4] <- sapply(object@library_counts_chr, function (x) x[[2]])
-        df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[3]])
-        df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[4]])
-
-        low_per <- vector()
-        if (qctype == "screen") {
-            for (s in object@samples) {
-                tmp_num <- sum(object@library_counts_pos[[s@sample]]$count < object@cutoffs$seq_low_count)
-                low_per <- append(low_per, round(tmp_num / nrow(object@library_counts_pos[[s@sample]]) * 100, 2))
-            }
-        } else {
-            for (s in object@samples) {
-                tmp_num <- sum(s@libcounts$count < object@cutoffs$seq_low_count)
-                low_per <- append(low_per, round(tmp_num / nrow(object@library_counts_pos[[s@sample]]) * 100, 2))
-            }
-        }
-        df_outs[, 7] <- low_per
-
-        df_outs[, 8] <- object@cutoffs$seq_low_count
-        df_outs[, 9] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
-        df_outs[, 10] <- df_outs[, 7] < (1 - object@cutoffs$low_abundance_lib_per) * 100
-
-        if (length(outdir) == 0) {
-            reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
-                      theme = reactableTheme(
-                          style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
-                      columns = list(
-                          "Group" = colDef(minWidth = 100),
-                          "Sample" = colDef(minWidth = 100),
-                          "Genomic Start" = colDef(format = colFormat(separators = TRUE)),
-                          "Genomic End" = colDef(format = colFormat(separators = TRUE)),
-                          "% Low Abundance" = colDef(minWidth = 200,
-                                                           style = function(value) {
-                                                                       if (value > (1 - object@cutoffs$low_abundance_lib_per) * 100) {
-                                                                           color <- "red"
-                                                                           fweight <- "bold"
-                                                                       } else {
-                                                                           color <- "forestgreen"
-                                                                           fweight <- "plain"
-                                                                       }
-                                                                       list(color = color, fontWeight = fweight)}),
-                          "Low Abundance cutoff" = colDef(minWidth = 200),
-                          "Pass" = colDef(cell = function(value) {
-                                                   if (value) "\u2705" else "\u274c" }))
-                     )
-        } else {
-            write.table(df_outs,
-                        file = paste0(outdir, "/", "sampleqc_stats_pos_coverage.tsv"),
+                        file = paste0(outdir, "/", "sample_qc_stats_pos_percentage.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,

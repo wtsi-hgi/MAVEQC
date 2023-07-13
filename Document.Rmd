@@ -77,70 +77,70 @@ outputdir <- "~/Desktop/test"
 
 * ##### Read Length Distrubtion
 ```{r, echo = TRUE, results = FALSE}
-qcplot_readlens(samqc, plotdir = outputdir)
+qcplot_samqc_readlens(samqc, plotdir = outputdir)
 ```
 
 ```{r, echo = FALSE}
-qcplot_readlens(samqc)
+qcplot_samqc_readlens(samqc)
 ```
 
 ```{r, echo = TRUE}
-qcout_sampleqc_length(samqc)
+qcout_samqc_readlens(samqc)
 ```
 
 <br>
 
 * ##### Total Reads
 ```{r, echo = TRUE, results = FALSE}
-qcplot_stats_total(samqc, plotdir = outputdir)
+qcplot_samqc_total(samqc, plotdir = outputdir)
 ```
 
 ```{r, echo = FALSE}
-qcplot_stats_total(samqc)
+qcplot_samqc_total(samqc)
 ```
 
 ```{r, echo = TRUE}
-qcout_sampleqc_total(samqc)
+qcout_samqc_total(samqc)
 ```
 
 * ##### Accepted Reads
 ```{r, echo = TRUE, results = FALSE}
-qcplot_stats_accepted(samqc, plotdir = outputdir)
+qcplot_samqc_accepted(samqc, plotdir = outputdir)
 ```
 
 ```{r, echo = FALSE}
-qcplot_stats_accepted(samqc)
+qcplot_samqc_accepted(samqc)
 ```
 
 ```{r, echo = TRUE}
-qcout_sampleqc_library(samqc)
-qcout_sampleqc_cov(samqc)
+qcout_samqc_accepted(samqc)
+qcout_samqc_libcov(samqc)
 ```
 
 <br>
 
 * ##### Genomic Coverage
 ```{r, echo = TRUE, results = FALSE}
-qcplot_position(samqc, "screen", plotdir = outputdir)
+qcplot_samqc_pos_cov(samqc, "screen", plotdir = outputdir)
 ```
 
 ![](/Users/fs18/Desktop/test/sample_qc_position_cov.dots.png)
 
 ```{r, echo = TRUE}
-qcout_sampleqc_pos_cov(samqc)
+qcout_samqc_pos_cov(samqc)
 ```
 
 <br>
 
 * ##### Genomic Position Percentage
 ```{r, echo = TRUE, results = FALSE, warning = FALSE}
-qcplot_position_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), type = "lof", plotdir = outputdir)
+qcplot_samqc_pos_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), type = "lof", plotdir = outputdir)
 ```
 
 ![](/Users/fs18/Desktop/test/sample_qc_position_anno.lof_dots.png)
 
 ```{r, echo = TRUE}
-qcout_sampleqc_pos_per(samqc)
+qcout_samqc_pos_anno(samqc)
 ```
 
 <br>
@@ -173,18 +173,18 @@ outputdir <- "~/Desktop/test"
 
 * ##### Sample Correlations
 ```{r, echo = TRUE, results = FALSE}
-qcplot_dist_samples(expqc, plotdir = outputdir)
+qcplot_expqc_sample_corr(expqc, plotdir = outputdir)
 ```
 
 ```{r, echo = FALSE}
-qcplot_dist_samples(expqc)
+qcplot_expqc_sample_corr(expqc)
 ```
 
 <br>
 
 * ##### Sample PCA
 ```{r, echo = TRUE, results = FALSE, warning = FALSE}
-qcplot_pca_samples(expqc, ntop = 500, plotdir = outputdir)
+qcplot_expqc_sample_pca(expqc, ntop = 500, plotdir = outputdir)
 ```
 
 ![](/Users/fs18/Desktop/test/sample_qc_pca_samples.png)
@@ -193,7 +193,7 @@ qcplot_pca_samples(expqc, ntop = 500, plotdir = outputdir)
 
 * ##### Fold Changes
 ```{r, echo = TRUE, results = FALSE, warning = FALSE}
-qcplot_deseq_fc(expqc, plotdir = outputdir)
+qcplot_expqc_deseq_fc(expqc, plotdir = outputdir)
 ```
 
 ![](/Users/fs18/Desktop/test/sample_qc_deseq_fc.condition_D7_vs_D4.violin.png)

@@ -1,6 +1,6 @@
 #' initialize function
-setGeneric("qcplot_readlens", function(object, ...) {
-  standardGeneric("qcplot_readlens")
+setGeneric("qcplot_samqc_readlens", function(object, ...) {
+  standardGeneric("qcplot_samqc_readlens")
 })
 
 #' create the read length plot
@@ -10,7 +10,7 @@ setGeneric("qcplot_readlens", function(object, ...) {
 #' @param len_bins the bins of length distribution
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_readlens",
+    "qcplot_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
                           len_bins = seq(0, 300, 50),
@@ -72,8 +72,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_clusters", function(object, ...) {
-  standardGeneric("qcplot_clusters")
+setGeneric("qcplot_samqc_clusters", function(object, ...) {
+  standardGeneric("qcplot_samqc_clusters")
 })
 
 #' create the sequence counts and clusters plot
@@ -83,7 +83,7 @@ setGeneric("qcplot_clusters", function(object, ...) {
 #' @param qctype  qc type for plot
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_clusters",
+    "qcplot_samqc_clusters",
     signature = "sampleQC",
     definition = function(object,
                           qctype = "screen",
@@ -162,8 +162,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_stats_total", function(object, ...) {
-  standardGeneric("qcplot_stats_total")
+setGeneric("qcplot_samqc_total", function(object, ...) {
+  standardGeneric("qcplot_samqc_total")
 })
 
 #' create the stats plot
@@ -172,7 +172,7 @@ setGeneric("qcplot_stats_total", function(object, ...) {
 #' @param object  sampleQC object
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_stats_total",
+    "qcplot_samqc_total",
     signature = "sampleQC",
     definition = function(object,
                           plotdir = NULL) {
@@ -211,8 +211,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_stats_accepted", function(object, ...) {
-  standardGeneric("qcplot_stats_accepted")
+setGeneric("qcplot_samqc_accepted", function(object, ...) {
+  standardGeneric("qcplot_samqc_accepted")
 })
 
 #' create the stats plot
@@ -221,7 +221,7 @@ setGeneric("qcplot_stats_accepted", function(object, ...) {
 #' @param object  sampleQC object
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_stats_accepted",
+    "qcplot_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
                           plotdir = NULL) {
@@ -270,7 +270,7 @@ setMethod(
             mk <- list(size = 12,
                        symbol = "diamond",
                        color = "red")
-            
+
             plot_ly(data = dt_filtered, x = ~samples, y = ~percent, color = ~types, type = "bar", colors = rev(fill_colors)) %>%
                 layout(barmode = "stack") %>%
                 add_markers(data = df_cov, x = ~samples, y = ~library_cov, inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
@@ -304,8 +304,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_gini", function(object, ...) {
-  standardGeneric("qcplot_gini")
+setGeneric("qcplot_samqc_gini", function(object, ...) {
+  standardGeneric("qcplot_samqc_gini")
 })
 
 #' create the gini plot
@@ -314,7 +314,7 @@ setGeneric("qcplot_gini", function(object, ...) {
 #' @param object  sampleQC object
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_gini",
+    "qcplot_samqc_gini",
     signature = "sampleQC",
     definition = function(object,
                           plotdir = NULL) {
@@ -370,8 +370,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_position", function(object, ...) {
-  standardGeneric("qcplot_position")
+setGeneric("qcplot_samqc_pos_cov", function(object, ...) {
+  standardGeneric("qcplot_samqc_pos_cov")
 })
 
 #' create the position plot
@@ -381,7 +381,7 @@ setGeneric("qcplot_position", function(object, ...) {
 #' @param qctype  plot type, screen or plasmid
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_position",
+    "qcplot_samqc_pos_cov",
     signature = "sampleQC",
     definition = function(object,
                           qctype = "screen",
@@ -462,8 +462,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_position_anno", function(object, ...) {
-  standardGeneric("qcplot_position_anno")
+setGeneric("qcplot_samqc_pos_anno", function(object, ...) {
+  standardGeneric("qcplot_samqc_pos_anno")
 })
 
 #' create the position plot
@@ -474,7 +474,7 @@ setGeneric("qcplot_position_anno", function(object, ...) {
 #' @param type      plot type, lof or all
 #' @param plotdir   the output plot directory
 setMethod(
-    "qcplot_position_anno",
+    "qcplot_samqc_pos_anno",
     signature = "sampleQC",
     definition = function(object,
                           samples = NULL,
@@ -584,8 +584,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_dist_samples", function(object, ...) {
-  standardGeneric("qcplot_dist_samples")
+setGeneric("qcplot_expqc_sample_corr", function(object, ...) {
+  standardGeneric("qcplot_expqc_sample_corr")
 })
 
 #' create the heatmap of samples
@@ -594,7 +594,7 @@ setGeneric("qcplot_dist_samples", function(object, ...) {
 #' @param object  experimentQC object
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_dist_samples",
+    "qcplot_expqc_sample_corr",
     signature = "experimentQC",
     definition = function(object,
                           plotdir = NULL) {
@@ -673,8 +673,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_pca_samples", function(object, ...) {
-  standardGeneric("qcplot_pca_samples")
+setGeneric("qcplot_expqc_sample_pca", function(object, ...) {
+  standardGeneric("qcplot_expqc_sample_pca")
 })
 
 #' create the pca of samples
@@ -684,7 +684,7 @@ setGeneric("qcplot_pca_samples", function(object, ...) {
 #' @param ntop       the number of top variances
 #' @param plotdir    the output plot directory
 setMethod(
-    "qcplot_pca_samples",
+    "qcplot_expqc_sample_pca",
     signature = "experimentQC",
     definition = function(object,
                           ntop = 500,
@@ -742,8 +742,8 @@ setMethod(
 )
 
 #' initialize function
-setGeneric("qcplot_deseq_fc", function(object, ...) {
-  standardGeneric("qcplot_deseq_fc")
+setGeneric("qcplot_expqc_deseq_fc", function(object, ...) {
+  standardGeneric("qcplot_expqc_deseq_fc")
 })
 
 #' create fold change and consequence plot
@@ -756,7 +756,7 @@ setGeneric("qcplot_deseq_fc", function(object, ...) {
 #' @param ecut    the enriched cutoff
 #' @param plotdir the output plot directory
 setMethod(
-    "qcplot_deseq_fc",
+    "qcplot_expqc_deseq_fc",
     signature = "experimentQC",
     definition = function(object,
                           cons = c("Synonymous_Variant", "LOF", "Missense_Variant"),
