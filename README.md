@@ -170,7 +170,7 @@ qcout_samqc_pos_cov(samqc, outdir = "/path/to/outdir")
 
 <a id="pqc-report"></a>
 ### Report
-This creates a html report concatenating all the results including figures and tables
+This creates a html report concatenating all the results including figures and tables. Please make sure you have generated all the figures and tables, otherwise the report may be incomplete.
 ```R
 create_qc_reports("/path/to/sample/sheet", "plasmid", "/path/to/qc/outdir")
 ```
@@ -240,7 +240,7 @@ qcplot_expqc_deseq_fc(expqc, plotdir = "/path/to/outdir")
 
 <a id="sqc-report"></a>
 ### Report
-This creates a html report concatenating all the results including figures and tables
+This creates a html report concatenating all the results including figures and tables. Please make sure you have generated all the figures and tables, otherwise the report may be incomplete.
 ```R
 create_qc_reports("/path/to/sample/sheet", "screen", "/path/to/qc/outdir")
 ```

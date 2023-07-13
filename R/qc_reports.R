@@ -15,8 +15,16 @@ create_qc_reports <- function(samplesheet = NULL,
             stop(paste0("====> Error: please provide the path of sample sheet file!"))
         }
 
+        if (qctype %nin% c("screen", "plasmid")) {
+            stop(paste0("====> Error: wrong qctype, please use screen or plasmid!"))
+        }
+
         if (is.null(qcdir)) {
             stop(paste0("====> Error: qcdir is not provided, no output directory."))
+        }
+
+        if (!file.exists(paste0(qcdir, "/sample_qc_cutoffs.tsv"))) {
+            stop(paste0("====> Error: sample_qc_cutoffs.tsv is not in ", qcdir, ". Please use qcout_samqc_cutoffs to create it."))
         }
 
         #------------------#
