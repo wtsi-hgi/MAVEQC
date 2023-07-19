@@ -389,10 +389,10 @@ create_experimentqc_object <- function(samqc_obj,
         coldata <- as.data.frame(coldata)
 
         coldata$condition <- factor(coldata$condition)
-        coldata$condition <- factor(coldata$condition, levels = mixsort(levels(coldata$condition)))
+        coldata$condition <- factor(coldata$condition, levels = mixedsort(levels(coldata$condition)))
 
         coldata$replicate <- factor(coldata$replicate)
-        coldata$replicate <- factor(coldata$replicate, levels = mixsort(levels(coldata$replicate)))
+        coldata$replicate <- factor(coldata$replicate, levels = mixedsort(levels(coldata$replicate)))
     }
 
     conds <- levels(coldata$condition)

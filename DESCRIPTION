@@ -29,4 +29,5 @@ Depends:
     see (>= 0.8.0),
     reactable (>= 0.4.4)
 Imports:
-    reshape2 (>= 1.4.4)
+    reshape2 (>= 1.4.4),
+    gtools (>= 3.9.4)

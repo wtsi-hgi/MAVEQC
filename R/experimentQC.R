@@ -30,7 +30,7 @@ setMethod(
 
         syn_ds_obj <- DESeqDataSetFromMatrix(countData = syn_counts, colData = ds_coldata, design = ~condition)
         syn_ds_obj <- syn_ds_obj[rowSums(counts(syn_ds_obj)) > 0, ]
-        syn_ds_obj$condition <- factor(syn_ds_obj$condition, levels = mixsort(levels(syn_ds_obj$condition)))
+        syn_ds_obj$condition <- factor(syn_ds_obj$condition, levels = mixedsort(levels(syn_ds_obj$condition)))
         syn_ds_obj$condition <- relevel(syn_ds_obj$condition, ref = object@ref_condition)
         syn_ds_obj <- estimateSizeFactors(syn_ds_obj)
 
@@ -40,7 +40,7 @@ setMethod(
 
         ds_obj <- DESeqDataSetFromMatrix(countData = deseq_counts, colData = ds_coldata, design = ~condition)
         ds_obj <- ds_obj[rowSums(counts(ds_obj)) > 0, ]
-        ds_obj$condition <- factor(ds_obj$condition, levels = mixsort(levels(ds_obj$condition)))
+        ds_obj$condition <- factor(ds_obj$condition, levels = mixedsort(levels(ds_obj$condition)))
         ds_obj$condition <- relevel(ds_obj$condition, ref = object@ref_condition)
         sizeFactors(ds_obj) <- sizeFactors(syn_ds_obj)
 

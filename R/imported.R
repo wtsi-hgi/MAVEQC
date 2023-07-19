@@ -14,4 +14,5 @@
 #' @importFrom see geom_violinhalf
 #' @import reactable
 #' @importFrom reshape2 melt
+#' @importFrom gtools mixedsort
 NULL

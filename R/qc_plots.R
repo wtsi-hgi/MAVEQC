@@ -178,7 +178,7 @@ setMethod(
         df_total$samples <- rownames(df_total)
         dt_total <- reshape2::melt(as.data.table(df_total), id.vars = "samples", variable.name = "types", value.name = "counts")
 
-        dt_total$samples <- factor(dt_total$samples, levels = df_total$samples)
+        dt_total$samples <- factor(dt_total$samples, levels = mixedsort(levels(factor(dt_total$samples))))
 
         select_colors <- select_colorblind("col8")[1:2]
         fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
@@ -229,7 +229,7 @@ setMethod(
         df_accepted$samples <- rownames(df_accepted)
         dt_filtered <- reshape2::melt(as.data.table(df_accepted), id.vars = "samples", variable.name = "types", value.name = "percent")
 
-        dt_filtered$samples <- factor(dt_filtered$samples, levels = df_accepted$samples)
+        dt_filtered$samples <- factor(dt_filtered$samples, levels = mixedsort(levels(factor(dt_filtered$samples))))
 
         df_cov <- object@stats[, c("total_reads", "library_reads", "library_cov")]
         colnames(df_cov) <- c("num_total_reads", "num_library_reads", "library_cov")
@@ -434,17 +434,21 @@ setMethod(
             libcounts_pos[, log2p1 := log2(count+1)]
         }
 
+        libcounts_pos$sample <- factor(libcounts_pos$sample, levels = mixedsort(levels(factor(libcounts_pos$sample))))
+
         p1 <- ggplot(libcounts_pos, aes(x = position, y = log2p1)) +
                 geom_point(shape = 16, size = 0.5, color = "tomato", alpha = 0.8) +
-                geom_hline(yintercept = object@cutoffs$seq_low_count, linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
+                geom_smooth(linewidth = 0.5, se = FALSE, color = "royalblue", fill = "lightblue") +
+                geom_hline(yintercept = log2(object@cutoffs$seq_low_count+1), linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                 labs(x = "Genomic Coordinate", y = "log2(count+1)", title = "Sample QC position coverage") +
+                ylim(0, as.integer(max(libcounts_pos$log2p1)) + 1) +
                 theme(legend.position = "none", panel.grid.major = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                 theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                 theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 6, face = "bold")) +
-                theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-                facet_wrap(~sample, dir = "v", ncol = 4)
+                theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+                facet_wrap(~sample)
 
         pheight <- 400 * as.integer((length(sample_names) / 3))
 

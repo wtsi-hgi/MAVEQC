@@ -96,17 +96,6 @@ cbind_fill <- function(...) {
     do.call(cbind, lapply(nm, function (x) rbind(x, matrix(, n - nrow(x), ncol(x)))))
 }
 
-#' sort characters and numbers
-#'
-#' @param x a vector
-#' @return a sorted vector
-mixsort <- function(x) {
-    order1 <- gsub("([A-Z]+)([0-9]+)", "\\1", x)
-    order2 <- as.numeric(gsub("([A-Z]+)([0-9]+)", "\\2", x))
-
-    return(x[order(order1, order2)])
-}
-
 #' calculate gini coefficiency for a sample
 #'
 #' @param x a vector

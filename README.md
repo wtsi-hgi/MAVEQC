@@ -38,6 +38,7 @@ install.packages("corrplot")
 install.packages("ggcorrplot")
 install.packages("see")
 install.packages("reactable")
+install.packages("gtools")
 
 install.packages("BiocManager")
 BiocManager::install("DESeq2")
