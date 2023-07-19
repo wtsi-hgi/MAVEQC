@@ -4,12 +4,12 @@
 \alias{qcout_samqc_libcov,sampleQC-method}
 \title{create output file of library coverage}
 \usage{
-\S4method{qcout_samqc_libcov}{sampleQC}(object, outdir = NULL)
+\S4method{qcout_samqc_libcov}{sampleQC}(object, out_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
-\item{outdir}{the output directory}
+\item{out_dir}{the output directory}
 }
 \description{
 create output file of library coverage

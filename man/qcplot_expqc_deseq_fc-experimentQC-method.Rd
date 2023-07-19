@@ -10,7 +10,7 @@
   pcut = 0.05,
   dcut = 0,
   ecut = 0,
-  plotdir = NULL
+  plot_dir = NULL
 )
 }
 \arguments{
@@ -24,7 +24,7 @@
 
 \item{ecut}{the enriched cutoff}
 
-\item{plotdir}{the output plot directory}
+\item{plot_dir}{the output plot directory}
 }
 \description{
 create fold change and consequence plot

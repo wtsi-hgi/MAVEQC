@@ -1,5 +1,4 @@
 Group	Sample	Total Reads	% 0 ~ 50	% 50 ~ 100	% 100 ~ 150	% 150 ~ 200	% 200 ~ 250	% 250 ~ 300	Pass Threshold	Pass
-SMARCA4_exon26	hgsm3_d0_r1	4049537	0.1	0.1	0.1	0.3	97.7	1.7	90	TRUE
 SMARCA4_exon26	hgsm3_d4_r1	5077590	0	0.1	0.3	1.5	96.3	1.6	90	TRUE
 SMARCA4_exon26	hgsm3_d7_r1	4379641	0	0.1	0.3	1.4	96.8	1.4	90	TRUE
 SMARCA4_exon26	hgsm3_d15_r1	4397054	0	0.1	0.2	0.6	97.5	1.7	90	TRUE

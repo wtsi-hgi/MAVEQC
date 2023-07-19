@@ -8,13 +8,13 @@ setGeneric("qcplot_samqc_readlens", function(object, ...) {
 #' @export
 #' @param object   sampleQC object
 #' @param len_bins the bins of length distribution
-#' @param plotdir the output plot directory
+#' @param plot_dir the output plot directory
 setMethod(
     "qcplot_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
                           len_bins = seq(0, 300, 50),
-                          plotdir = NULL) {
+                          plot_dir = NULL) {
         read_lens <- data.table()
         for (i in 1:length(object@lengths)) {
             tmp_lens <- object@lengths[[i]][, "length", drop = FALSE]
@@ -38,7 +38,7 @@ setMethod(
 
         p1 <- ggplot(read_lens, aes(x = length)) +
                 geom_histogram(aes(y = after_stat(width * density)), breaks = len_bins, color = "black", fill = "grey") +
-                geom_hline(yintercept = c(0.25, 0.5, 0.75, 1), linetype = "dashed", color = "yellowgreen", linewidth = 0.3) +
+                geom_hline(yintercept = c(0.25, 0.5, 0.75, 1), linetype = "dashed", color = "yellowgreen", linewidth = 0.4) +
                 scale_y_continuous(labels = scales::percent) +
                 coord_trans(y = "sqrt") +
                 labs(x = "Length Distribution", y = "Composition Percentage", title = "Sample QC read lengths") +
@@ -50,7 +50,7 @@ setMethod(
 
         p2 <- ggplot(read_lens, aes(x = length)) +
                 geom_histogram(aes(y = after_stat(width * density)), breaks = len_bins, color = "black", fill = "grey") +
-                geom_hline(yintercept = c(0.25, 0.5, 0.75, 1), linetype = "dashed", color = "yellowgreen", linewidth = 0.3) +
+                geom_hline(yintercept = c(0.25, 0.5, 0.75, 1), linetype = "dashed", color = "yellowgreen", linewidth = 0.4) +
                 scale_y_continuous(labels = scales::percent) +
                 labs(x = "Length Distribution", y = "Composition Percentage", title = "Sample QC read lengths") +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
@@ -61,10 +61,10 @@ setMethod(
 
         pheight <- 400 * as.integer((length(sample_names) / 3))
 
-        if (is.null(plotdir)) {
+        if (is.null(plot_dir)) {
             ggplotly(p2)
         } else {
-            png(paste0(plotdir, "/", "sample_qc_read_length.png"), width = 1200, height = pheight, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_read_length.png"), width = 1200, height = pheight, res = 200)
             print(p1)
             dev.off()
         }
@@ -79,20 +79,18 @@ setGeneric("qcplot_samqc_clusters", function(object, ...) {
 #' create the sequence counts and clusters plot
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param qctype  qc type for plot
-#' @param plotdir the output plot directory
+#' @param object    sampleQC object
+#' @param qc_type   qc type for plot
+#' @param plot_dir  the output plot directory
 setMethod(
     "qcplot_samqc_clusters",
     signature = "sampleQC",
     definition = function(object,
-                          qctype = "screen",
-                          plotdir = NULL) {
-        if (qctype %nin% c("plasmid", "screen")) {
-                stop(paste0("====> Error: wrong qctype, plasmid or screen."))
-        }
+                          qc_type = c("plasmid", "screen"),
+                          plot_dir = NULL) {
+        qc_type <- match.arg(qc_type)
 
-        if (qctype == "screen") {
+        if (qc_type == "screen") {
             seq_clusters <- object@seq_clusters[[1]]
             seq_clusters_1 <- seq_clusters[seq_clusters$cluster == 1, ]
             seq_clusters_2 <- seq_clusters[seq_clusters$cluster == 2, ]
@@ -151,10 +149,10 @@ setMethod(
             p2 <- p1
         }
 
-        if (is.null(plotdir)) {
+        if (is.null(plot_dir)) {
             ggplotly(p2)
         } else {
-            png(paste0(plotdir, "/", "sample_qc_seq_clusters.png"), width = 1200, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_seq_clusters.png"), width = 1200, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -169,13 +167,13 @@ setGeneric("qcplot_samqc_total", function(object, ...) {
 #' create the stats plot
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param plotdir the output plot directory
+#' @param object   sampleQC object
+#' @param plot_dir the output plot directory
 setMethod(
     "qcplot_samqc_total",
     signature = "sampleQC",
     definition = function(object,
-                          plotdir = NULL) {
+                          plot_dir = NULL) {
         df_total <- object@stats[, c("excluded_reads", "accepted_reads")]
         df_total$samples <- rownames(df_total)
         dt_total <- reshape2::melt(as.data.table(df_total), id.vars = "samples", variable.name = "types", value.name = "counts")
@@ -200,10 +198,10 @@ setMethod(
 
         pwidth <- 150 * nrow(df_total)
 
-        if (is.null(plotdir)) {
+        if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plotdir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -218,13 +216,13 @@ setGeneric("qcplot_samqc_accepted", function(object, ...) {
 #' create the stats plot
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param plotdir the output plot directory
+#' @param object   sampleQC object
+#' @param plot_dir the output plot directory
 setMethod(
     "qcplot_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
-                          plotdir = NULL) {
+                          plot_dir = NULL) {
         df_accepted <- object@stats[, c("per_unmapped_reads", "per_ref_reads", "per_pam_reads", "per_library_reads")]
         colnames(df_accepted) <- c("unmapped_reads", "ref_reads", "pam_reads", "library_reads")
         df_accepted <- round(df_accepted * 100, 1)
@@ -236,6 +234,7 @@ setMethod(
         df_cov <- object@stats[, c("total_reads", "library_reads", "library_cov")]
         colnames(df_cov) <- c("num_total_reads", "num_library_reads", "library_cov")
         df_cov$samples <- rownames(df_cov)
+        df_cov$type <- "coverage"
 
         select_colors <- select_colorblind("col8")[1:4]
         fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
@@ -244,11 +243,11 @@ setMethod(
 
         p1 <- ggplot(dt_filtered,  aes(x = samples, y = percent, fill = types)) +
                 geom_bar(stat = "identity", position = "fill") +
-                geom_line(data = df_cov, aes(x = samples, y = library_cov / y_scale, group = 1, linetype = "coverage"), linetype = "dashed", color = "red", inherit.aes = FALSE) +
-                geom_point(data = df_cov, aes(x = samples, y = library_cov / y_scale, group = 1), shape = 18, color = "red", size = 2, inherit.aes = FALSE) +
+                geom_line(data = df_cov, aes(x = samples, y = library_cov / y_scale, group = 1), linetype = "dashed", color = "red", inherit.aes = FALSE) +
+                geom_point(data = df_cov, aes(x = samples, y = library_cov / y_scale, color = type), shape = 18, size = 3, inherit.aes = FALSE) +
                 scale_y_continuous(labels = scales::percent, sec.axis = sec_axis(~. * y_scale, name = "library coverage")) +
                 scale_fill_manual(values = fill_colors) +
-                scale_color_manual(values = select_colors, guide = guide_legend(override.aes = list(fill = NA))) +
+                scale_color_manual(values = "red") +
                 labs(x = "samples", y = "percent", title = "Sample QC Stats") +
                 theme(legend.position = "right", legend.title = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
@@ -260,7 +259,7 @@ setMethod(
 
         pwidth <- 150 * nrow(df_accepted)
 
-        if (is.null(plotdir)) {
+        if (is.null(plot_dir)) {
             dt_filtered$types <- factor(dt_filtered$types, levels = rev(levels(dt_filtered$types)))
 
             ay <- list(overlaying = "y",
@@ -276,7 +275,7 @@ setMethod(
                 add_markers(data = df_cov, x = ~samples, y = ~library_cov, inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
                 layout(yaxis2 = ay)
         } else {
-            png(paste0(plotdir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -297,7 +296,7 @@ setMethod(
         #         theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
         #         theme(axis.text = element_text(size = 12, face = "bold"))
 
-        # png(paste0(plotdir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
+        # png(paste0(plot_dir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
         # print(p2)
         # dev.off()
     }
@@ -311,13 +310,13 @@ setGeneric("qcplot_samqc_gini", function(object, ...) {
 #' create the gini plot
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param plotdir the output plot directory
+#' @param object   sampleQC object
+#' @param plot_dir the output plot directory
 setMethod(
     "qcplot_samqc_gini",
     signature = "sampleQC",
     definition = function(object,
-                          plotdir = NULL) {
+                          plot_dir = NULL) {
         sample_names <- character()
         all_gini <- character()
         for (s in object@samples) {
@@ -359,10 +358,10 @@ setMethod(
 
         pwidth <- 150 * num_samples
 
-        if (is.null(plotdir)) {
+        if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plotdir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -377,22 +376,20 @@ setGeneric("qcplot_samqc_pos_cov", function(object, ...) {
 #' create the position plot
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param qctype  plot type, screen or plasmid
-#' @param plotdir the output plot directory
+#' @param object   sampleQC object
+#' @param qc_type  plot type, screen or plasmid
+#' @param plot_dir the output plot directory
 setMethod(
     "qcplot_samqc_pos_cov",
     signature = "sampleQC",
     definition = function(object,
-                          qctype = "screen",
-                          plotdir = NULL) {
-        if (is.null(plotdir)) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
+                          qc_type = c("plasmid", "screen"),
+                          plot_dir = NULL) {
+        if (is.null(plot_dir)) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
-        if (qctype %nin% c("plasmid", "screen")) {
-            stop(paste0("====> Error: wrong qctype, plasmid or screen."))
-        }
+        qc_type <- match.arg(qc_type)
 
         sample_names <- vector()
         libcounts_pos <- data.table()
@@ -411,7 +408,7 @@ setMethod(
         }
         libcounts_pos[, log2p1 := log2(count+1)]
 
-        if (qctype == "plasmid") {
+        if (qc_type == "plasmid") {
             libcounts_dependent_pos <- data.table()
 
             for (s in object@samples) {
@@ -439,7 +436,7 @@ setMethod(
 
         p1 <- ggplot(libcounts_pos, aes(x = position, y = log2p1)) +
                 geom_point(shape = 16, size = 0.5, color = "tomato", alpha = 0.8) +
-                geom_hline(yintercept = object@cutoffs$seq_low_count, linetype = "dashed", color = "springgreen4", size = 0.4) +
+                geom_hline(yintercept = object@cutoffs$seq_low_count, linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                 labs(x = "Genomic Coordinate", y = "log2(count+1)", title = "Sample QC position coverage") +
                 theme(legend.position = "none", panel.grid.major = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
@@ -451,10 +448,10 @@ setMethod(
 
         pheight <- 400 * as.integer((length(sample_names) / 3))
 
-        if (is.null(plotdir)) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
+        if (is.null(plot_dir)) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         } else {
-            png(paste0(plotdir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 200)
             print(p1)
             dev.off()
         }
@@ -472,16 +469,16 @@ setGeneric("qcplot_samqc_pos_anno", function(object, ...) {
 #' @param object    sampleQC object
 #' @param samples   a vector of sample names
 #' @param type      plot type, lof or all
-#' @param plotdir   the output plot directory
+#' @param plot_dir  the output plot directory
 setMethod(
     "qcplot_samqc_pos_anno",
     signature = "sampleQC",
     definition = function(object,
                           samples = NULL,
                           type = "lof",
-                          plotdir = NULL) {
-        if (is.null(plotdir)) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
+                          plot_dir = NULL) {
+        if (is.null(plot_dir)) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
         if (is.null(samples)) {
@@ -508,7 +505,7 @@ setMethod(
 
             p1 <- ggplot(df_libcounts_pos, aes(x = position, y = counts)) +
                     geom_point(shape = 19, size = 0.5, aes(color = factor(consequence))) +
-                    geom_hline(yintercept = tmp_cutoff, linetype = "dashed", color = "springgreen4", size = 0.4) +
+                    geom_hline(yintercept = tmp_cutoff, linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                     scale_color_manual(values = c(t_col("red", 1), t_col("royalblue", 0.2)), labels = c("LOF", "Others")) +
                     labs(x = "Genomic Coordinate", y = "Percentage", title = "Sample QC position percentage", color = "Type") +
                     coord_trans(y = "log2") +
@@ -522,10 +519,10 @@ setMethod(
 
             pheight <- 300 * length(samples)
 
-            if (is.null(plotdir)) {
-                stop(paste0("====> Error: plotdir is not provided, no output directory."))
+            if (is.null(plot_dir)) {
+                stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plotdir, "/", "sample_qc_position_anno.lof_dots.png"), width = 1200, height = pheight, res = 200)
+                png(paste0(plot_dir, "/", "sample_qc_position_anno.lof_dots.png"), width = 1200, height = pheight, res = 200)
                 print(p1)
                 dev.off()
             }
@@ -572,10 +569,10 @@ setMethod(
 
             pheight <- 300 * length(samples)
 
-            if (is.null(plotdir)) {
-                stop(paste0("====> Error: plotdir is not provided, no output directory."))
+            if (is.null(plot_dir)) {
+                stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plotdir, "/", "sample_qc_position_anno.all_dots.png"), width = 1200, height = pheight, res = 200)
+                png(paste0(plot_dir, "/", "sample_qc_position_anno.all_dots.png"), width = 1200, height = pheight, res = 200)
                 print(p1)
                 dev.off()
             }
@@ -591,13 +588,13 @@ setGeneric("qcplot_expqc_sample_corr", function(object, ...) {
 #' create the heatmap of samples
 #'
 #' @export
-#' @param object  experimentQC object
-#' @param plotdir the output plot directory
+#' @param object   experimentQC object
+#' @param plot_dir the output plot directory
 setMethod(
     "qcplot_expqc_sample_corr",
     signature = "experimentQC",
     definition = function(object,
-                          plotdir = NULL) {
+                          plot_dir = NULL) {
         sample_dist <- as.matrix(dist(t(object@deseq_rlog)))
         sample_rlog <- as.matrix(object@deseq_rlog)
 
@@ -607,7 +604,7 @@ setMethod(
         # heatmap, leave it temporarily
 
         # pwidth <- 100 * ncol(sample_rlog)
-        # png(paste0(plotdir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
+        # png(paste0(plot_dir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
         # lmat <- rbind(c(4, 3), c(2, 1))
         # lhei <- c(3, 8)
         # lwid <- c(3, 8)
@@ -649,10 +646,10 @@ setMethod(
                                        midpoint = (1 + min_corr) / 2,
                                        name = "correlation")
 
-        if (is.null(plotdir)) {
+        if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plotdir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 200)
             corrplot(sample_corr,
                      method = "color",
                      order = "hclust",
@@ -682,15 +679,15 @@ setGeneric("qcplot_expqc_sample_pca", function(object, ...) {
 #' @export
 #' @param object     experimentQC object
 #' @param ntop       the number of top variances
-#' @param plotdir    the output plot directory
+#' @param plot_dir   the output plot directory
 setMethod(
     "qcplot_expqc_sample_pca",
     signature = "experimentQC",
     definition = function(object,
                           ntop = 500,
-                          plotdir = NULL) {
-        if (is.null(plotdir)) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
+                          plot_dir = NULL) {
+        if (is.null(plot_dir)) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
         pca_input <- as.matrix(object@deseq_rlog)
@@ -728,7 +725,7 @@ setMethod(
             pca_pchs[i] <- select_pchs[ds_coldata[i, ]$replicate]
         }
 
-        png(paste0(plotdir, "/", "sample_qc_pca_samples.png"), width = 1200, height = 1200, res = 200)
+        png(paste0(plot_dir, "/", "sample_qc_pca_samples.png"), width = 1200, height = 1200, res = 200)
         par(mfrow = c(2, 2), mar = c(4, 4, 4, 1))
         plot(pca$x[, 1], pca$x[, 2], xlab = "PC1", ylab = "PC2", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc1_set, ylim = pc2_set, main = "PC1 vs PC2")
         plot(pca$x[, 2], pca$x[, 3], xlab = "PC2", ylab = "PC3", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc2_set, ylim = pc3_set, main = "PC2 vs PC3")
@@ -749,12 +746,12 @@ setGeneric("qcplot_expqc_deseq_fc", function(object, ...) {
 #' create fold change and consequence plot
 #'
 #' @export
-#' @param object  experimentQC object
-#' @param cons    a vector of consequences showed in the figure
-#' @param pcut    the padj cutoff
-#' @param dcut    the depleted cutoff
-#' @param ecut    the enriched cutoff
-#' @param plotdir the output plot directory
+#' @param object   experimentQC object
+#' @param cons     a vector of consequences showed in the figure
+#' @param pcut     the padj cutoff
+#' @param dcut     the depleted cutoff
+#' @param ecut     the enriched cutoff
+#' @param plot_dir the output plot directory
 setMethod(
     "qcplot_expqc_deseq_fc",
     signature = "experimentQC",
@@ -763,9 +760,9 @@ setMethod(
                           pcut = 0.05,
                           dcut = 0,
                           ecut = 0,
-                          plotdir = NULL) {
-        if (length(plotdir) == 0) {
-            stop(paste0("====> Error: plotdir is not provided, no output directory."))
+                          plot_dir = NULL) {
+        if (length(plot_dir) == 0) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
         comparisions <- names(object@deseq_res)
@@ -799,10 +796,10 @@ setMethod(
 
             pheight <- 200 * length(cons)
 
-            if (is.null(plotdir)) {
-                stop(paste0("====> Error: plotdir is not provided, no output directory."))
+            if (is.null(plot_dir)) {
+                stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plotdir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
+                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
                 print(p1)
                 dev.off()
             }
@@ -824,7 +821,7 @@ setMethod(
             #         facet_wrap(~consequence, dir = "v")
 
             # pheight <- 300 * length(cons)
-            # png(paste0(plotdir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
+            # png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
             # print(p2)
             # dev.off()
         }

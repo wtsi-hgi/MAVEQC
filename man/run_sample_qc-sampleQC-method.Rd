@@ -6,15 +6,15 @@
 \usage{
 \S4method{run_sample_qc}{sampleQC}(
   object,
-  qc_type,
-  cutoff_low_count = 5,
-  cutoff_low_sample_per = 0.25,
-  cutoff_filtered = 1e+06,
-  cutoff_mapping_per = 0.6,
-  cutoff_library_per = 0.4,
-  cutoff_library_cov = 100,
-  cutoff_low_per = 5e-05,
-  cutoff_low_lib_per = 0.7
+  qc_type = c("plasmid", "screen"),
+  cutoff_low_count = maveqc_config$sqc_low_count,
+  cutoff_low_sample_per = maveqc_config$sqc_low_sample_per,
+  cutoff_filtered = maveqc_config$sqc_filtered,
+  cutoff_mapping_per = maveqc_config$sqc_mapping_per,
+  cutoff_library_per = maveqc_config$sqc_library_per,
+  cutoff_library_cov = maveqc_config$sqc_library_cov,
+  cutoff_low_per = maveqc_config$sqc_low_per,
+  cutoff_low_lib_per = maveqc_config$sqc_low_lib_per
 )
 }
 \arguments{

@@ -4,12 +4,12 @@
 \alias{qcplot_samqc_total,sampleQC-method}
 \title{create the stats plot}
 \usage{
-\S4method{qcplot_samqc_total}{sampleQC}(object, plotdir = NULL)
+\S4method{qcplot_samqc_total}{sampleQC}(object, plot_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
-\item{plotdir}{the output plot directory}
+\item{plot_dir}{the output plot directory}
 }
 \description{
 create the stats plot

@@ -4,14 +4,14 @@
 \alias{qcout_samqc_readlens,sampleQC-method}
 \title{create output file of total reads stats}
 \usage{
-\S4method{qcout_samqc_readlens}{sampleQC}(object, len_bins = seq(0, 300, 50), outdir = NULL)
+\S4method{qcout_samqc_readlens}{sampleQC}(object, len_bins = seq(0, 300, 50), out_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
 \item{len_bins}{the bins of length distribution}
 
-\item{outdir}{the output directory}
+\item{out_dir}{the output directory}
 }
 \description{
 create output file of total reads stats

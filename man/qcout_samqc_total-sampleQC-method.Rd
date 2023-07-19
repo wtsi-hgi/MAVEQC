@@ -4,12 +4,12 @@
 \alias{qcout_samqc_total,sampleQC-method}
 \title{create output file of total reads stats}
 \usage{
-\S4method{qcout_samqc_total}{sampleQC}(object, outdir = NULL)
+\S4method{qcout_samqc_total}{sampleQC}(object, out_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
-\item{outdir}{the output directory}
+\item{out_dir}{the output directory}
 }
 \description{
 create output file of total reads stats

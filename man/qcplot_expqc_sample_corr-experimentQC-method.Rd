@@ -4,12 +4,12 @@
 \alias{qcplot_expqc_sample_corr,experimentQC-method}
 \title{create the heatmap of samples}
 \usage{
-\S4method{qcplot_expqc_sample_corr}{experimentQC}(object, plotdir = NULL)
+\S4method{qcplot_expqc_sample_corr}{experimentQC}(object, plot_dir = NULL)
 }
 \arguments{
 \item{object}{experimentQC object}
 
-\item{plotdir}{the output plot directory}
+\item{plot_dir}{the output plot directory}
 }
 \description{
 create the heatmap of samples

@@ -1,0 +1,22 @@
+# user defined thresholds for QC
+
+# the sequence must have at least 5 counts in at least 25% of the samples
+sqc_low_count: 5
+sqc_low_sample_per: 0.25
+
+# the sample must have more than 1000000 reads after the low count filtering
+sqc_filtered: 1000000
+
+# the sample must have more than 60% of reads aligned to the library including reference and PAM reads
+sqc_mapping_per: 0.6
+
+# the sample must have more than 40% of library reads excluding reference and PAM reads
+sqc_library_per: 0.4
+
+# the sample must have more than 100x average coverage
+# the number of library reads divided by the number of sequences
+sqc_library_cov: 100
+
+# the majority of the variants (>70%) distributed above the 0.005% cutoff for the reference samples
+sqc_low_per: 0.00005
+sqc_low_lib_per: 0.7

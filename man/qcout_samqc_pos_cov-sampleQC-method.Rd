@@ -4,14 +4,14 @@
 \alias{qcout_samqc_pos_cov,sampleQC-method}
 \title{create output file of lof percentages}
 \usage{
-\S4method{qcout_samqc_pos_cov}{sampleQC}(object, qctype = "screen", outdir = NULL)
+\S4method{qcout_samqc_pos_cov}{sampleQC}(object, qc_type = c("plasmid", "screen"), out_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
-\item{qctype}{screen or plasmid}
+\item{qc_type}{screen or plasmid}
 
-\item{outdir}{the output directory}
+\item{out_dir}{the output directory}
 }
 \description{
 create output file of lof percentages

@@ -1,5 +1,4 @@
 Group	Sample	Total Library Reads	Total Template Oligo Sequences	Library Coverage	Pass Threshold	Pass
-SMARCA4_exon26	hgsm3_d0_r1	2321699	2338	993	100	TRUE
 SMARCA4_exon26	hgsm3_d4_r1	2402820	2338	1027	100	TRUE
 SMARCA4_exon26	hgsm3_d7_r1	2061566	2338	881	100	TRUE
 SMARCA4_exon26	hgsm3_d15_r1	2003930	2338	857	100	TRUE

@@ -4,12 +4,12 @@
 \alias{qcplot_samqc_gini,sampleQC-method}
 \title{create the gini plot}
 \usage{
-\S4method{qcplot_samqc_gini}{sampleQC}(object, plotdir = NULL)
+\S4method{qcplot_samqc_gini}{sampleQC}(object, plot_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
-\item{plotdir}{the output plot directory}
+\item{plot_dir}{the output plot directory}
 }
 \description{
 create the gini plot

@@ -6,19 +6,19 @@ setGeneric("qcout_samqc_cutoffs", function(object, ...) {
 #' create output file of bad seqs which fail filtering
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param outdir  the output directory
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_cutoffs",
     signature = "sampleQC",
     definition = function(object,
-                          outdir) {
-        if (length(outdir) == 0) {
-            stop(paste0("====> Error: outdir is not provided, no output directory."))
+                          out_dir) {
+        if (length(out_dir) == 0) {
+            stop(paste0("====> Error: out_dir is not provided, no output directory."))
         }
 
         write.table(object@cutoffs,
-                    file = paste0(outdir, "/", "sample_qc_cutoffs.tsv"),
+                    file = paste0(out_dir, "/", "sample_qc_cutoffs.tsv"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -34,20 +34,20 @@ setGeneric("qcout_samqc_badseqs", function(object, ...) {
 #' create output file of bad seqs which fail filtering
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param outdir  the output directory
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_badseqs",
     signature = "sampleQC",
     definition = function(object,
-                          outdir) {
-        if (length(outdir) == 0) {
-            stop(paste0("====> Error: outdir is not provided, no output directory."))
+                          out_dir) {
+        if (length(out_dir) == 0) {
+            stop(paste0("====> Error: out_dir is not provided, no output directory."))
         }
 
         cat("Outputing bad sequences filtered out by clustering...", "\n", sep = "")
         write.table(merge_list_to_df(object@bad_seqs_bycluster),
-                    file = paste0(outdir, "/", "failed_sequences_by_cluster.txt"),
+                    file = paste0(out_dir, "/", "failed_sequences_by_cluster.txt"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -55,7 +55,7 @@ setMethod(
 
         cat("Outputing bad sequences filtered out by sequencing depth...", "\n", sep = "")
         write.table(object@bad_seqs_bydepth,
-                    file = paste0(outdir, "/", "failed_sequences_by_depth.txt"),
+                    file = paste0(out_dir, "/", "failed_sequences_by_depth.txt"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -63,7 +63,7 @@ setMethod(
 
         cat("Outputing bad sequences filtered out by library mapping...", "\n", sep = "")
         write.table(object@bad_seqs_bylib,
-                    file = paste0(outdir, "/", "failed_sequences_by_mapping.txt"),
+                    file = paste0(out_dir, "/", "failed_sequences_by_mapping.txt"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -79,15 +79,15 @@ setGeneric("qcout_samqc_readlens", function(object, ...) {
 #' create output file of total reads stats
 #'
 #' @export
-#' @param object   sampleQC object
-#' @param len_bins the bins of length distribution
-#' @param outdir   the output directory
+#' @param object    sampleQC object
+#' @param len_bins  the bins of length distribution
+#' @param out_dir   the output directory
 setMethod(
     "qcout_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
                           len_bins = seq(0, 300, 50),
-                          outdir = NULL) {
+                          out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
                   "Total Reads",
@@ -122,7 +122,7 @@ setMethod(
         df_outs[, 10] <- 90
         df_outs[, 11] <- (df_outs[, 8] + df_outs[, 9]) > df_outs[, 10]
 
-        if (length(outdir) == 0) {
+        if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
                       theme = reactableTheme(
                           style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
@@ -135,7 +135,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sample_qc_read_length.tsv"),
+                        file = paste0(out_dir, "/", "sample_qc_read_length.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -152,13 +152,13 @@ setGeneric("qcout_samqc_total", function(object, ...) {
 #' create output file of total reads stats
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param outdir  the output directory
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_total",
     signature = "sampleQC",
     definition = function(object,
-                          outdir = NULL) {
+                          out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
                   "Accepted Reads",
@@ -185,7 +185,7 @@ setMethod(
         df_outs[, 8] <- object@cutoffs$total_reads
         df_outs[, 9] <- object@stats$qcpass_accepted_reads
 
-        if (length(outdir) == 0) {
+        if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
                       theme = reactableTheme(
                           style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
@@ -210,7 +210,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sample_qc_stats_total.tsv"),
+                        file = paste0(out_dir, "/", "sample_qc_stats_total.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -227,13 +227,13 @@ setGeneric("qcout_samqc_accepted", function(object, ...) {
 #' create output file of library reads stats
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param outdir  the output directory
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
-                          outdir = NULL) {
+                          out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
                   "% Library Reads",
@@ -262,7 +262,7 @@ setMethod(
         df_outs[, 7] <- object@cutoffs$library_percent * 100
         df_outs[, 8] <- object@stats$qcpass_library_per
 
-        if (length(outdir) == 0) {
+        if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
                       theme = reactableTheme(
                           style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
@@ -283,7 +283,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sample_qc_stats_accepted.tsv"),
+                        file = paste0(out_dir, "/", "sample_qc_stats_accepted.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -300,13 +300,13 @@ setGeneric("qcout_samqc_libcov", function(object, ...) {
 #' create output file of library coverage
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param outdir  the output directory
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_libcov",
     signature = "sampleQC",
     definition = function(object,
-                          outdir = NULL) {
+                          out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
                   "Total Library Reads",
@@ -327,7 +327,7 @@ setMethod(
         df_outs[, 6] <- object@cutoffs$library_cov
         df_outs[, 7] <- object@stats$qcpass_library_cov
 
-        if (length(outdir) == 0) {
+        if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
                       theme = reactableTheme(
                           style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
@@ -351,7 +351,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sample_qc_stats_coverage.tsv"),
+                        file = paste0(out_dir, "/", "sample_qc_stats_coverage.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -368,15 +368,17 @@ setGeneric("qcout_samqc_pos_cov", function(object, ...) {
 #' create output file of lof percentages
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param qctype  screen or plasmid
-#' @param outdir  the output directory
+#' @param object   sampleQC object
+#' @param qc_type  screen or plasmid
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_pos_cov",
     signature = "sampleQC",
     definition = function(object,
-                          qctype = "screen",
-                          outdir = NULL) {
+                          qc_type = c("plasmid", "screen"),
+                          out_dir = NULL) {
+        qc_type <- match.arg(qc_type)
+
         cols <- c("Group",
                   "Sample",
                   "Chromosome",
@@ -398,7 +400,7 @@ setMethod(
         df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[4]])
 
         low_per <- vector()
-        if (qctype == "screen") {
+        if (qc_type == "screen") {
             for (s in object@samples) {
                 tmp_num <- sum(object@library_counts_pos[[s@sample]]$count < object@cutoffs$seq_low_count)
                 low_per <- append(low_per, round(tmp_num / nrow(object@library_counts_pos[[s@sample]]) * 100, 2))
@@ -415,7 +417,7 @@ setMethod(
         df_outs[, 9] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
         df_outs[, 10] <- df_outs[, 7] < (1 - object@cutoffs$low_abundance_lib_per) * 100
 
-        if (length(outdir) == 0) {
+        if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
                       theme = reactableTheme(
                           style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
@@ -440,7 +442,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sample_qc_stats_pos_coverage.tsv"),
+                        file = paste0(out_dir, "/", "sample_qc_stats_pos_coverage.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
@@ -457,13 +459,13 @@ setGeneric("qcout_samqc_pos_anno", function(object, ...) {
 #' create output file of lof percentages
 #'
 #' @export
-#' @param object  sampleQC object
-#' @param outdir  the output directory
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_pos_anno",
     signature = "sampleQC",
     definition = function(object,
-                          outdir = NULL) {
+                          out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
                   "Chromosome",
@@ -515,7 +517,7 @@ setMethod(
         df_outs[, 11] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
         df_outs[, 12] <- df_outs[, 9] < (1 - object@cutoffs$low_abundance_lib_per) * 100
 
-        if (length(outdir) == 0) {
+        if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
                       theme = reactableTheme(
                           style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
@@ -542,7 +544,7 @@ setMethod(
                      )
         } else {
             write.table(df_outs,
-                        file = paste0(outdir, "/", "sample_qc_stats_pos_percentage.tsv"),
+                        file = paste0(out_dir, "/", "sample_qc_stats_pos_percentage.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,

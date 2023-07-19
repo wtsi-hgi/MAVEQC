@@ -4,14 +4,18 @@
 \alias{create_qc_reports}
 \title{create QC reports}
 \usage{
-create_qc_reports(samplesheet = NULL, qctype = "screen", qcdir = NULL)
+create_qc_reports(
+  samplesheet = NULL,
+  qc_type = c("plasmid", "screen"),
+  qc_dir = NULL
+)
 }
 \arguments{
 \item{samplesheet}{the path of sample sheet file}
 
-\item{qctype}{screen or plasmid}
+\item{qc_type}{screen or plasmid}
 
-\item{qcdir}{the directory of QC plots and outs}
+\item{qc_dir}{the directory of QC plots and outs}
 }
 \description{
 create QC reports

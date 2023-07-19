@@ -21,15 +21,15 @@ setMethod(
     "run_sample_qc",
     signature = "sampleQC",
     definition = function(object,
-                          qc_type,
-                          cutoff_low_count = 5,
-                          cutoff_low_sample_per = 0.25,
-                          cutoff_filtered = 1000000,
-                          cutoff_mapping_per = 0.6,
-                          cutoff_library_per = 0.4,
-                          cutoff_library_cov = 100,
-                          cutoff_low_per = 0.00005,
-                          cutoff_low_lib_per = 0.7) {
+                          qc_type = c("plasmid", "screen"),
+                          cutoff_low_count = maveqc_config$sqc_low_count,
+                          cutoff_low_sample_per = maveqc_config$sqc_low_sample_per,
+                          cutoff_filtered = maveqc_config$sqc_filtered,
+                          cutoff_mapping_per = maveqc_config$sqc_mapping_per,
+                          cutoff_library_per = maveqc_config$sqc_library_per,
+                          cutoff_library_cov = maveqc_config$sqc_library_cov,
+                          cutoff_low_per = maveqc_config$sqc_low_per,
+                          cutoff_low_lib_per = maveqc_config$sqc_low_lib_per) {
         #----------#
         # checking #
         #----------#
@@ -37,17 +37,10 @@ setMethod(
             stop(paste0("====> Error: no sample found in the sampleQC object!"))
         }
 
-        if (length(qc_type) == 0) {
-            stop(paste0("====> Error: please provide QC type."))
-        } else {
-            if (qc_type %in% c("plasmid", "screen")) {
-                if (qc_type == "screen") {
-                    if (length(object@samples_ref) == 0) {
-                        stop(paste0("====> Error: samples_ref is empty! Screen QC must have reference samples."))
-                    }
-                }
-            } else {
-                stop(paste0("====> Error: wrong QC type! Please use plasmid or screen."))
+        qc_type <- match.arg(qc_type)
+        if (qc_type == "screen") {
+            if (length(object@samples_ref) == 0) {
+                stop(paste0("====> Error: samples_ref is empty! Screen QC must have reference samples."))
             }
         }
 

@@ -4,14 +4,14 @@
 \alias{qcplot_samqc_pos_cov,sampleQC-method}
 \title{create the position plot}
 \usage{
-\S4method{qcplot_samqc_pos_cov}{sampleQC}(object, qctype = "screen", plotdir = NULL)
+\S4method{qcplot_samqc_pos_cov}{sampleQC}(object, qc_type = c("plasmid", "screen"), plot_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
-\item{qctype}{plot type, screen or plasmid}
+\item{qc_type}{plot type, screen or plasmid}
 
-\item{plotdir}{the output plot directory}
+\item{plot_dir}{the output plot directory}
 }
 \description{
 create the position plot

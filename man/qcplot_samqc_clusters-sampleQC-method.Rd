@@ -4,14 +4,18 @@
 \alias{qcplot_samqc_clusters,sampleQC-method}
 \title{create the sequence counts and clusters plot}
 \usage{
-\S4method{qcplot_samqc_clusters}{sampleQC}(object, qctype = "screen", plotdir = NULL)
+\S4method{qcplot_samqc_clusters}{sampleQC}(
+  object,
+  qc_type = c("plasmid", "screen"),
+  plot_dir = NULL
+)
 }
 \arguments{
 \item{object}{sampleQC object}
 
-\item{qctype}{qc type for plot}
+\item{qc_type}{qc type for plot}
 
-\item{plotdir}{the output plot directory}
+\item{plot_dir}{the output plot directory}
 }
 \description{
 create the sequence counts and clusters plot

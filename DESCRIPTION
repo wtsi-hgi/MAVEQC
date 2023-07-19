@@ -15,6 +15,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 4.2.3),
+    configr (>= 0.3.5),
     data.table (>= 1.14.8),
     Ckmeans.1d.dp (>= 4.3.4),
     gplots (>= 3.1.3),
