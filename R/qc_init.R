@@ -26,7 +26,7 @@
 create_config <- function(config_dir) {
     config_path <- paste0(config_dir, "/", "config.yaml")
 
-    sink(report_path)
+    sink(config_path)
 
     cat("# user defined thresholds for QC", "\n", sep = "")
     cat("\n", sep = "")
