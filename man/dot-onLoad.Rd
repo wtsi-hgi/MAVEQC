@@ -2,10 +2,10 @@
 % Please edit documentation in R/qc_init.R
 \name{.onLoad}
 \alias{.onLoad}
-\title{load the configure file}
+\title{load the default config file}
 \usage{
 .onLoad(libname, pkgname)
 }
 \description{
-load the configure file
+load the default config file
 }
