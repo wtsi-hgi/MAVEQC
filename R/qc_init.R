@@ -5,7 +5,7 @@
     quietly <- getOption("quietly")
     options(quietly = TRUE)
 
-    pkg_info <- "Welcome to MAVEQC"
+    pkg_info <- paste0("MAVEQC", "-v", packageVersion("MAVEQC"))
     packageStartupMessage(pkg_info)
     options(quietly = quietly)
 

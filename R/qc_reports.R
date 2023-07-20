@@ -322,6 +322,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("\n", sep = "")
             cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
             cat("figs <- list.files(path = outdir, pattern = \"sample_qc_deseq_fc.*.violin.png\", full.names = TRUE)", "\n", sep = "")
+            cat("figs <- mixedsort(figs)", "\n", sep = "")
             cat("knitr::include_graphics(figs, rel_path = FALSE)", "\n", sep = "")
             cat("```", "\n", sep = "")
             cat("<br>", "\n", sep = "")

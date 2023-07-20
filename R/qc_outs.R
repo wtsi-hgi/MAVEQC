@@ -122,7 +122,7 @@ setMethod(
         df_outs[, 10] <- 90
         df_outs[, 11] <- (df_outs[, 8] + df_outs[, 9]) > df_outs[, 10]
 
-        df_outs <- df_outs[order(df_outs$Sample), ]
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
         if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
@@ -187,7 +187,7 @@ setMethod(
         df_outs[, 8] <- object@cutoffs$total_reads
         df_outs[, 9] <- object@stats$qcpass_accepted_reads
 
-        df_outs <- df_outs[order(df_outs$Sample), ]
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
         if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
@@ -266,7 +266,7 @@ setMethod(
         df_outs[, 7] <- object@cutoffs$library_percent * 100
         df_outs[, 8] <- object@stats$qcpass_library_per
 
-        df_outs <- df_outs[order(df_outs$Sample), ]
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
         if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
@@ -333,7 +333,7 @@ setMethod(
         df_outs[, 6] <- object@cutoffs$library_cov
         df_outs[, 7] <- object@stats$qcpass_library_cov
 
-        df_outs <- df_outs[order(df_outs$Sample), ]
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
         if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
@@ -425,7 +425,7 @@ setMethod(
         df_outs[, 9] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
         df_outs[, 10] <- df_outs[, 7] < (1 - object@cutoffs$low_abundance_lib_per) * 100
 
-        df_outs <- df_outs[order(df_outs$Sample), ]
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
         if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
@@ -527,7 +527,7 @@ setMethod(
         df_outs[, 11] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
         df_outs[, 12] <- df_outs[, 9] < (1 - object@cutoffs$low_abundance_lib_per) * 100
 
-        df_outs <- df_outs[order(df_outs$Sample), ]
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
         if (length(out_dir) == 0) {
             reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
