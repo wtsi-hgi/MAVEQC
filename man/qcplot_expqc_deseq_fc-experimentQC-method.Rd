@@ -7,9 +7,6 @@
 \S4method{qcplot_expqc_deseq_fc}{experimentQC}(
   object,
   cons = c("Synonymous_Variant", "LOF", "Missense_Variant"),
-  pcut = 0.05,
-  dcut = 0,
-  ecut = 0,
   plot_dir = NULL
 )
 }
@@ -17,12 +14,6 @@
 \item{object}{experimentQC object}
 
 \item{cons}{a vector of consequences showed in the figure}
-
-\item{pcut}{the padj cutoff}
-
-\item{dcut}{the depleted cutoff}
-
-\item{ecut}{the enriched cutoff}
 
 \item{plot_dir}{the output plot directory}
 }

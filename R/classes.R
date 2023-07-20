@@ -348,7 +348,8 @@ setClass("experimentQC",
         library_counts_pos_anno = "data.frame",
         comparisons = "list",
         deseq_rlog = "data.frame",
-        deseq_res = "list"
+        deseq_res = "list",
+        deseq_res_anno = "list"
     ),
     prototype = list(
         samples = list(),
@@ -358,7 +359,8 @@ setClass("experimentQC",
         library_counts_pos_anno = data.frame(),
         comparisons = list(),
         deseq_rlog = data.frame(),
-        deseq_res = list()
+        deseq_res = list(),
+        deseq_res_anno = list()
     )
 )
 
@@ -411,6 +413,9 @@ create_experimentqc_object <- function(samqc_obj,
         library_counts_anno = samqc_obj@library_counts_anno,
         library_counts_pos_anno = samqc_obj@library_counts_pos_anno,
         comparisons = ds_contrast)
+
+    experimentqc_object@library_counts_anno <- as.data.table(experimentqc_object@library_counts_anno)
+    experimentqc_object@library_counts_pos_anno <- as.data.table(experimentqc_object@library_counts_pos_anno)
 
     # Return the object
     return(experimentqc_object)

@@ -4,10 +4,16 @@
 \alias{run_experiment_qc,experimentQC-method}
 \title{run DESeq2 for the list of samples}
 \usage{
-\S4method{run_experiment_qc}{experimentQC}(object)
+\S4method{run_experiment_qc}{experimentQC}(object, pcut = 0.05, dcut = 0, ecut = 0)
 }
 \arguments{
-\item{object}{sampleQC object}
+\item{object}{experimentQC object}
+
+\item{pcut}{the padj cutoff}
+
+\item{dcut}{the depleted log2 fold change cutoff}
+
+\item{ecut}{the enriched log2 fold change cutoff}
 }
 \value{
 object

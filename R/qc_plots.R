@@ -752,38 +752,23 @@ setGeneric("qcplot_expqc_deseq_fc", function(object, ...) {
 #' @export
 #' @param object   experimentQC object
 #' @param cons     a vector of consequences showed in the figure
-#' @param pcut     the padj cutoff
-#' @param dcut     the depleted cutoff
-#' @param ecut     the enriched cutoff
 #' @param plot_dir the output plot directory
 setMethod(
     "qcplot_expqc_deseq_fc",
     signature = "experimentQC",
     definition = function(object,
                           cons = c("Synonymous_Variant", "LOF", "Missense_Variant"),
-                          pcut = 0.05,
-                          dcut = 0,
-                          ecut = 0,
                           plot_dir = NULL) {
         if (length(plot_dir) == 0) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
-        comparisions <- names(object@deseq_res)
-        for (i in 1:length(object@deseq_res)) {
-            res <- object@deseq_res[[i]]$shrunken[, c("log2FoldChange", "padj")]
-            res <- as.data.frame(res)
-
-            tmp_anno <- as.data.frame(object@library_counts_anno)
-            rownames(tmp_anno) <- tmp_anno$seq
-
-            res$consequence <- tmp_anno[rownames(res), ]$consequence
-            res$stat <- "no impact"
-            res[(res$padj < pcut) & (res$log2FoldChange > ecut), ]$stat <- "enriched"
-            res[(res$padj < pcut) & (res$log2FoldChange < dcut), ]$stat <- "depleted"
+        comparisions <- names(object@deseq_res_anno)
+        for (i in 1:length(object@deseq_res_anno)) {
+            res <- as.data.frame(object@deseq_res_anno[[i]])
+            rownames(res) <- res$seq
 
             res_cons <- res[res$consequence %in% cons, ]
-            res_cons$stat <- factor(res_cons$stat, levels = c("no impact", "enriched", "depleted"))
 
             p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
                     geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen", position = position_nudge(x = .2, y = 0)) +
@@ -828,6 +813,69 @@ setMethod(
             # png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
             # print(p2)
             # dev.off()
+        }
+    }
+)
+
+
+#' initialize function
+setGeneric("qcplot_expqc_deseq_fc_pos", function(object, ...) {
+  standardGeneric("qcplot_expqc_deseq_fc_pos")
+})
+
+#' create fold change and consequence plot
+#'
+#' @export
+#' @param object        experimentQC object
+#' @param consequences  a vector of all the consequences in the vep annotation file
+#' @param plot_dir      the output plot directory
+setMethod(
+    "qcplot_expqc_deseq_fc_pos",
+    signature = "experimentQC",
+    definition = function(object,
+                          consequences = c("Synonymous_Variant",
+                                           "LOF",
+                                           "Missense_Variant",
+                                           "Intronic_Variant",
+                                           "Inframe_Deletion",
+                                           "Splice_Variant",
+                                           "Splice_Polypyrimidine_Tract_Variant",
+                                           "Others"),
+                          plot_dir = NULL) {
+        if (length(plot_dir) == 0) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
+        }
+
+        comparisions <- names(object@deseq_res_anno)
+        colors <- select_colorblind("col21")[1:length(consequences)]
+        select_colors <- sapply(colors, function(x) t_col(x, 0.3), USE.NAMES = FALSE)
+        fill_colors <- sapply(colors, function(x) t_col(x, 0.8), USE.NAMES = FALSE)
+
+        for (i in 1:length(object@deseq_res_anno)) {
+            dt_res <- object@deseq_res_anno[[i]]
+            dt_res$consequence <- factor(dt_res$consequence, levels = consequences)
+
+            p1 <- ggplot(dt_res, aes(x = position, y = log2FoldChange)) +
+                    geom_point(aes(size = factor(stat), shape = factor(stat), fill = factor(consequence), color = factor(consequence))) +
+                    scale_size_manual(values = c(0.5, 2, 2)) +
+                    scale_shape_manual(values = c(16, 24, 25)) +
+                    scale_color_manual(values = select_colors) +
+                    scale_fill_manual(values = fill_colors) +
+                    labs(x = "Genomic Coordinate", y = "Log2 Fold Change", title = comparisions[i]) +
+                    theme(legend.position = "right", legend.title = element_blank(), panel.grid.major = element_blank()) +
+                    theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
+                    theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
+                    theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
+                    theme(axis.text = element_text(size = 8, face = "bold")) +
+                    ylim(-6, 2) + guides(fill = guide_legend(override.aes = list(shape = 21)))
+
+            if (is.null(plot_dir)) {
+                stop(paste0("====> Error: plot_dir is not provided, no output directory."))
+            } else {
+                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 200)
+                print(p1)
+                dev.off()
+            }
         }
     }
 )

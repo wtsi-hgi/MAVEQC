@@ -121,36 +121,16 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 * *please refer to [pyQUEST](https://github.com/cancerit/pyQUEST#library-dependent-counts)*
 
 ### valiant meta file
-Please use the VaLiAnT output file, refer to [VaLiAnT](https://github.com/cancerit/VaLiAnt)
+*Please use the VaLiAnT output file, refer to [VaLiAnT](https://github.com/cancerit/VaLiAnt)*
 
 ### vep annotation file
-Please use one to one mapping file
+*Please use one to one mapping file*
 
 
 <p align="right">(<a href="#top">TOP</a>)</p>
 
 <!-- Import Data -->
 ## Import Data
-
-### Import a sample by creating an object
-You can create an object by providing all the input files and processing them.
-
-```R
-library(MAVEQC)
-
-objA <- create_sge_object(file_libcount = "libcounts.tsv.gz",
-                          file_allcount = "allcounts.tsv.gz",
-                          file_valiant_meta = "meta.csv.gz",
-                          file_vep_anno = "consequence.tsv.gz")
-objA@adapt5 <- "CTGACTGGCACCTCTTCCCCCAGGA"
-objA@adapt3 <- "CCCCGACCCCTCCCCAGCGTGAATG"
-objA@sample <- "sampleA"
-objA <- format_count(objA)
-objA <- sge_stats(objA) 
-objA <- sge_qc_stats(objA) 
-```
-
-### Or
 
 ### Import a group of samples from a directory
 All the files are in the same directory including library dependent counts, library independent counts, valiant meta csv, vep annotation and the sample sheet.
@@ -174,17 +154,19 @@ samqc <- create_sampleqc_object(sge_objs)
 ```R
 samqc <- run_sample_qc(samqc, "plasmid")
 
-qcplot_samqc_readlens(samqc, plot_dir = "/path/to/output/directory")
-qcplot_samqc_total(samqc, plot_dir = "/path/to/output/directory")
-qcplot_samqc_accepted(samqc, plot_dir = "/path/to/output/directory")
-qcplot_samqc_pos_cov(samqc, "plasmid", plot_dir = "/path/to/output/directory")
+output_dir <- "/path/to/output/directory"
 
-qcout_samqc_cutoffs(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_readlens(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_total(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_accepted(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_libcov(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_pos_cov(samqc, out_dir = "/path/to/output/directory")
+qcplot_samqc_readlens(samqc, plot_dir = output_dir)
+qcplot_samqc_total(samqc, plot_dir = output_dir)
+qcplot_samqc_accepted(samqc, plot_dir = output_dir)
+qcplot_samqc_pos_cov(samqc, "plasmid", plot_dir = output_dir)
+
+qcout_samqc_cutoffs(samqc, out_dir = output_dir)
+qcout_samqc_readlens(samqc, out_dir = output_dir)
+qcout_samqc_total(samqc, out_dir = output_dir)
+qcout_samqc_accepted(samqc, out_dir = output_dir)
+qcout_samqc_libcov(samqc, out_dir = output_dir)
+qcout_samqc_pos_cov(samqc, out_dir = output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -193,7 +175,7 @@ qcout_samqc_pos_cov(samqc, out_dir = "/path/to/output/directory")
 ### Report
 This creates a html report concatenating all the results including figures and tables. Please make sure you have generated all the figures and tables, otherwise the report may be incomplete.
 ```R
-create_qc_reports("/path/to/sample/sheet", "plasmid", "/path/to/qc/out_dir")
+create_qc_reports("/path/to/sample/sheet", "plasmid", output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -210,19 +192,21 @@ samples <- c(2,5,8)
 samqc@samples_ref <- select_objects(sge_objs, samples)
 samqc <- run_sample_qc(samqc, "screen")
 
-qcplot_samqc_readlens(samqc, plot_dir = "/path/to/output/directory")
-qcplot_samqc_total(samqc, plot_dir = "/path/to/output/directory")
-qcplot_samqc_accepted(samqc, plot_dir = "/path/to/output/directory")
-qcplot_samqc_pos_cov(samqc, "plasmid", plot_dir = "/path/to/output/directory")
-qcplot_samqc_pos_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", plot_dir = "/path/to/output/directory")
+output_dir <- "/path/to/output/directory"
 
-qcout_samqc_cutoffs(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_readlens(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_total(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_accepted(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_libcov(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_pos_cov(samqc, out_dir = "/path/to/output/directory")
-qcout_samqc_pos_anno(samqc, out_dir = "/path/to/output/directory")
+qcplot_samqc_readlens(samqc, plot_dir = output_dir)
+qcplot_samqc_total(samqc, plot_dir = output_dir)
+qcplot_samqc_accepted(samqc, plot_dir = output_dir)
+qcplot_samqc_pos_cov(samqc, "plasmid", plot_dir = output_dir)
+qcplot_samqc_pos_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", plot_dir = output_dir)
+
+qcout_samqc_cutoffs(samqc, out_dir = output_dir)
+qcout_samqc_readlens(samqc, out_dir = output_dir)
+qcout_samqc_total(samqc, out_dir = output_dir)
+qcout_samqc_accepted(samqc, out_dir = output_dir)
+qcout_samqc_libcov(samqc, out_dir = output_dir)
+qcout_samqc_pos_cov(samqc, out_dir = output_dir)
+qcout_samqc_pos_anno(samqc, out_dir = output_dir)
 ```
 
 #### coldata example:
@@ -244,8 +228,8 @@ coldata <- read.table("sample_coldata.tsv", header = T, row.names = 1)
 expqc <- create_experimentqc_object(samqc, coldata, "D4")
 expqc <- run_experiment_qc(expqc)
 
-qcplot_expqc_sample_corr(expqc, plot_dir = "/path/to/output/directory")
-qcplot_expqc_sample_pca(expqc, ntop = 500, plot_dir = "/path/to/output/directory")
+qcplot_expqc_sample_corr(expqc, plot_dir = output_dir)
+qcplot_expqc_sample_pca(expqc, ntop = 500, plot_dir = output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -254,7 +238,7 @@ qcplot_expqc_sample_pca(expqc, ntop = 500, plot_dir = "/path/to/output/directory
 ### QC 2: Experimental QC
 
 ```R
-qcplot_expqc_deseq_fc(expqc, plot_dir = "/path/to/output/directory")
+qcplot_expqc_deseq_fc(expqc, plot_dir = output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -263,7 +247,7 @@ qcplot_expqc_deseq_fc(expqc, plot_dir = "/path/to/output/directory")
 ### Report
 This creates a html report concatenating all the results including figures and tables. Please make sure you have generated all the figures and tables, otherwise the report may be incomplete.
 ```R
-create_qc_reports("/path/to/sample/sheet", "screen", "/path/to/qc/out_dir")
+create_qc_reports("/path/to/sample/sheet", "screen", output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>

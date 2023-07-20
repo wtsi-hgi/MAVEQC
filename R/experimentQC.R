@@ -7,16 +7,21 @@ setGeneric("run_experiment_qc", function(object, ...) {
 #' run DESeq2 for the list of samples
 #'
 #' @export
-#' @param object     sampleQC object
+#' @param object  experimentQC object
+#' @param pcut    the padj cutoff
+#' @param dcut    the depleted log2 fold change cutoff
+#' @param ecut    the enriched log2 fold change cutoff
 #' @return object
 setMethod(
     "run_experiment_qc",
     signature = "experimentQC",
-    definition = function(object) {
+    definition = function(object,
+                          pcut = 0.05,
+                          dcut = 0,
+                          ecut = 0) {
         #-------------------#
         # 1. DESeq2 process #
         #-------------------#
-
         # run control
         cat("Running control deseq2 to get size factor...", "\n", sep = "")
 
@@ -59,6 +64,30 @@ setMethod(
                            fdr = "default")
 
         object@deseq_res <- ds_res
+
+        #--------------------#
+        # 2. extract results #
+        #--------------------#
+
+        library_counts_pos_anno <- object@library_counts_pos_anno
+
+        comparisions <- names(object@deseq_res)
+        for (i in 1:length(object@deseq_res)) {
+            res <- object@deseq_res[[i]]$shrunken[, c("log2FoldChange", "padj")]
+            res$seq <- rownames(res)
+            res <- as.data.table(res)
+
+            res[library_counts_pos_anno, position := i.position, on = .(seq)]
+            res[library_counts_pos_anno, consequence := i.consequence, on = .(seq)]
+
+            res$stat <- "no impact"
+            res[(res$padj < pcut) & (res$log2FoldChange > ecut), ]$stat <- "enriched"
+            res[(res$padj < pcut) & (res$log2FoldChange < dcut), ]$stat <- "depleted"
+
+            res$stat <- factor(res$stat, levels = c("no impact", "enriched", "depleted"))
+
+            object@deseq_res_anno[[comparisions[i]]] <- res
+        }
 
         return(object)
     }

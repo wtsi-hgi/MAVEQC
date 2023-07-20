@@ -331,6 +331,6 @@ create_qc_reports <- function(samplesheet = NULL,
 
         sink()
 
-        rmarkdown::render(paste0(qc_dir, "/MAVEQC_report.Rmd"))
+        rmarkdown::render(paste0(qc_dir, "/MAVEQC_report.Rmd"), clean = TRUE, quiet = TRUE)
         invisible(file.remove(paste0(qc_dir, "/MAVEQC_report.Rmd")))
 }
