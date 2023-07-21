@@ -13,7 +13,7 @@
 \arguments{
 \item{object}{experimentQC object}
 
-\item{cons}{a vector of consequences showed in the figure}
+\item{cons}{a vector of the selected consequences in the vep annotation file}
 
 \item{plot_dir}{the output plot directory}
 }

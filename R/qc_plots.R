@@ -516,9 +516,9 @@ setMethod(
                     scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 6, face = "bold")) +
+                    theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
+                    theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
+                    theme(axis.text = element_text(size = 8, face = "bold")) +
                     facet_wrap(~samples, dir = "v")
 
             pheight <- 300 * length(samples)
@@ -566,9 +566,9 @@ setMethod(
                     scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 6, face = "bold")) +
+                    theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
+                    theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
+                    theme(axis.text = element_text(size = 8, face = "bold")) +
                     facet_wrap(~samples, dir = "v")
 
             pheight <- 300 * length(samples)
@@ -751,13 +751,15 @@ setGeneric("qcplot_expqc_deseq_fc", function(object, ...) {
 #'
 #' @export
 #' @param object   experimentQC object
-#' @param cons     a vector of consequences showed in the figure
+#' @param cons     a vector of the selected consequences in the vep annotation file
 #' @param plot_dir the output plot directory
 setMethod(
     "qcplot_expqc_deseq_fc",
     signature = "experimentQC",
     definition = function(object,
-                          cons = c("Synonymous_Variant", "LOF", "Missense_Variant"),
+                          cons = c("Synonymous_Variant",
+                                   "LOF",
+                                   "Missense_Variant"),
                           plot_dir = NULL) {
         if (length(plot_dir) == 0) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
@@ -780,7 +782,7 @@ setMethod(
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                     theme(axis.title.y = element_blank(), axis.title.x = element_text(size = 12, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
+                    theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 8, face = "bold"))
 
             pheight <- 200 * length(cons)
@@ -826,34 +828,34 @@ setGeneric("qcplot_expqc_deseq_fc_pos", function(object, ...) {
 #' create fold change and consequence plot
 #'
 #' @export
-#' @param object        experimentQC object
-#' @param consequences  a vector of all the consequences in the vep annotation file
-#' @param plot_dir      the output plot directory
+#' @param object    experimentQC object
+#' @param cons      a vector of all the consequences in the vep annotation file
+#' @param plot_dir  the output plot directory
 setMethod(
     "qcplot_expqc_deseq_fc_pos",
     signature = "experimentQC",
     definition = function(object,
-                          consequences = c("Synonymous_Variant",
-                                           "LOF",
-                                           "Missense_Variant",
-                                           "Intronic_Variant",
-                                           "Inframe_Deletion",
-                                           "Splice_Variant",
-                                           "Splice_Polypyrimidine_Tract_Variant",
-                                           "Others"),
+                          cons = c("Synonymous_Variant",
+                                   "LOF",
+                                   "Missense_Variant",
+                                   "Intronic_Variant",
+                                   "Inframe_Deletion",
+                                   "Splice_Variant",
+                                   "Splice_Polypyrimidine_Tract_Variant",
+                                   "Others"),
                           plot_dir = NULL) {
         if (length(plot_dir) == 0) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
         comparisions <- names(object@deseq_res_anno)
-        colors <- select_colorblind("col21")[1:length(consequences)]
+        colors <- select_colorblind("col21")[1:length(cons)]
         select_colors <- sapply(colors, function(x) t_col(x, 0.3), USE.NAMES = FALSE)
         fill_colors <- sapply(colors, function(x) t_col(x, 0.8), USE.NAMES = FALSE)
 
         for (i in 1:length(object@deseq_res_anno)) {
             dt_res <- object@deseq_res_anno[[i]]
-            dt_res$consequence <- factor(dt_res$consequence, levels = consequences)
+            dt_res$consequence <- factor(dt_res$consequence, levels = cons)
 
             p1 <- ggplot(dt_res, aes(x = position, y = log2FoldChange)) +
                     geom_point(aes(size = factor(stat), shape = factor(stat), fill = factor(consequence), color = factor(consequence))) +
@@ -867,7 +869,8 @@ setMethod(
                     theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 8, face = "bold")) +
-                    ylim(-6, 2) + guides(fill = guide_legend(override.aes = list(shape = 21)))
+                    scale_y_continuous(limits = c(-6, 2), breaks = seq(-6, 2)) +
+                    guides(fill = guide_legend(override.aes = list(shape = 21)))
 
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))

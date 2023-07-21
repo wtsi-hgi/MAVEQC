@@ -6,8 +6,8 @@
 create objects based on the sample names}
 \usage{
 import_sge_files(
-  dir_path,
-  sample_sheet,
+  dir_path = NULL,
+  sample_sheet = NULL,
   file_libcount_hline = 3,
   file_allcount_hline = 3,
   file_valiant_meta_hline = 1,

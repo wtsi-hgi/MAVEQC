@@ -1,0 +1,2 @@
+total_reads	seq_low_count	seq_low_sample_per	library_percent	library_cov	low_abundance_per	low_abundance_lib_per
+1000000	5	0.25	0.4	100	5e-05	0.7
