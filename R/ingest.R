@@ -78,8 +78,8 @@ read_sge_file <- function(file_path,
 #' @param file_valiant_meta_cols  a vector of numbers of selected columns in VaLiAnT meta file, default is none
 #' @param file_vep_anno_cols      a vector of numbers of selected columns in vep annotation file, default is none
 #' @return a list of objects
-import_sge_files <- function(dir_path,
-                             sample_sheet,
+import_sge_files <- function(dir_path = NULL,
+                             sample_sheet = NULL,
                              file_libcount_hline = 3,
                              file_allcount_hline = 3,
                              file_valiant_meta_hline = 1,
@@ -89,12 +89,20 @@ import_sge_files <- function(dir_path,
                              file_valiant_meta_cols = vector(),
                              file_vep_anno_cols = vector()) {
     # check input format
-    if (!dir.exists(dir_path)) {
-        stop(paste0("====> Error: ", dir_path, " doesn't exist"))
+    if (is.null(dir_path)) {
+        stop(paste0("====> Error: please provide the directory of input files!"))
+    } else {
+        if (!dir.exists(dir_path)) {
+            stop(paste0("====> Error: ", dir_path, " doesn't exist"))
+        }
     }
 
-    if (!file.exists(paste0(dir_path, "/", sample_sheet))) {
-        stop(paste0("====> Error: ", sample_sheet, " doesn't exist in the directory"))
+    if (is.null(sample_sheet)) {
+        stop(paste0("====> Error: please provide the file name of sample sheet!"))
+    } else {
+        if (!file.exists(paste0(dir_path, "/", sample_sheet))) {
+            stop(paste0("====> Error: ", sample_sheet, " doesn't exist in the directory!"))
+        }
     }
 
     # read sample sheet and check format

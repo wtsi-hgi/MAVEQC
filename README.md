@@ -237,8 +237,11 @@ qcplot_expqc_sample_pca(expqc, ntop = 500, plot_dir = output_dir)
 <a id="sqc2"></a>
 ### QC 2: Experimental QC
 
+> Not ready yet
+
 ```R
 qcplot_expqc_deseq_fc(expqc, plot_dir = output_dir)
+qcplot_expqc_deseq_fc_pos(expqc, plot_dir = output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
