@@ -4,7 +4,7 @@
 \alias{qcout_samqc_cutoffs,sampleQC-method}
 \title{create output file of bad seqs which fail filtering}
 \usage{
-\S4method{qcout_samqc_cutoffs}{sampleQC}(object, out_dir)
+\S4method{qcout_samqc_cutoffs}{sampleQC}(object, out_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}

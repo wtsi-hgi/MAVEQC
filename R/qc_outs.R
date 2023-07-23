@@ -1,4 +1,46 @@
 #' initialize function
+setGeneric("qcout_samqc_all", function(object, ...) {
+  standardGeneric("qcout_samqc_all")
+})
+
+#' create all the output files
+#'
+#' @export
+#' @param object   sampleQC object
+#' @param qc_type  qc type
+#' @param out_dir  the output directory
+setMethod(
+    "qcout_samqc_all",
+    signature = "sampleQC",
+    definition = function(object,
+                          qc_type = c("plasmid", "screen"),
+                          out_dir = NULL) {
+        if (is.null(out_dir)) {
+            stop(paste0("====> Error: out_dir is not provided, no output directory."))
+        }
+
+        qc_type <- match.arg(qc_type)
+
+        if (qc_type == "plasmid") {
+            qcout_samqc_cutoffs(object = object, out_dir = out_dir)
+            qcout_samqc_readlens(object = object, out_dir = out_dir)
+            qcout_samqc_total(object = object, out_dir = out_dir)
+            qcout_samqc_accepted(object = object, out_dir = out_dir)
+            qcout_samqc_libcov(object = object, out_dir = out_dir)
+            qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
+        } else {
+            qcout_samqc_cutoffs(object = object, out_dir = out_dir)
+            qcout_samqc_readlens(object = object, out_dir = out_dir)
+            qcout_samqc_total(object = object, out_dir = out_dir)
+            qcout_samqc_accepted(object = object, out_dir = out_dir)
+            qcout_samqc_libcov(object = object, out_dir = out_dir)
+            qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
+            qcout_samqc_pos_anno(object = object, out_dir = out_dir)
+        }
+    }
+)
+
+#' initialize function
 setGeneric("qcout_samqc_cutoffs", function(object, ...) {
   standardGeneric("qcout_samqc_cutoffs")
 })
@@ -12,8 +54,8 @@ setMethod(
     "qcout_samqc_cutoffs",
     signature = "sampleQC",
     definition = function(object,
-                          out_dir) {
-        if (length(out_dir) == 0) {
+                          out_dir = NULL) {
+        if (is.null(out_dir)) {
             stop(paste0("====> Error: out_dir is not provided, no output directory."))
         }
 
@@ -40,8 +82,8 @@ setMethod(
     "qcout_samqc_badseqs",
     signature = "sampleQC",
     definition = function(object,
-                          out_dir) {
-        if (length(out_dir) == 0) {
+                          out_dir = NULL) {
+        if (is.null(out_dir)) {
             stop(paste0("====> Error: out_dir is not provided, no output directory."))
         }
 

@@ -1,4 +1,3 @@
-
 #' initialize function
 setGeneric("run_experiment_qc", function(object, ...) {
   standardGeneric("run_experiment_qc")

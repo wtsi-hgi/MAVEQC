@@ -1,4 +1,47 @@
 #' initialize function
+setGeneric("qcplot_samqc_all", function(object, ...) {
+  standardGeneric("qcplot_samqc_all")
+})
+
+#' create all the plot figures
+#'
+#' @export
+#' @param object   sampleQC object
+#' @param qc_type  qc type
+#' @param samples  samples for LOF annotation plot
+#' @param plot_dir the output plot directory
+setMethod(
+    "qcplot_samqc_all",
+    signature = "sampleQC",
+    definition = function(object,
+                          qc_type = c("plasmid", "screen"),
+                          samples = NULL,
+                          plot_dir = NULL) {
+        if (is.null(plot_dir)) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
+        }
+
+        qc_type <- match.arg(qc_type)
+
+        if (qc_type == "plasmid") {
+            qcplot_samqc_readlens(object = object, plot_dir = plot_dir)
+            qcplot_samqc_total(object = object, plot_dir = plot_dir)
+            qcplot_samqc_accepted(object = object, plot_dir = plot_dir)
+            qcplot_samqc_pos_cov(object = object, qc_type = qc_type, plot_dir = plot_dir)
+        } else {
+            if (is.null(samples)) {
+                stop(paste0("====> Error: please provide samples, a vector."))
+            }
+            qcplot_samqc_readlens(object = object, plot_dir = plot_dir)
+            qcplot_samqc_total(object = object, plot_dir = plot_dir)
+            qcplot_samqc_accepted(object = object, plot_dir = plot_dir)
+            qcplot_samqc_pos_cov(object = object, qc_type = qc_type, plot_dir = plot_dir)
+            qcplot_samqc_pos_anno(object = object, samples = c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), plot_dir = plot_dir)
+        }
+    }
+)
+
+#' initialize function
 setGeneric("qcplot_samqc_readlens", function(object, ...) {
   standardGeneric("qcplot_samqc_readlens")
 })
@@ -43,8 +86,8 @@ setMethod(
                 coord_trans(y = "sqrt") +
                 labs(x = "Length Distribution", y = "Composition Percentage", title = "Sample QC read lengths") +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
+                theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
+                theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 8, face = "bold")) +
                 facet_wrap(~sample, scales = "free", dir = "v", ncol = 4)
 
@@ -54,8 +97,8 @@ setMethod(
                 scale_y_continuous(labels = scales::percent) +
                 labs(x = "Length Distribution", y = "Composition Percentage", title = "Sample QC read lengths") +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
+                theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
+                theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 8, face = "bold")) +
                 facet_wrap(~sample, scales = "free", dir = "v", ncol = 4)
 
@@ -64,7 +107,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p2)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_read_length.png"), width = 1200, height = pheight, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_read_length.png"), width = 1200, height = pheight, res = 300)
             print(p1)
             dev.off()
         }
@@ -152,7 +195,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p2)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_seq_clusters.png"), width = 1200, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_seq_clusters.png"), width = 1200, height = 1200, res = 300)
             print(p1)
             dev.off()
         }
@@ -201,7 +244,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 300)
             print(p1)
             dev.off()
         }
@@ -275,7 +318,7 @@ setMethod(
                 add_markers(data = df_cov, x = ~samples, y = ~library_cov, inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
                 layout(yaxis2 = ay)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 300)
             print(p1)
             dev.off()
         }
@@ -296,7 +339,7 @@ setMethod(
         #         theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
         #         theme(axis.text = element_text(size = 12, face = "bold"))
 
-        # png(paste0(plot_dir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
+        # png(paste0(plot_dir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 300)
         # print(p2)
         # dev.off()
     }
@@ -361,7 +404,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 300)
             print(p1)
             dev.off()
         }
@@ -455,7 +498,7 @@ setMethod(
         if (is.null(plot_dir)) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 300)
             print(p1)
             dev.off()
         }
@@ -526,7 +569,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_position_anno.lof_dots.png"), width = 1200, height = pheight, res = 200)
+                png(paste0(plot_dir, "/", "sample_qc_position_anno.lof_dots.png"), width = 1200, height = pheight, res = 300)
                 print(p1)
                 dev.off()
             }
@@ -576,11 +619,37 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_position_anno.all_dots.png"), width = 1200, height = pheight, res = 200)
+                png(paste0(plot_dir, "/", "sample_qc_position_anno.all_dots.png"), width = 1200, height = pheight, res = 300)
                 print(p1)
                 dev.off()
             }
         }
+    }
+)
+
+#####################################################################################################################################################
+
+#' initialize function
+setGeneric("qcplot_expqc_all", function(object, ...) {
+  standardGeneric("qcplot_expqc_all")
+})
+
+#' create all the plot figures
+#'
+#' @export
+#' @param object   sampleQC object
+#' @param plot_dir the output plot directory
+setMethod(
+    "qcplot_expqc_all",
+    signature = "experimentQC",
+    definition = function(object,
+                          plot_dir = NULL) {
+        if (is.null(plot_dir)) {
+            stop(paste0("====> Error: plot_dir is not provided, no output directory."))
+        }
+
+        qcplot_expqc_sample_corr(object = object, plot_dir = plot_dir)
+        qcplot_expqc_sample_pca(object = object, plot_dir = plot_dir)
     }
 )
 
@@ -608,7 +677,7 @@ setMethod(
         # heatmap, leave it temporarily
 
         # pwidth <- 100 * ncol(sample_rlog)
-        # png(paste0(plot_dir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
+        # png(paste0(plot_dir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 300)
         # lmat <- rbind(c(4, 3), c(2, 1))
         # lhei <- c(3, 8)
         # lwid <- c(3, 8)
@@ -653,7 +722,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 300)
             corrplot(sample_corr,
                      method = "color",
                      order = "hclust",
@@ -729,7 +798,7 @@ setMethod(
             pca_pchs[i] <- select_pchs[ds_coldata[i, ]$replicate]
         }
 
-        png(paste0(plot_dir, "/", "sample_qc_pca_samples.png"), width = 1200, height = 1200, res = 200)
+        png(paste0(plot_dir, "/", "sample_qc_pca_samples.png"), width = 1200, height = 1200, res = 300)
         par(mfrow = c(2, 2), mar = c(4, 4, 4, 1))
         plot(pca$x[, 1], pca$x[, 2], xlab = "PC1", ylab = "PC2", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc1_set, ylim = pc2_set, main = "PC1 vs PC2")
         plot(pca$x[, 2], pca$x[, 3], xlab = "PC2", ylab = "PC3", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc2_set, ylim = pc3_set, main = "PC2 vs PC3")
@@ -790,7 +859,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
+                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 300)
                 print(p1)
                 dev.off()
             }
@@ -812,7 +881,7 @@ setMethod(
             #         facet_wrap(~consequence, dir = "v")
 
             # pheight <- 300 * length(cons)
-            # png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
+            # png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 300)
             # print(p2)
             # dev.off()
         }
@@ -875,7 +944,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 200)
+                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 300)
                 print(p1)
                 dev.off()
             }

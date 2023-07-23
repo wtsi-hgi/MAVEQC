@@ -140,7 +140,6 @@ All the files are in the same directory including library dependent counts, libr
 library(MAVEQC)
 
 sge_objs <- import_sge_files("/path/to/input/directory", "sample_sheet.tsv")
-samqc <- create_sampleqc_object(sge_objs)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -152,21 +151,13 @@ samqc <- create_sampleqc_object(sge_objs)
 <a id="pqc1"></a>
 ### QC 1: Sample QC
 ```R
+samqc <- create_sampleqc_object(sge_objs)
 samqc <- run_sample_qc(samqc, "plasmid")
 
 output_dir <- "/path/to/output/directory"
 
-qcplot_samqc_readlens(samqc, plot_dir = output_dir)
-qcplot_samqc_total(samqc, plot_dir = output_dir)
-qcplot_samqc_accepted(samqc, plot_dir = output_dir)
-qcplot_samqc_pos_cov(samqc, "plasmid", plot_dir = output_dir)
-
-qcout_samqc_cutoffs(samqc, out_dir = output_dir)
-qcout_samqc_readlens(samqc, out_dir = output_dir)
-qcout_samqc_total(samqc, out_dir = output_dir)
-qcout_samqc_accepted(samqc, out_dir = output_dir)
-qcout_samqc_libcov(samqc, out_dir = output_dir)
-qcout_samqc_pos_cov(samqc, out_dir = output_dir)
+qcplot_samqc_all(samqc, qc_type = "plasmid", plot_dir = output_dir)
+qcout_samqc_all(samqc, qc_type = "plasmid", out_dir = output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -188,25 +179,15 @@ create_qc_reports("/path/to/sample/sheet", "plasmid", output_dir)
 Reference samples must be assigned. You can use ```select_objects()``` to get this done. ```c(2,5,8)``` is used to point the positions of reference samples in your sample sheet, like 2nd, 5th, 8th line here, or you can use the sample names instead, like ```c("hgsm3_d4_r1","hgsm3_d4_r2","hgsm3_d4_r3")```
 
 ```R
+samqc <- create_sampleqc_object(sge_objs)
 samples <- c(2,5,8)
 samqc@samples_ref <- select_objects(sge_objs, samples)
 samqc <- run_sample_qc(samqc, "screen")
 
 output_dir <- "/path/to/output/directory"
 
-qcplot_samqc_readlens(samqc, plot_dir = output_dir)
-qcplot_samqc_total(samqc, plot_dir = output_dir)
-qcplot_samqc_accepted(samqc, plot_dir = output_dir)
-qcplot_samqc_pos_cov(samqc, "plasmid", plot_dir = output_dir)
-qcplot_samqc_pos_anno(samqc, c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), "lof", plot_dir = output_dir)
-
-qcout_samqc_cutoffs(samqc, out_dir = output_dir)
-qcout_samqc_readlens(samqc, out_dir = output_dir)
-qcout_samqc_total(samqc, out_dir = output_dir)
-qcout_samqc_accepted(samqc, out_dir = output_dir)
-qcout_samqc_libcov(samqc, out_dir = output_dir)
-qcout_samqc_pos_cov(samqc, out_dir = output_dir)
-qcout_samqc_pos_anno(samqc, out_dir = output_dir)
+qcplot_samqc_all(samqc, qc_type = "screen", samples = c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), plot_dir = output_dir)
+qcout_samqc_all(samqc, qc_type = "screen", out_dir = output_dir)
 ```
 
 #### coldata example:
@@ -228,8 +209,7 @@ coldata <- read.table("sample_coldata.tsv", header = T, row.names = 1)
 expqc <- create_experimentqc_object(samqc, coldata, "D4")
 expqc <- run_experiment_qc(expqc)
 
-qcplot_expqc_sample_corr(expqc, plot_dir = output_dir)
-qcplot_expqc_sample_pca(expqc, ntop = 500, plot_dir = output_dir)
+qcplot_expqc_all(expqc, plot_dir = output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -237,7 +217,7 @@ qcplot_expqc_sample_pca(expqc, ntop = 500, plot_dir = output_dir)
 <a id="sqc2"></a>
 ### QC 2: Experimental QC
 
-> Not ready yet
+> Not ready yet, still testing
 
 ```R
 qcplot_expqc_deseq_fc(expqc, plot_dir = output_dir)
