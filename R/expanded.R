@@ -158,7 +158,13 @@ select_colorblind <- function(col_id) {
                "#44AA99", "#999933", "#882255",
                "#661100", "#6699CC", "#888888")
 
-    col21 <- c("#F60239", "#009503", "#FFDC3D", 
+    col15 <- c("red",       "royalblue", "yellowgreen",
+               "purple",    "violet",    "maroon1",
+               "seagreen1", "navy",      "pink",
+               "coral",     "steelblue", "turquoise1",
+               "red4",      "skyblue",   "olivedrab")
+
+    col21 <- c("#F60239", "#009503", "#FFDC3D",
                "#9900E6", "#009FFA", "#FF92FD",
                "#65019F", "#FF6E3A", "#005A01",
                "#00E5F8", "#DA00FD", "#AFFF2A",
@@ -170,6 +176,8 @@ select_colorblind <- function(col_id) {
         return(col8)
     } else if (col_id == "col12") {
         return(col12)
+    } else if (col_id == "col15") {
+        return(col15)
     } else if (col_id == "col21") {
         return(col21)
     } else {

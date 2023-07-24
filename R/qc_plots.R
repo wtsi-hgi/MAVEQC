@@ -107,7 +107,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p2)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_read_length.png"), width = 1200, height = pheight, res = 300)
+            png(paste0(plot_dir, "/", "sample_qc_read_length.png"), width = 1200, height = pheight, res = 200)
             print(p1)
             dev.off()
         }
@@ -195,7 +195,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p2)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_seq_clusters.png"), width = 1200, height = 1200, res = 300)
+            png(paste0(plot_dir, "/", "sample_qc_seq_clusters.png"), width = 1200, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -244,7 +244,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 300)
+            png(paste0(plot_dir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -318,7 +318,7 @@ setMethod(
                 add_markers(data = df_cov, x = ~samples, y = ~library_cov, inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
                 layout(yaxis2 = ay)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 300)
+            png(paste0(plot_dir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -339,7 +339,7 @@ setMethod(
         #         theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
         #         theme(axis.text = element_text(size = 12, face = "bold"))
 
-        # png(paste0(plot_dir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 300)
+        # png(paste0(plot_dir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
         # print(p2)
         # dev.off()
     }
@@ -404,7 +404,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 300)
+            png(paste0(plot_dir, "/", "sample_qc_gini.png"), width = pwidth, height = 1200, res = 200)
             print(p1)
             dev.off()
         }
@@ -498,7 +498,7 @@ setMethod(
         if (is.null(plot_dir)) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 300)
+            png(paste0(plot_dir, "/", "sample_qc_position_cov.dots.png"), width = 2400, height = pheight, res = 200)
             print(p1)
             dev.off()
         }
@@ -569,7 +569,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_position_anno.lof_dots.png"), width = 1200, height = pheight, res = 300)
+                png(paste0(plot_dir, "/", "sample_qc_position_anno.lof_dots.png"), width = 1200, height = pheight, res = 200)
                 print(p1)
                 dev.off()
             }
@@ -582,8 +582,8 @@ setMethod(
             df_libcounts_pos[df_libcounts_pos == 0] <- NA
 
             num_colors <- length(unique(libcounts_pos$consequence))
-            index_colors <- sample(seq(1, length(select_colorblind("col21"))), num_colors)
-            select_colors <- select_colorblind("col21")[index_colors]
+            index_colors <- sample(seq(1, length(select_colorblind("col15"))), num_colors)
+            select_colors <- select_colorblind("col15")[index_colors]
 
             freq_cons <- table(libcounts_pos$consequence)
             names(select_colors) <- names(freq_cons)
@@ -619,7 +619,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_position_anno.all_dots.png"), width = 1200, height = pheight, res = 300)
+                png(paste0(plot_dir, "/", "sample_qc_position_anno.all_dots.png"), width = 1200, height = pheight, res = 200)
                 print(p1)
                 dev.off()
             }
@@ -677,7 +677,7 @@ setMethod(
         # heatmap, leave it temporarily
 
         # pwidth <- 100 * ncol(sample_rlog)
-        # png(paste0(plot_dir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 300)
+        # png(paste0(plot_dir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
         # lmat <- rbind(c(4, 3), c(2, 1))
         # lhei <- c(3, 8)
         # lwid <- c(3, 8)
@@ -722,7 +722,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 300)
+            png(paste0(plot_dir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 200)
             corrplot(sample_corr,
                      method = "color",
                      order = "hclust",
@@ -798,7 +798,7 @@ setMethod(
             pca_pchs[i] <- select_pchs[ds_coldata[i, ]$replicate]
         }
 
-        png(paste0(plot_dir, "/", "sample_qc_pca_samples.png"), width = 1200, height = 1200, res = 300)
+        png(paste0(plot_dir, "/", "sample_qc_pca_samples.png"), width = 1200, height = 1200, res = 200)
         par(mfrow = c(2, 2), mar = c(4, 4, 4, 1))
         plot(pca$x[, 1], pca$x[, 2], xlab = "PC1", ylab = "PC2", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc1_set, ylim = pc2_set, main = "PC1 vs PC2")
         plot(pca$x[, 2], pca$x[, 3], xlab = "PC2", ylab = "PC3", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc2_set, ylim = pc3_set, main = "PC2 vs PC3")
@@ -859,7 +859,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 300)
+                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
                 print(p1)
                 dev.off()
             }
@@ -881,7 +881,7 @@ setMethod(
             #         facet_wrap(~consequence, dir = "v")
 
             # pheight <- 300 * length(cons)
-            # png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 300)
+            # png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
             # print(p2)
             # dev.off()
         }
@@ -918,7 +918,7 @@ setMethod(
         }
 
         comparisions <- names(object@deseq_res_anno)
-        colors <- select_colorblind("col21")[1:length(cons)]
+        colors <- select_colorblind("col15")[1:length(cons)]
         select_colors <- sapply(colors, function(x) t_col(x, 0.3), USE.NAMES = FALSE)
         fill_colors <- sapply(colors, function(x) t_col(x, 0.8), USE.NAMES = FALSE)
 
@@ -944,7 +944,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 300)
+                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 200)
                 print(p1)
                 dev.off()
             }
