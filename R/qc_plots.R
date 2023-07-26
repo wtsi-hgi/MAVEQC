@@ -491,7 +491,7 @@ setMethod(
                 theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 6, face = "bold")) +
                 theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-                facet_wrap(~sample)
+                facet_wrap(~sample, scales = "free_x")
 
         pheight <- 400 * as.integer((length(sample_names) / 3))
 
@@ -562,7 +562,7 @@ setMethod(
                     theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 8, face = "bold")) +
-                    facet_wrap(~samples, dir = "v")
+                    facet_wrap(~samples, scales = "free_x",  dir = "v")
 
             pheight <- 300 * length(samples)
 
@@ -612,7 +612,7 @@ setMethod(
                     theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 8, face = "bold")) +
-                    facet_wrap(~samples, dir = "v")
+                    facet_wrap(~samples, scales = "free_x", dir = "v")
 
             pheight <- 300 * length(samples)
 
