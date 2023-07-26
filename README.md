@@ -19,6 +19,7 @@
     - [QC 2: Experiment QC](#sqc2)
     - [Report](#sqc-report)
 7. [Others](#others)
+    - [Pandoc](#pandoc)
     - [Test datasets](#test)
     - [Conda](#conda)
 
@@ -237,6 +238,11 @@ create_qc_reports("/path/to/sample/sheet", "screen", output_dir)
 
 <!-- Others -->
 ## Others
+<a id="pandoc"></a>
+### Pandoc
+Pandoc is required to generate the R markdown report. Please download and install it from https://pandoc.org/installing.html
+
+<p align="right">(<a href="#top">TOP</a>)</p>
 
 <a id="test"></a>
 ### Test datasets: 
