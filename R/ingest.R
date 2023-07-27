@@ -23,9 +23,11 @@ read_sge_file <- function(file_path,
     csv_pattern <- "\\.csv(\\.gz)?$"
     tsv_pattern <- "\\.tsv(\\.gz)?$"
     if (grepl(csv_pattern, file_path)) {
-        filedata <- read.table(file_path, sep = ",", comment.char = "#", skip = hline)
+        #filedata <- read.table(file_path, sep = ",", comment.char = "#", skip = hline)
+        suppressWarnings(filedata <- vroom(file_path, delim = ",", comment = "#", skip = hline, col_names = FALSE, show_col_types = FALSE))
     } else if (grepl(tsv_pattern, file_path)) {
-        filedata <- read.table(file_path, sep = "\t", comment.char = "#", skip = hline)
+        #filedata <- read.table(file_path, sep = "\t", comment.char = "#", skip = hline)
+        suppressWarnings(filedata <- vroom(file_path, delim = "\t", comment = "#", skip = hline, col_names = FALSE, show_col_types = FALSE))
     } else {
         stop(paste0("====> Error: wrong format, ", file_path, " is not .csv(.gz) or .tsv(.gz)!"))
     }
@@ -156,6 +158,11 @@ import_sge_files <- function(dir_path = NULL,
         tmp_obj <- format_count(tmp_obj)
         tmp_obj <- sge_stats(tmp_obj)
         tmp_obj <- sge_qc_stats(tmp_obj)
+
+        tmp_obj@libcounts <- as.data.table(tmp_obj@libcounts)
+        tmp_obj@allcounts <- as.data.table(tmp_obj@allcounts)
+        tmp_obj@valiant_meta <- as.data.table(tmp_obj@valiant_meta)
+        tmp_obj@vep_anno <- as.data.table(tmp_obj@vep_anno)
 
         list_objects <- append(list_objects, tmp_obj)
     }

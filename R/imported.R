@@ -1,6 +1,7 @@
 #' @importFrom methods setMethod
 #' @import S4Vectors
 #' @import configr
+#' @import vroom
 #' @import data.table
 #' @import Ckmeans.1d.dp
 #' @import gplots
