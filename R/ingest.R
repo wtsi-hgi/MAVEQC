@@ -155,14 +155,14 @@ import_sge_files <- function(dir_path = NULL,
         tmp_obj@libname <- samplesheet[i, ]$library_name
         tmp_obj@libtype <- samplesheet[i, ]$library_type
 
-        tmp_obj <- format_count(tmp_obj)
-        tmp_obj <- sge_stats(tmp_obj)
-        tmp_obj <- sge_qc_stats(tmp_obj)
-
         tmp_obj@libcounts <- as.data.table(tmp_obj@libcounts)
         tmp_obj@allcounts <- as.data.table(tmp_obj@allcounts)
         tmp_obj@valiant_meta <- as.data.table(tmp_obj@valiant_meta)
         tmp_obj@vep_anno <- as.data.table(tmp_obj@vep_anno)
+
+        tmp_obj <- format_count(tmp_obj)
+        tmp_obj <- sge_stats(tmp_obj)
+        tmp_obj <- sge_qc_stats(tmp_obj)
 
         list_objects <- append(list_objects, tmp_obj)
     }

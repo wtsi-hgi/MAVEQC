@@ -268,7 +268,7 @@ setMethod(
 
             # multiple oligo names have the same seq and the same position
             # so here is fine, but need to refine
-            # oligo name may not right, but position is good
+            # oligo name may be not right, but position is good
             libcounts_pos[tmp_map, oligo_name := i.oligo_name, on = .(seq)]
             libcounts_pos[tmp_meta, position := i.mut_position, on = .(oligo_name)]
             setorder(libcounts_pos, cols = "position")
