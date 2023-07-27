@@ -20,13 +20,16 @@ read_sge_file <- function(file_path,
     }
 
     # read data and check file is csv or tsv
+    # speed: vroom > fread > read.table
     csv_pattern <- "\\.csv(\\.gz)?$"
     tsv_pattern <- "\\.tsv(\\.gz)?$"
     if (grepl(csv_pattern, file_path)) {
         #filedata <- read.table(file_path, sep = ",", comment.char = "#", skip = hline)
+        #filedata <- fread(file_path, sep = ",", skip = hline)        
         suppressWarnings(filedata <- vroom(file_path, delim = ",", comment = "#", skip = hline, col_names = FALSE, show_col_types = FALSE))
     } else if (grepl(tsv_pattern, file_path)) {
         #filedata <- read.table(file_path, sep = "\t", comment.char = "#", skip = hline)
+        #filedata <- fread(file_path, sep = "\t", skip = hline)
         suppressWarnings(filedata <- vroom(file_path, delim = "\t", comment = "#", skip = hline, col_names = FALSE, show_col_types = FALSE))
     } else {
         stop(paste0("====> Error: wrong format, ", file_path, " is not .csv(.gz) or .tsv(.gz)!"))
@@ -51,7 +54,7 @@ read_sge_file <- function(file_path,
         }
     }
 
-    filedata <- data.frame(filedata)
+    filedata <- as.data.frame(filedata)
     # add header to dataframe, and transfer to lower characters
     if (hline > 0) {
         colnames(filedata) <- tolower(header)

@@ -478,19 +478,20 @@ setMethod(
         }
 
         libcounts_pos$sample <- factor(libcounts_pos$sample, levels = mixedsort(levels(factor(libcounts_pos$sample))))
+        libcounts_pos_range <- c(min(libcounts_pos$position), max(libcounts_pos$position))
 
         p1 <- ggplot(libcounts_pos, aes(x = position, y = log2p1)) +
                 geom_point(shape = 16, size = 0.5, color = "tomato", alpha = 0.8) +
-                geom_smooth(linewidth = 0.5, se = FALSE, color = "royalblue", fill = "lightblue") +
                 geom_hline(yintercept = log2(object@cutoffs$seq_low_count+1), linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                 labs(x = "Genomic Coordinate", y = "log2(count+1)", title = "Sample QC position coverage") +
+                scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
                 ylim(0, as.integer(max(libcounts_pos$log2p1)) + 1) +
                 theme(legend.position = "none", panel.grid.major = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                 theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                 theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 6, face = "bold")) +
-                theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+                theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 1)) +
                 facet_wrap(~sample, scales = "free_x")
 
         pheight <- 400 * as.integer((length(sample_names) / 3))
