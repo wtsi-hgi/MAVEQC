@@ -61,14 +61,14 @@ setMethod(
         #----------------------------#
         # 2. library dependent count #
         #----------------------------#
-        object@libcounts$is_ref <- unlist(lapply(object@libcounts$sequence, function(s) ifelse(s == object@refseq, 1, 0)))
-        object@libcounts$is_pam <- unlist(lapply(object@libcounts$sequence, function(s) ifelse(s == object@pamseq, 1, 0)))
+        object@libcounts[, is_ref := fifelse(sequence == object@refseq, 1, 0)]
+        object@libcounts[, is_pam := fifelse(sequence == object@pamseq, 1, 0)]
 
         #------------------------------#
         # 3. library independent count #
         #------------------------------#
-        object@allcounts$is_ref <- unlist(lapply(object@allcounts$sequence, function(s) ifelse(s == object@refseq, 1, 0)))
-        object@allcounts$is_pam <- unlist(lapply(object@allcounts$sequence, function(s) ifelse(s == object@pamseq, 1, 0)))
+        object@allcounts[, is_ref := fifelse(sequence == object@refseq, 1, 0)]
+        object@allcounts[, is_pam := fifelse(sequence == object@pamseq, 1, 0)]
 
         #--------------------------#
         # 4. mseq in valiant meta  #
