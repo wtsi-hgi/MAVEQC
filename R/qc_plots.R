@@ -135,23 +135,26 @@ setMethod(
 
         if (qc_type == "screen") {
             seq_clusters <- object@seq_clusters[[1]]
-            seq_clusters_1 <- seq_clusters[seq_clusters$cluster == 1, ]
-            seq_clusters_2 <- seq_clusters[seq_clusters$cluster == 2, ]
-            seq_clusters_new <- rbind(seq_clusters_1, seq_clusters_2)
 
+            seq_breaks <- seq(0, round(max(seq_clusters$count_log2)), 2)
             select_colors <- select_colorblind("col8")[1:2]
             fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
 
-            p1 <- ggplot(seq_clusters_new, aes(x = 1:dim(seq_clusters_new)[1], y = count_log2, color = factor(cluster))) +
-                    geom_point(shape = 21, size = 1, aes(fill = factor(cluster), color = factor(cluster))) +
+            p1 <- ggplot(seq_clusters, aes(x = 1:dim(seq_clusters_new)[1], y = count_log2, color = factor(cluster))) +
+                    geom_point(shape = 21, size = 0.3, aes(fill = factor(cluster), color = factor(cluster))) +
+                    coord_polar() +
                     scale_fill_manual(values = fill_colors) +
                     scale_color_manual(values = select_colors) +
                     labs(x = "sequence index", y = "log2(count+1)", title = "Sample QC clusters") +
-                    theme(legend.position = "none", panel.grid.major = element_blank()) +
+                    annotate("text", x = 0, y = seq_breaks, label = seq_breaks, size = 3) +
+                    scale_y_continuous(breaks = seq_breaks) +
+                    theme(panel.grid.major.x = element_blank()) +
+                    theme(panel.grid.major.y = element_line(color = "darkgrey", linewidth = 0.1)) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 8, face = "bold"))
+                    theme(axis.title.x = element_blank()) +
+                    theme(axis.title.y = element_text(size = 12, face = "bold", family = "Arial")) +
+                    theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
+                    theme(axis.text = element_blank(), axis.ticks = element_blank())
 
             p2 <- ggplot(seq_clusters_new, aes(x = count_log2, color = factor(cluster))) +
                     geom_density(aes(fill = factor(cluster), color = factor(cluster))) +
