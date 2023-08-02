@@ -104,18 +104,11 @@ setMethod(
                     colnames(ref_counts) <- c(tmp_cols, s@sample)
                 }
             }
-            ref_counts <- as.data.frame(ref_counts)
-            rownames(ref_counts) <- ref_counts$sequence
-            ref_counts <- subset(ref_counts, select = -sequence)
+            ref_counts[, count := rowSums(.SD, na.rm = TRUE), .SDcols = 2:ncol(ref_counts)]
+            ref_counts[, count_log2 := log2(count + 1)]
 
-            ref_counts_merged <- rowSums(ref_counts, na.rm = TRUE)
-            ref_counts_merged_log2 <- log2(ref_counts_merged + 1)
-
-            # create filtered set of sequences by k-means clustering
-            kmeans_res <- Ckmeans.1d.dp(ref_counts_merged_log2, k = 2, y = 1)
-            ref_clusters <- cbind(ref_counts_merged, ref_counts_merged_log2, kmeans_res$cluster)
-            colnames(ref_clusters) <- c("count", "count_log2", "cluster")
-            ref_clusters <- data.frame(ref_clusters)
+            kmeans_res <- Ckmeans.1d.dp(ref_counts$count_log2, k = 2, y = 1)
+            ref_counts$cluster <- kmeans_res$cluster
 
             cat("    |--> Filtering using clusters...", "\n", sep = "")
 
@@ -126,14 +119,14 @@ setMethod(
                 unfiltered_counts <- s@allcounts$count
                 names(unfiltered_counts) <- s@allcounts$sequence
 
-                object@seq_clusters[[s@sample]] <- ref_clusters
-                object@accepted_seqs[[s@sample]] <- rownames(ref_clusters[ref_clusters$cluster == 2, ])
+                object@seq_clusters[[s@sample]] <- ref_counts
+                object@accepted_seqs[[s@sample]] <- ref_counts[cluster == 2]$sequence
 
                 # considering missing seqs
                 name_check <- names(unfiltered_counts) %in% object@accepted_seqs[[s@sample]]
                 object@accepted_counts[[s@sample]] <- unfiltered_counts[name_check]
 
-                object@bad_seqs_bycluster[[s@sample]] <- rownames(ref_clusters[ref_clusters$cluster == 1, ])
+                object@bad_seqs_bycluster[[s@sample]] <- ref_counts[cluster == 1]$sequence
             }
         } else {
             cat("    |--> Creating k-means clusters...", "\n", sep = "")
@@ -141,20 +134,20 @@ setMethod(
             for (s in object@samples) {
                 cat("        |--> Filtering on ", s@sample, "\n", sep = "")
 
-                tmp_counts <- s@allcounts$count
-                names(tmp_counts) <- s@allcounts$sequence
+                tmp_counts <- s@allcounts[, c("sequence", "count")]
+                tmp_counts <- as.data.table(tmp_counts)
+                tmp_counts[, count_log2 := log2(count + 1)]
 
-                tmp_counts_log2 <- log2(tmp_counts + 1)
-                kmeans_res <- Ckmeans.1d.dp(tmp_counts_log2, k = 2, y = 1)
-                tmp_clusters <- cbind(tmp_counts, tmp_counts_log2, kmeans_res$cluster)
-                colnames(tmp_clusters) <- c("count", "count_log2", "cluster")
-                tmp_clusters <- data.frame(tmp_clusters)
+                kmeans_res <- Ckmeans.1d.dp(tmp_counts$count_log2, k = 2, y = 1)
+                tmp_counts$cluster <- kmeans_res$cluster
 
-                object@seq_clusters[[s@sample]] <- tmp_clusters
-                object@accepted_seqs[[s@sample]] <- rownames(tmp_clusters[tmp_clusters$cluster == 2, ])
-                object@accepted_counts[[s@sample]] <- tmp_counts[object@accepted_seqs[[s@sample]]]
+                object@seq_clusters[[s@sample]] <- tmp_counts
+                object@accepted_seqs[[s@sample]] <- tmp_counts[cluster == 2]$sequence
 
-                object@bad_seqs_bycluster[[s@sample]] <- rownames(tmp_clusters[tmp_clusters$cluster == 1, ])
+                object@accepted_counts[[s@sample]] <- tmp_counts[cluster == 2]$count
+                names(object@accepted_counts[[s@sample]]) <- tmp_counts[cluster == 2]$sequence
+
+                object@bad_seqs_bycluster[[s@sample]] <- tmp_counts[cluster == 1]$sequence
             }
         }
 
