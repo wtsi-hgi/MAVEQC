@@ -171,8 +171,6 @@ setMethod(
             for (i in 1:length(object@seq_clusters)) {
                 tmp_cluster <- object@seq_clusters[[i]][, c("count_log2", "cluster")]
                 tmp_cluster$samples <- names(object@seq_clusters)[i]
-                tmp_cluster <- as.data.table(tmp_cluster)
-                tmp_cluster$samples <- object@samples[[i]]@sample
                 tmp_cluster[cluster == 1, group := "low-count cluster"]
                 tmp_cluster[cluster == 2, group := "high-count cluster"]
 
@@ -442,8 +440,7 @@ setMethod(
         for (s in object@samples) {
             sample_names <- append(sample_names, s@sample)
 
-            tmp_counts <- object@library_counts_pos[[s@sample]][, c("seq", "position", "count")]
-            tmp_counts <- as.data.table(tmp_counts)
+            tmp_counts <- object@library_counts_pos[[s@sample]][, c("sequence", "position", "count")]
             tmp_counts[, sample := s@sample]
 
             if (nrow(libcounts_pos) == 0) {
@@ -452,7 +449,7 @@ setMethod(
                 libcounts_pos <- rbind(libcounts_pos, tmp_counts)
             }
         }
-        libcounts_pos[, log2p1 := log2(count+1)]
+        libcounts_pos[, log2p1 := log2(count + 1)]
 
         if (qc_type == "plasmid") {
             libcounts_dependent_pos <- data.table()

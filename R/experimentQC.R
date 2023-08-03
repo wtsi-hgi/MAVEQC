@@ -28,7 +28,7 @@ setMethod(
         ds_coldata <- object@coldata
 
         # rownames are necessary for DESeq2, otherwise error happens to assign values in function
-        rownames(library_counts_anno) <- library_counts_anno$seq
+        rownames(library_counts_anno) <- library_counts_anno$sequence
 
         syn_counts <- library_counts_anno[library_counts_anno$consequence == "Synonymous_Variant", rownames(ds_coldata)]
 
@@ -73,11 +73,11 @@ setMethod(
         comparisions <- names(object@deseq_res)
         for (i in 1:length(object@deseq_res)) {
             res <- object@deseq_res[[i]]$shrunken[, c("log2FoldChange", "padj")]
-            res$seq <- rownames(res)
+            res$sequence <- rownames(res)
             res <- as.data.table(res)
 
-            res[library_counts_pos_anno, position := i.position, on = .(seq)]
-            res[library_counts_pos_anno, consequence := i.consequence, on = .(seq)]
+            res[library_counts_pos_anno, position := i.position, on = .(sequence)]
+            res[library_counts_pos_anno, consequence := i.consequence, on = .(sequence)]
 
             res$stat <- "no impact"
             res[(res$padj < pcut) & (res$log2FoldChange > ecut), ]$stat <- "enriched"

@@ -115,7 +115,7 @@ setMethod(
         }
 
         cat("|--> QC results: ", "\n", sep = "")
-        for (i in 1:length(object@stats)) {
+        for (i in 1:nrow(object@stats)) {
             cat("    |--> ", rownames(object@stats)[i], ": ", object@stats[i, ]$qcpass, "\n", sep = "")
         }
     }

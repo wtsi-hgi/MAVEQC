@@ -144,6 +144,32 @@ merge_list_to_df <- function(list_vals) {
     return(df_out)
 }
 
+#' merge a list of data tables into a data table
+#'
+#' @param objects   a list of data tables
+#' @param by_val    join data tables by which column
+#' @param join_val  join which column in the data tables
+#' @return a data table
+merge_list_to_dt <- function(list_dt, by_val, join_val) {
+    dt_out <- data.table()
+
+    for (i in 1:length(list_dt)) {
+        cols <- c(by_val, join_val)
+        dt_tmp <- list_dt[[i]][, ..cols]
+
+        if (nrow(dt_out) == 0) {
+            dt_out <- dt_tmp
+            colnames(dt_out) <- c(by_val, names(list_dt)[i])
+        } else {
+            coln <- colnames(dt_out)
+            dt_out <- merge(dt_out, dt_tmp, by = by_val, all = TRUE)
+            colnames(dt_out) <- c(coln, names(list_dt)[i])
+        }
+    }
+
+    return(dt_out)
+}
+
 #' color blind friendly
 #'
 #' @param col_id a character to select colors

@@ -196,7 +196,6 @@ create_sge_object <- function(file_libcount,
 #' @slot counts                   a list of sample counts
 #' @slot lengths                  a list of sequence lengths
 #' @slot seq_clusters             a list of dataframes of sequences and cluster IDs
-#' @slot accepted_seqs            a list of sequences with counts > clustering cutoff for screen QC in the references
 #' @slot accepted_counts          a list of filtered counts of all the samples
 #' @slot library_counts           a list of library counts of all the samples
 #' @slot unmapped_counts          a list of unmapped counts against meta library sequences of all the samples
@@ -217,7 +216,6 @@ setClass("sampleQC",
         counts = "list",
         lengths = "list",
         seq_clusters = "list",
-        accepted_seqs = "list",
         accepted_counts = "list",
         library_counts = "list",
         unmapped_counts = "list",
@@ -238,7 +236,6 @@ setClass("sampleQC",
         counts = list(),
         lengths = list(),
         seq_clusters = list(),
-        accepted_seqs = list(),
         accepted_counts = list(),
         library_counts = list(),
         unmapped_counts = list(),
@@ -281,8 +278,6 @@ create_sampleqc_object <- function(samples) {
     list_lengths <- list()
     for (s in samples) {
         counts <- s@allcounts[, c("sequence", "count")]
-        rownames(counts) <- counts$sequence
-        counts <- subset(counts, select = -sequence)
 
         lengths <- s@allcounts[, "sequence", drop = FALSE]
         lengths$length <- nchar(lengths$sequence)

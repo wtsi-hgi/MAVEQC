@@ -22,8 +22,6 @@ A class representing a primary qc object
 
 \item{\code{seq_clusters}}{a list of dataframes of sequences and cluster IDs}
 
-\item{\code{accepted_seqs}}{a list of sequences with counts > clustering cutoff for screen QC in the references}
-
 \item{\code{accepted_counts}}{a list of filtered counts of all the samples}
 
 \item{\code{library_counts}}{a list of library counts of all the samples}
