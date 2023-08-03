@@ -2,7 +2,7 @@
 % Please edit documentation in R/qc_outs.R
 \name{qcout_samqc_badseqs,sampleQC-method}
 \alias{qcout_samqc_badseqs,sampleQC-method}
-\title{create output file of bad seqs which fail filtering}
+\title{create output file of bad seqs which fail filtering for screen qc}
 \usage{
 \S4method{qcout_samqc_badseqs}{sampleQC}(object, out_dir = NULL)
 }
@@ -12,5 +12,5 @@
 \item{out_dir}{the output directory}
 }
 \description{
-create output file of bad seqs which fail filtering
+create output file of bad seqs which fail filtering for screen qc
 }

@@ -73,7 +73,7 @@ setGeneric("qcout_samqc_badseqs", function(object, ...) {
   standardGeneric("qcout_samqc_badseqs")
 })
 
-#' create output file of bad seqs which fail filtering
+#' create output file of bad seqs which fail filtering for screen qc
 #'
 #' @export
 #' @param object   sampleQC object
@@ -87,25 +87,91 @@ setMethod(
             stop(paste0("====> Error: out_dir is not provided, no output directory."))
         }
 
+        if (nrow(object@samples[[1]]@vep_anno) == 0) {
+            stop(paste0("====> Error: bad sequences only for screen QC which requires vep anno file."))
+        }
+
         cat("Outputing bad sequences filtered out by clustering...", "\n", sep = "")
-        write.table(merge_list_to_df(object@bad_seqs_bycluster),
-                    file = paste0(out_dir, "/", "failed_sequences_by_cluster.txt"),
+        bad_seqs <- data.table()
+        for (i in 1:length(object@bad_seqs_bycluster)) {
+            bad_tmp <- object@bad_seqs_bycluster[[i]]
+            colnames(bad_tmp)[1] <- "seq"
+            lib_tmp <- object@samples[[i]]@vep_anno
+            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("seq", "count")]
+
+            if (nrow(bad_seqs) == 0) {
+                bad_seqs <- res_tmp
+            } else {
+                bad_seqs <- merge(bad_seqs, res_tmp, by = "seq", all = TRUE)
+            }
+        }
+
+        write.table(bad_seqs,
+                    file = paste0(out_dir, "/", "failed_variants_by_cluster.txt"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
                     col.names = TRUE)
 
         cat("Outputing bad sequences filtered out by sequencing depth...", "\n", sep = "")
-        write.table(object@bad_seqs_bydepth,
-                    file = paste0(out_dir, "/", "failed_sequences_by_depth.txt"),
+        bad_seqs <- data.table()
+        for (i in 1:length(object@bad_seqs_bydepth)) {
+            bad_tmp <- object@bad_seqs_bydepth[[i]]
+            colnames(bad_tmp)[1] <- "seq"
+            lib_tmp <- object@samples[[i]]@vep_anno
+            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0]
+
+            if (nrow(bad_seqs) == 0) {
+                bad_seqs <- res_tmp
+            } else {
+                bad_seqs <- merge(bad_seqs, res_tmp, by = "seq", all = TRUE)
+            }
+        }
+
+        write.table(bad_seqs,
+                    file = paste0(out_dir, "/", "failed_variants_by_depth.txt"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
                     col.names = TRUE)
 
         cat("Outputing bad sequences filtered out by library mapping...", "\n", sep = "")
-        write.table(object@bad_seqs_bylib,
-                    file = paste0(out_dir, "/", "failed_sequences_by_mapping.txt"),
+        bad_seqs <- data.table()
+        for (i in 1:length(object@bad_seqs_bylib)) {
+            bad_tmp <- object@bad_seqs_bylib[[i]]
+            colnames(bad_tmp)[1] <- "seq"
+            lib_tmp <- object@samples[[i]]@vep_anno
+            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0]
+
+            if (nrow(bad_seqs) == 0) {
+                bad_seqs <- res_tmp
+            } else {
+                bad_seqs <- merge(bad_seqs, res_tmp, by = "seq", all = TRUE)
+            }
+        }
+
+        write.table(bad_seqs,
+                    file = paste0(out_dir, "/", "failed_variants_by_mapping.txt"),
+                    quote = FALSE,
+                    sep = "\t",
+                    row.names = FALSE,
+                    col.names = TRUE)
+
+        cat("Outputing missing variants in the library...", "\n", sep = "")
+        bad_seqs <- data.table()
+        for (i in 1:length(object@samples)) {
+            bad_tmp <- object@samples[[i]]@libcounts[count == 0]
+
+            if (nrow(bad_seqs) == 0) {
+                bad_seqs <- bad_tmp
+            } else {
+                bad_seqs <- merge(bad_seqs, bad_tmp)
+            }
+        }
+        setorder(bad_seqs, cols = "sequence")
+
+        write.table(bad_seqs,
+                    file = paste0(out_dir, "/", "missing_variants_in_library.txt"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,

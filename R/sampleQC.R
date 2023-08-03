@@ -122,7 +122,7 @@ setMethod(
                 # considering missing seqs
                 object@accepted_counts[[s@sample]] <- unfiltered_counts[ref_counts[cluster == 2], on = .(sequence), nomatch = 0]
 
-                object@bad_seqs_bycluster[[s@sample]] <- ref_counts[cluster == 1]$sequence
+                object@bad_seqs_bycluster[[s@sample]] <- unfiltered_counts[!ref_counts[cluster == 2], on = .(sequence)]
             }
         } else {
             cat("    |--> Creating k-means clusters...", "\n", sep = "")
@@ -141,7 +141,7 @@ setMethod(
 
                 object@accepted_counts[[s@sample]] <- tmp_counts[cluster == 2]
 
-                object@bad_seqs_bycluster[[s@sample]] <- tmp_counts[cluster == 1]$sequence
+                object@bad_seqs_bycluster[[s@sample]] <- tmp_counts[cluster == 1, c("sequence", "count")]
             }
         }
 
@@ -165,7 +165,7 @@ setMethod(
                 object@accepted_counts[[s@sample]] <- na.omit(accepted_counts[sample_percentage >= cutoff_low_sample_per, ..cols], cols = s@sample)
                 colnames(object@accepted_counts[[s@sample]]) <- c("sequence", "count")
 
-                object@bad_seqs_bydepth[[s@sample]] <- na.omit(accepted_counts[sample_percentage < cutoff_low_sample_per]$sequence)
+                object@bad_seqs_bydepth[[s@sample]] <- na.omit(accepted_counts[sample_percentage < cutoff_low_sample_per])
             }
         } else {
             cat("Filtering by depth...", "\n", sep = "")
@@ -176,7 +176,7 @@ setMethod(
 
                 object@accepted_counts[[s@sample]] <- tmp_counts[count >= cutoff_low_count, ..cols]
 
-                object@bad_seqs_bydepth[[s@sample]] <- tmp_counts[count < cutoff_low_count]$sequence
+                object@bad_seqs_bydepth[[s@sample]] <- tmp_counts[count < cutoff_low_count, ..cols]
             }
         }
 
@@ -195,7 +195,7 @@ setMethod(
             object@library_counts[[s@sample]] <- object@accepted_counts[[s@sample]][sequence %in% s@meta_mseqs]
             object@unmapped_counts[[s@sample]] <- object@accepted_counts[[s@sample]][sequence %nin% c(s@meta_mseqs, s@refseq, s@pamseq)]
 
-            object@bad_seqs_bylib[[s@sample]] <- object@unmapped_counts[[s@sample]]$sequence
+            object@bad_seqs_bylib[[s@sample]] <- object@unmapped_counts[[s@sample]]
         }
 
         #--------------------------------------#
