@@ -105,7 +105,9 @@ create_sge_object <- function(file_libcount,
         }
 
         if (vep_anno[1, ]$seq %nin% libcounts$sequence) {
-            vep_anno$seq <- sapply(vep_anno$seq, function (x) revcomp(x))
+            if (revcomp(vep_anno[1, ]$seq) %in% libcounts$sequence) {
+                vep_anno$seq <- sapply(vep_anno$seq, function (x) revcomp(x))
+            }
         }
     }
 

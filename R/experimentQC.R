@@ -25,6 +25,7 @@ setMethod(
         cat("Running control deseq2 to get size factor...", "\n", sep = "")
 
         library_counts_anno <- as.data.frame(object@library_counts_anno)
+        library_counts_anno[is.na(library_counts_anno)] <- 0
         ds_coldata <- object@coldata
 
         # rownames are necessary for DESeq2, otherwise error happens to assign values in function

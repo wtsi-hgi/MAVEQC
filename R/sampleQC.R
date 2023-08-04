@@ -244,6 +244,9 @@ setMethod(
             libcounts_pos[tmp_meta, position := i.mut_position, on = .(oligo_name)]
             setorder(libcounts_pos, cols = "position")
 
+            # in case some sequences don't match in the library
+            libcounts_pos <- na.omit(libcounts_pos, cols = "position")
+
             object@library_counts_pos[[s@sample]] <- libcounts_pos
             object@library_counts_chr[[s@sample]] <- c(unique(s@valiant_meta$ref_chr),
                                                        unique(s@valiant_meta$ref_strand),

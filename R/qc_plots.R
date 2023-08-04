@@ -36,7 +36,7 @@ setMethod(
             qcplot_samqc_total(object = object, plot_dir = plot_dir)
             qcplot_samqc_accepted(object = object, plot_dir = plot_dir)
             qcplot_samqc_pos_cov(object = object, qc_type = qc_type, plot_dir = plot_dir)
-            qcplot_samqc_pos_anno(object = object, samples = c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), plot_dir = plot_dir)
+            qcplot_samqc_pos_anno(object = object, samples = samples, plot_dir = plot_dir)
         }
     }
 )
