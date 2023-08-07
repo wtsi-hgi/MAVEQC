@@ -380,6 +380,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("#### 2.3.1. Sample Correlations", "\n", sep = "")
             cat("\n", sep = "")
             cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
+            cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_samples_tree.png\"), rel_path = FALSE)", "\n", sep = "")
             cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_samples_corr.png\"), rel_path = FALSE)", "\n", sep = "")
             cat("```", "\n", sep = "")
             cat("<br>", "\n", sep = "")

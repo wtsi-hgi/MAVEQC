@@ -175,8 +175,8 @@ merge_list_to_dt <- function(list_dt, by_val, join_val) {
 #' @param col_id a character to select colors
 #' @return a vector of colors
 select_colorblind <- function(col_id) {
-    col8 <- c("#D55E00", "#56B4E9", "#F0E442",
-              "#009E73", "#E69F00", "#0072B2",
+    col8 <- c("#D55E00", "#56B4E9", "#E69F00",
+              "#009E73", "#F0E442", "#0072B2",
               "#CC79A7", "#000000")
 
     col12 <- c("#88CCEE", "#CC6677", "#DDCC77",
@@ -184,11 +184,11 @@ select_colorblind <- function(col_id) {
                "#44AA99", "#999933", "#882255",
                "#661100", "#6699CC", "#888888")
 
-    col15 <- c("red",       "royalblue", "yellowgreen",
+    col15 <- c("red",       "royalblue", "olivedrab",
                "purple",    "violet",    "maroon1",
                "seagreen1", "navy",      "pink",
                "coral",     "steelblue", "turquoise1",
-               "red4",      "skyblue",   "olivedrab")
+               "red4",      "skyblue",   "yellowgreen")
 
     col21 <- c("#F60239", "#009503", "#FFDC3D",
                "#9900E6", "#009FFA", "#FF92FD",

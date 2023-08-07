@@ -669,7 +669,24 @@ setMethod(
     signature = "experimentQC",
     definition = function(object,
                           plot_dir = NULL) {
-        sample_dist <- as.matrix(dist(t(object@deseq_rlog)))
+        sample_dist <- dist(t(object@deseq_rlog), method = "euclidean")
+        sample_hclust <- hclust(d = sample_dist, method = "ward.D2")
+        sample_dend <- as.dendrogram(sample_hclust)
+
+        num_clusters <- length(unique(object@coldata$condition))
+        name_clusters <- as.vector(unique(object@coldata$condition))
+
+        sample_dend <- dendextend::set(sample_dend, "branches_lwd", 1)
+        sample_dend <- dendextend::set(sample_dend, "branches_k_color", select_colorblind("col8")[1:num_clusters], k = num_clusters)
+        sample_dend <- dendextend::set(sample_dend, "labels_cex", 0.6)
+        sample_dend <- dendextend::set(sample_dend, "labels_colors", select_colorblind("col8")[1:num_clusters], k = num_clusters)
+
+        pheight <- 50 * length(sample_hclust$labels)
+        png(paste0(plot_dir, "/", "sample_qc_samples_tree.png"), width = 800, height = pheight, res = 200)
+        par(mar = c(1, 1, 1, 5))
+        plot(sample_dend, axes = FALSE, horiz = TRUE)
+        dev.off()
+
         sample_rlog <- as.matrix(object@deseq_rlog)
 
         min_rlog <- round(min(sample_rlog))
