@@ -669,9 +669,7 @@ setMethod(
     signature = "experimentQC",
     definition = function(object,
                           plot_dir = NULL) {
-        sample_dist <- dist(t(object@deseq_rlog), method = "euclidean")
-        sample_hclust <- hclust(d = sample_dist, method = "ward.D2")
-        sample_dend <- as.dendrogram(sample_hclust)
+        sample_dend <- as.dendrogram(object@hclust_res)
 
         num_clusters <- length(unique(object@coldata$condition))
         name_clusters <- as.vector(unique(object@coldata$condition))
@@ -681,7 +679,7 @@ setMethod(
         sample_dend <- dendextend::set(sample_dend, "labels_cex", 0.6)
         sample_dend <- dendextend::set(sample_dend, "labels_colors", select_colorblind("col8")[1:num_clusters], k = num_clusters)
 
-        pheight <- 50 * length(sample_hclust$labels)
+        pheight <- 50 * length(object@hclust_res$labels)
         png(paste0(plot_dir, "/", "sample_qc_samples_tree.png"), width = 800, height = pheight, res = 200)
         par(mar = c(1, 1, 1, 5))
         plot(sample_dend, axes = FALSE, horiz = TRUE)
@@ -769,23 +767,17 @@ setGeneric("qcplot_expqc_sample_pca", function(object, ...) {
 #'
 #' @export
 #' @param object     experimentQC object
-#' @param ntop       the number of top variances
 #' @param plot_dir   the output plot directory
 setMethod(
     "qcplot_expqc_sample_pca",
     signature = "experimentQC",
     definition = function(object,
-                          ntop = 500,
                           plot_dir = NULL) {
         if (is.null(plot_dir)) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
-        pca_input <- as.matrix(object@deseq_rlog)
-        rv <- rowVars(pca_input)
-        select <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
-
-        pca <- prcomp(t(pca_input[select, ]), center = TRUE, scale = TRUE)
+        pca <- object@pca_res
         percentVar <- pca$sdev^2 / sum(pca$sdev^2)
         percentVar <- round(percentVar, digits = 3) * 100
 

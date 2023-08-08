@@ -324,6 +324,8 @@ create_sampleqc_object <- function(samples) {
     return(sampleqc_object)
 }
 
+setClass("hclust")
+setClass("prcomp")
 #' A class representing a primary qc object
 #'
 #' @export
@@ -335,7 +337,11 @@ create_sampleqc_object <- function(samples) {
 #' @slot library_counts_pos_anno  a data frame of library counts of all the samples, annotated with consequences, sorted by position
 #' @slot comparisons              a list of comparisons for degComps
 #' @slot deseq_rlog               a data frame of deseq rlog counts of all the samples using library counts
+#' @slot hclust_res               a hclust object for all the samples
+#' @slot corr_res                 the correlation results for all the samples
+#' @slot pca_res                  the pca results for all the samples
 #' @slot deseq_res                a list of deseq results of all the comparison against reference
+#' @slot deseq_res_anno           a list of deseq results with consequence annotations
 setClass("experimentQC",
     slots = list(
         samples = "list",
@@ -345,6 +351,9 @@ setClass("experimentQC",
         library_counts_pos_anno = "data.frame",
         comparisons = "list",
         deseq_rlog = "data.frame",
+        hclust_res = "hclust",
+        corr_res = "matrix",
+        pca_res = "prcomp",
         deseq_res = "list",
         deseq_res_anno = "list"
     ),
@@ -356,6 +365,9 @@ setClass("experimentQC",
         library_counts_pos_anno = data.frame(),
         comparisons = list(),
         deseq_rlog = data.frame(),
+        hclust_res = hclust(dist(matrix(seq(1:9), nrow = 3))),
+        corr_res = matrix(),
+        pca_res = prcomp(as.data.frame(matrix(round(runif(n = 25, min = 1, max = 20), 0), nrow = 5))),
         deseq_res = list(),
         deseq_res_anno = list()
     )

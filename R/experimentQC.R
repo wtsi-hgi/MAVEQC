@@ -10,6 +10,7 @@ setGeneric("run_experiment_qc", function(object, ...) {
 #' @param pcut    the padj cutoff
 #' @param dcut    the depleted log2 fold change cutoff
 #' @param ecut    the enriched log2 fold change cutoff
+#' @param ntop    the number of top variances
 #' @return object
 setMethod(
     "run_experiment_qc",
@@ -17,10 +18,11 @@ setMethod(
     definition = function(object,
                           pcut = 0.05,
                           dcut = 0,
-                          ecut = 0) {
-        #-------------------#
-        # 1. DESeq2 process #
-        #-------------------#
+                          ecut = 0,
+                          ntop = 500) {
+        #----------------------------#
+        # 1. calculating size factor #
+        #----------------------------#
         # run control
         cat("Running control deseq2 to get size factor...", "\n", sep = "")
 
@@ -54,6 +56,26 @@ setMethod(
 
         object@deseq_rlog <- as.data.frame(assay(ds_rlog))
 
+        #-----------------------#
+        # 2. clustering and PCA #
+        #-----------------------#
+        sample_dist <- dist(t(object@deseq_rlog), method = "euclidean")
+        sample_hclust <- hclust(d = sample_dist, method = "ward.D2")
+
+        object@hclust_res <- sample_hclust
+        object@corr_res <- cor(scale(as.matrix(object@deseq_rlog)))
+
+        pca_input <- as.matrix(object@deseq_rlog)
+        rv <- rowVars(pca_input)
+        select <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
+        pca <- prcomp(t(pca_input[select, ]), center = TRUE, scale = TRUE)
+
+        object@pca_res <- pca
+
+        #-------------------#
+        # 3. DESeq2 results #
+        #-------------------#
+
         ds_res <- degComps(ds_obj,
                            combs = "condition",
                            contrast = object@comparisons,
@@ -64,10 +86,6 @@ setMethod(
                            fdr = "default")
 
         object@deseq_res <- ds_res
-
-        #--------------------#
-        # 2. extract results #
-        #--------------------#
 
         library_counts_pos_anno <- object@library_counts_pos_anno
 

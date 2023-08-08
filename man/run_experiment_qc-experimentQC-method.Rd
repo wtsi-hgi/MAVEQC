@@ -4,7 +4,7 @@
 \alias{run_experiment_qc,experimentQC-method}
 \title{run DESeq2 for the list of samples}
 \usage{
-\S4method{run_experiment_qc}{experimentQC}(object, pcut = 0.05, dcut = 0, ecut = 0)
+\S4method{run_experiment_qc}{experimentQC}(object, pcut = 0.05, dcut = 0, ecut = 0, ntop = 500)
 }
 \arguments{
 \item{object}{experimentQC object}
@@ -14,6 +14,8 @@
 \item{dcut}{the depleted log2 fold change cutoff}
 
 \item{ecut}{the enriched log2 fold change cutoff}
+
+\item{ntop}{the number of top variances}
 }
 \value{
 object

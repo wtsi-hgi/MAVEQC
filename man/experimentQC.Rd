@@ -24,6 +24,14 @@ A class representing a primary qc object
 
 \item{\code{deseq_rlog}}{a data frame of deseq rlog counts of all the samples using library counts}
 
+\item{\code{hclust_res}}{a hclust object for all the samples}
+
+\item{\code{corr_res}}{the correlation results for all the samples}
+
+\item{\code{pca_res}}{the pca results for all the samples}
+
 \item{\code{deseq_res}}{a list of deseq results of all the comparison against reference}
+
+\item{\code{deseq_res_anno}}{a list of deseq results with consequence annotations}
 }}
 

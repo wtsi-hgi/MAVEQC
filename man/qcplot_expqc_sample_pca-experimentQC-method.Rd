@@ -4,12 +4,10 @@
 \alias{qcplot_expqc_sample_pca,experimentQC-method}
 \title{create the pca of samples}
 \usage{
-\S4method{qcplot_expqc_sample_pca}{experimentQC}(object, ntop = 500, plot_dir = NULL)
+\S4method{qcplot_expqc_sample_pca}{experimentQC}(object, plot_dir = NULL)
 }
 \arguments{
 \item{object}{experimentQC object}
-
-\item{ntop}{the number of top variances}
 
 \item{plot_dir}{the output plot directory}
 }
