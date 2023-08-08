@@ -29,33 +29,37 @@ setMethod(
         # 1. valiant ref and pam seq #
         #----------------------------#
         if ((length(object@refseq) == 0)) {
-            seq_strand <- unique(object@valiant_meta$revc)
-            if (seq_strand == "+") {
-                object@refseq <- unique(object@valiant_meta$ref_seq)
+            tmp_refseq <- trim_adaptor(unique(object@valiant_meta$ref_seq), object@adapt5, object@adapt3)
+
+            if (tmp_refseq %in% object@allcounts$sequence) {
+                object@refseq <- tmp_refseq
             } else {
-                object@refseq <- revcomp(unique(object@valiant_meta$ref_seq))
+                tmp_refseq <- revcomp(tmp_refseq)
+                if (tmp_refseq %in% object@allcounts$sequence) {
+                    object@refseq <- tmp_refseq
+                }
             }
 
-            if (length(object@refseq) == 0) {
-                stop(paste0("====> Error: no reference sequence found in the valiant meta file, please check ref_seq tag."))
-            }
-
-            object@refseq <- trim_adaptor(object@refseq, object@adapt5, object@adapt3)
+            #if (length(object@refseq) == 0) {
+            #    stop(paste0("====> Error: no reference sequence found in the valiant meta file, please check ref_seq tag."))
+            #}
         }
 
         if ((length(object@pamseq) == 0)) {
-            seq_strand <- unique(object@valiant_meta$revc)
-            if (seq_strand == "+") {
-                object@pamseq <- unique(object@valiant_meta$pam_seq)
+            tmp_pamseq <- trim_adaptor(unique(object@valiant_meta$pam_seq), object@adapt5, object@adapt3)
+
+            if (tmp_pamseq %in% object@allcounts$sequence) {
+                object@pamseq <- tmp_pamseq
             } else {
-                object@pamseq <- revcomp(unique(object@valiant_meta$pam_seq))
+                tmp_pamseq <- revcomp(tmp_pamseq)
+                if (tmp_pamseq %in% object@allcounts$sequence) {
+                    object@pamseq <- tmp_pamseq
+                }
             }
 
-            if (length(object@pamseq) == 0) {
-                stop(paste0("====> Error: no pam sequence found in the valiant meta file, please check pam_seq tag."))
-            }
-
-            object@pamseq <- trim_adaptor(object@pamseq, object@adapt5, object@adapt3)
+            #if (length(object@pamseq) == 0) {
+            #    stop(paste0("====> Error: no pam sequence found in the valiant meta file, please check pam_seq tag."))
+            #}
         }
 
         #----------------------------#
