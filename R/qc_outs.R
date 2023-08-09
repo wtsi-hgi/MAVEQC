@@ -241,7 +241,8 @@ setMethod(
                           "Sample" = colDef(minWidth = 100),
                           "Total Reads" = colDef(format = colFormat(separators = TRUE)),
                           "Pass" = colDef(cell = function(value) {
-                                                   if (value) "\u2705" else "\u274c" }))
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
                      )
         } else {
             write.table(df_outs,
@@ -318,7 +319,8 @@ setMethod(
                                                              list(color = color, fontWeight = fweight)}),
                           "Pass Threshold" = colDef(format = colFormat(separators = TRUE)),
                           "Pass" = colDef(cell = function(value) {
-                                                   if (value) "\u2705" else "\u274c" }))
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
                      )
         } else {
             write.table(df_outs,
@@ -393,7 +395,8 @@ setMethod(
                                                                 }
                                                                 list(color = color, fontWeight = fweight)}),
                           "Pass" = colDef(cell = function(value) {
-                                                   if (value) "\u2705" else "\u274c" }))
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
                      )
         } else {
             write.table(df_outs,
@@ -463,7 +466,8 @@ setMethod(
                                                                   }
                                                                   list(color = color, fontWeight = fweight)}),
                           "Pass" = colDef(cell = function(value) {
-                                                   if (value) "\u2705" else "\u274c" }))
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
                      )
         } else {
             write.table(df_outs,
@@ -556,7 +560,8 @@ setMethod(
                                                                        list(color = color, fontWeight = fweight)}),
                           "Low Abundance cutoff" = colDef(minWidth = 200),
                           "Pass" = colDef(cell = function(value) {
-                                                   if (value) "\u2705" else "\u274c" }))
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
                      )
         } else {
             write.table(df_outs,
@@ -660,11 +665,118 @@ setMethod(
                                                                        list(color = color, fontWeight = fweight)}),
                           "% Low Abundance cutoff" = colDef(minWidth = 200),
                           "Pass" = colDef(cell = function(value) {
-                                                   if (value) "\u2705" else "\u274c" }))
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
                      )
         } else {
             write.table(df_outs,
                         file = paste0(out_dir, "/", "sample_qc_stats_pos_percentage.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
+        }
+    }
+)
+
+#####################################################################################################################################################
+
+#' initialize function
+setGeneric("qcout_expqc_all", function(object, ...) {
+  standardGeneric("qcout_expqc_all")
+})
+
+#' create all the output files
+#'
+#' @export
+#' @param object   experimentQC object
+#' @param out_dir  the output directory
+setMethod(
+    "qcout_expqc_all",
+    signature = "experimentQC",
+    definition = function(object,
+                          out_dir = NULL) {
+        if (is.null(out_dir)) {
+            stop(paste0("====> Error: out_dir is not provided, no output directory."))
+        }
+
+        qcout_expqc_corr(object = object, out_dir = out_dir)
+    }
+)
+
+#' initialize function
+setGeneric("qcout_expqc_corr", function(object, ...) {
+  standardGeneric("qcout_expqc_corr")
+})
+
+#' create output file of clustering and correlation results
+#'
+#' @export
+#' @param object   experimentQC object
+#' @param out_dir  the output directory
+setMethod(
+    "qcout_expqc_corr",
+    signature = "experimentQC",
+    definition = function(object,
+                          out_dir = NULL) {
+        df_outs <- as.data.frame(object@corr_res)
+
+        num_clusters <- length(unique(object@coldata$condition))
+        name_clusters <- as.vector(unique(object@coldata$condition))
+        sample_clusters <- cutree(object@hclust_res, num_clusters)
+
+        df_outs <- cbind(object@coldata[rownames(df_outs), ], df_outs)
+        colnames(df_outs)[1] <- "Replicate"
+        colnames(df_outs)[2] <- "Condition"
+        df_outs <- cbind(sample_clusters[rownames(df_outs)], df_outs)
+        colnames(df_outs)[1] <- "Cluster"
+        df_outs <- cbind(rownames(df_outs), df_outs)
+        colnames(df_outs)[1] <- "Sample"
+
+        df_outs$Pass <- NA
+        for (i in 1:length(name_clusters)) {
+            tmp_clusters <- df_outs[df_outs$Condition == name_clusters[i], ]$Cluster
+            if (length(unique(tmp_clusters)) == 1) {
+                df_outs[df_outs$Condition == name_clusters[i], ]$Pass <- TRUE
+            } else {
+                df_outs[df_outs$Condition == name_clusters[i], ]$Pass <- FALSE
+            }
+        }
+
+        df_outs_tmp <- unique(df_outs[df_outs$Pass, c("Condition", "Cluster")])
+        for (i in 1:nrow(df_outs_tmp)) {
+            pass_check <- TRUE
+            for (j in 1:nrow(df_outs_tmp)) {
+                if (i != j) {
+                    if (df_outs_tmp[i, ]$Cluster == df_outs_tmp[j, ]$Cluster) {
+                        pass_check <- FALSE
+                    }
+                }
+            }
+            df_outs[df_outs$Condition == df_outs_tmp[i, ]$Condition, ]$Pass <- pass_check
+        }
+
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
+
+        is.num <- sapply(df_outs, is.numeric)
+        df_outs[is.num] <- lapply(df_outs[is.num], round, 2)
+
+        if (length(out_dir) == 0) {
+            reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+                      theme = reactableTheme(
+                          style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
+                      columns = list(
+                          "Sample" = colDef(minWidth = 100),
+                          "Cluster" = colDef(minWidth = 100),
+                          "Replicate" = colDef(minWidth = 100),
+                          "Condition" = colDef(minWidth = 100),
+                          "Pass" = colDef(cell = function(value) {
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
+                     )
+        } else {
+            write.table(df_outs,
+                        file = paste0(out_dir, "/", "experiment_qc_corr.tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,

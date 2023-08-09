@@ -657,6 +657,8 @@ setMethod(
 
         qcplot_expqc_sample_corr(object = object, plot_dir = plot_dir)
         qcplot_expqc_sample_pca(object = object, plot_dir = plot_dir)
+        qcplot_expqc_deseq_fc(object = object, plot_dir = plot_dir)
+        qcplot_expqc_deseq_fc_pos(object = object, plot_dir = plot_dir)
     }
 )
 
