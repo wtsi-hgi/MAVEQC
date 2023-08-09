@@ -40,9 +40,9 @@ setMethod(
                 }
             }
 
-            #if (length(object@refseq) == 0) {
-            #    stop(paste0("====> Error: no reference sequence found in the valiant meta file, please check ref_seq tag."))
-            #}
+            if (length(object@refseq) == 0) {
+                stop(paste0("====> Error: no reference sequence found in the valiant meta file, please check ref_seq tag."))
+            }
         }
 
         if ((length(object@pamseq) == 0)) {
@@ -57,9 +57,9 @@ setMethod(
                 }
             }
 
-            #if (length(object@pamseq) == 0) {
-            #    stop(paste0("====> Error: no pam sequence found in the valiant meta file, please check pam_seq tag."))
-            #}
+            if (length(object@pamseq) == 0) {
+                stop(paste0("====> Error: no pam sequence found in the valiant meta file, please check pam_seq tag."))
+            }
         }
 
         #----------------------------#
