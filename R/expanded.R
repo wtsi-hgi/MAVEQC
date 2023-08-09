@@ -115,35 +115,6 @@ cal_gini <- function(x, corr = FALSE, na.rm = TRUE) {
     }
 }
 
-#' merge a list of vector values into a data frame
-#' values may have different names in the list
-#'
-#' @param objects a list of vector values
-#' @return a data frame
-merge_list_to_df <- function(list_vals) {
-    dt_out <- data.table()
-
-    for (i in 1:length(list_vals)) {
-        dt_val <- as.data.table(list_vals[[i]])
-        dt_val$seq <- names(list_vals[[i]])
-
-        if (nrow(dt_out) == 0) {
-            dt_out <- dt_val[, c(2, 1)]
-            colnames(dt_out) <- c("seq", names(list_vals)[i])
-        } else {
-            cols <- colnames(dt_out)
-            dt_out <- merge(dt_out, dt_val, by = "seq", all = TRUE)
-            colnames(dt_out) <- c(cols, names(list_vals)[i])
-        }
-    }
-
-    df_out <- as.data.frame(dt_out)
-    rownames(df_out) <- df_out$seq
-    df_out <- subset(df_out, select = -seq)
-
-    return(df_out)
-}
-
 #' merge a list of data tables into a data table
 #'
 #' @param objects   a list of data tables

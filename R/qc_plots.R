@@ -478,13 +478,13 @@ setMethod(
         }
 
         libcounts_pos$sample <- factor(libcounts_pos$sample, levels = mixedsort(levels(factor(libcounts_pos$sample))))
-        libcounts_pos_range <- c(min(libcounts_pos$position), max(libcounts_pos$position))
+        libcounts_pos_range <- c(min(libcounts_pos$position, na.rm = TRUE), max(libcounts_pos$position, na.rm = TRUE))
 
         p1 <- ggplot(libcounts_pos, aes(x = position, y = log2p1)) +
                 geom_point(shape = 16, size = 0.5, color = "tomato", alpha = 0.8) +
                 geom_hline(yintercept = log2(object@cutoffs$seq_low_count+1), linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                 labs(x = "Genomic Coordinate", y = "log2(count+1)", title = "Sample QC position coverage") +
-                scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
+                #scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
                 ylim(0, as.integer(max(libcounts_pos$log2p1)) + 1) +
                 theme(legend.position = "none", panel.grid.major = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
@@ -539,6 +539,7 @@ setMethod(
 
         libcounts_pos <- as.data.frame(object@library_counts_pos_anno)
         libcounts_pos <- libcounts_pos[, c(samples, "position", "consequence")]
+        libcounts_pos_range <- c(min(libcounts_pos$position, na.rm = TRUE), max(libcounts_pos$position, na.rm = TRUE))
 
         if (type == "lof") {
             libcounts_pos$consequence <- ifelse(libcounts_pos$consequence == "LOF", "LOF", "Others")
@@ -556,6 +557,7 @@ setMethod(
                     geom_hline(yintercept = tmp_cutoff, linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                     scale_color_manual(values = c(t_col("red", 1), t_col("royalblue", 0.2)), labels = c("LOF", "Others")) +
                     labs(x = "Genomic Coordinate", y = "Percentage", title = "Sample QC position percentage", color = "Type") +
+                    scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
                     coord_trans(y = "log2") +
                     scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
@@ -606,6 +608,7 @@ setMethod(
                     geom_hline(yintercept = tmp_cutoff, linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                     scale_color_manual(values = select_colors) +
                     labs(x = "Genomic Coordinate", y = "Percentage", title = "Sample QC position percentage", color = "Type") +
+                    scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
                     coord_trans(y = "log2") +
                     scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
