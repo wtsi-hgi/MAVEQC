@@ -1,6 +1,6 @@
 Package: MAVEQC
 Title: A R package for MAVE QC
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: 
     person("Fei", "Sang", , "fei.sang@sanger.ac.uk", 
             role = c("aut", "cre"),
