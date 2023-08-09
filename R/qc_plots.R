@@ -478,21 +478,24 @@ setMethod(
         }
 
         libcounts_pos$sample <- factor(libcounts_pos$sample, levels = mixedsort(levels(factor(libcounts_pos$sample))))
-        libcounts_pos_range <- c(min(libcounts_pos$position, na.rm = TRUE), max(libcounts_pos$position, na.rm = TRUE))
+        libcounts_pos_range <- libcounts_pos[, .(min = min(position, na.rm = TRUE), max = max(position, na.rm = TRUE)), by = sample]
+        list_scales <- list()
+        for (i in 1:nrow(libcounts_pos_range)) {
+            list_scales[[i]] <- scale_override(i, scale_x_continuous(breaks = c(libcounts_pos_range$min[i], libcounts_pos_range$max[i])))
+        }
 
         p1 <- ggplot(libcounts_pos, aes(x = position, y = log2p1)) +
                 geom_point(shape = 16, size = 0.5, color = "tomato", alpha = 0.8) +
                 geom_hline(yintercept = log2(object@cutoffs$seq_low_count+1), linetype = "dashed", color = "springgreen4", linewidth = 0.4) +
                 labs(x = "Genomic Coordinate", y = "log2(count+1)", title = "Sample QC position coverage") +
-                #scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
                 ylim(0, as.integer(max(libcounts_pos$log2p1)) + 1) +
                 theme(legend.position = "none", panel.grid.major = element_blank()) +
                 theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 6, face = "bold")) +
-                theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 1)) +
-                facet_wrap(~sample, scales = "free_x")
+                theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
+                theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
+                theme(axis.text = element_text(size = 8, face = "bold")) +
+                theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0.5)) +
+                facet_wrap_custom(~sample, scales = "free", scale_overrides = list_scales)
 
         pheight <- 400 * as.integer((length(sample_names) / 3))
 
