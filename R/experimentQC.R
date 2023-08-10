@@ -103,8 +103,6 @@ setMethod(
 
             res$stat <- factor(res$stat, levels = c("no impact", "enriched", "depleted"))
             setcolorder(res, c("oligo_name", "consequence", "position", "log2FoldChange", "padj", "stat", "sequence"))
-            res$log2FoldChange <- format(res$log2FoldChange, digits = 3)
-            res$padj <- format(res$padj, digits = 3)
 
             object@deseq_res_anno[[comparisions[i]]] <- res
         }
