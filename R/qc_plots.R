@@ -964,6 +964,11 @@ setMethod(
             dt_res <- object@deseq_res_anno[[i]]
             dt_res$consequence <- factor(dt_res$consequence, levels = cons)
 
+            pos_tmp <- unique(sort(object@deseq_res_anno[[i]]$position))
+            pos_min <- head(pos_tmp, n = 1)
+            pos_max <- tail(pos_tmp, n = 1)
+            pos_by <- floor((pos_max - pos_min) / 5)
+
             p1 <- ggplot(dt_res, aes(x = position, y = log2FoldChange)) +
                     geom_point(aes(size = factor(stat), shape = factor(stat), fill = factor(consequence), color = factor(consequence))) +
                     scale_size_manual(values = c(0.5, 2, 2)) +
@@ -976,6 +981,7 @@ setMethod(
                     theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 8, face = "bold")) +
+                    scale_x_continuous(limits = c(pos_min, pos_max), breaks = seq(pos_min, pos_max, pos_by)) +
                     scale_y_continuous(limits = c(ymin, ymax), breaks = seq(ymin, ymax)) +
                     guides(fill = guide_legend(override.aes = list(shape = 21)))
 
