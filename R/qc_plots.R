@@ -853,11 +853,21 @@ setMethod(
         }
 
         comparisions <- names(object@deseq_res_anno)
+
+        ylimits <- vector()
         for (i in 1:length(object@deseq_res_anno)) {
             res <- object@deseq_res_anno[[i]]
             res_cons <- res[res$consequence %in% cons]
-            ymax <- ceiling(max(res_cons$log2FoldChange))
-            ymin <- floor(min(res_cons$log2FoldChange))
+            ylimits <- append(ylimits, ceiling(max(res_cons$log2FoldChange)))
+            ylimits <- append(ylimits, floor(min(res_cons$log2FoldChange)))
+        }
+        ylimits <- sort(ylimits)
+        ymin <- head(ylimits, n = 1)
+        ymax <- tail(ylimits, n = 1)
+
+        for (i in 1:length(object@deseq_res_anno)) {
+            res <- object@deseq_res_anno[[i]]
+            res_cons <- res[res$consequence %in% cons]
 
             p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
                     geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen", position = position_nudge(x = .2, y = 0)) +
@@ -940,11 +950,19 @@ setMethod(
         select_colors <- sapply(colors, function(x) t_col(x, 0.3), USE.NAMES = FALSE)
         fill_colors <- sapply(colors, function(x) t_col(x, 0.8), USE.NAMES = FALSE)
 
+        ylimits <- vector()
+        for (i in 1:length(object@deseq_res_anno)) {
+            dt_res <- object@deseq_res_anno[[i]]
+            ylimits <- append(ylimits, ceiling(max(dt_res$log2FoldChange)))
+            ylimits <- append(ylimits, floor(min(dt_res$log2FoldChange)))
+        }
+        ylimits <- sort(ylimits)
+        ymin <- head(ylimits, n = 1)
+        ymax <- tail(ylimits, n = 1)
+
         for (i in 1:length(object@deseq_res_anno)) {
             dt_res <- object@deseq_res_anno[[i]]
             dt_res$consequence <- factor(dt_res$consequence, levels = cons)
-            ymax <- ceiling(max(dt_res$log2FoldChange))
-            ymin <- floor(min(dt_res$log2FoldChange))
 
             p1 <- ggplot(dt_res, aes(x = position, y = log2FoldChange)) +
                     geom_point(aes(size = factor(stat), shape = factor(stat), fill = factor(consequence), color = factor(consequence))) +
