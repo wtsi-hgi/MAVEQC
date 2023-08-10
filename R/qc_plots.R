@@ -688,7 +688,7 @@ setMethod(
         sample_dend <- dendextend::set(sample_dend, "labels_colors", select_colorblind("col8")[1:num_clusters], k = num_clusters)
 
         pheight <- 50 * length(object@hclust_res$labels)
-        png(paste0(plot_dir, "/", "sample_qc_samples_tree.png"), width = 800, height = pheight, res = 200)
+        png(paste0(plot_dir, "/", "experiment_qc_samples_tree.png"), width = 800, height = pheight, res = 200)
         par(mar = c(1, 1, 1, 5))
         plot(sample_dend, axes = FALSE, horiz = TRUE)
         dev.off()
@@ -746,7 +746,7 @@ setMethod(
         if (is.null(plot_dir)) {
             ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_samples_corr.png"), width = 1200, height = 1200, res = 200)
+            png(paste0(plot_dir, "/", "experiment_qc_samples_corr.png"), width = 1200, height = 1200, res = 200)
             corrplot(sample_corr,
                      method = "color",
                      order = "hclust",
@@ -816,7 +816,7 @@ setMethod(
             pca_pchs[i] <- select_pchs[ds_coldata[i, ]$replicate]
         }
 
-        png(paste0(plot_dir, "/", "sample_qc_pca_samples.png"), width = 1200, height = 1200, res = 200)
+        png(paste0(plot_dir, "/", "experiment_qc_pca_samples.png"), width = 1200, height = 1200, res = 200)
         par(mfrow = c(2, 2), mar = c(4, 4, 4, 1))
         plot(pca$x[, 1], pca$x[, 2], xlab = "PC1", ylab = "PC2", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc1_set, ylim = pc2_set, main = "PC1 vs PC2")
         plot(pca$x[, 2], pca$x[, 3], xlab = "PC2", ylab = "PC3", pch = pca_pchs, col = pca_colors, bg = pca_bgs, lwd = 1, cex = 2, xlim = pc2_set, ylim = pc3_set, main = "PC2 vs PC3")
@@ -877,7 +877,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
+                png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
                 print(p1)
                 dev.off()
             }
@@ -962,7 +962,7 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 200)
+                png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 200)
                 print(p1)
                 dev.off()
             }

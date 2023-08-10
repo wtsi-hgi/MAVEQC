@@ -287,8 +287,6 @@ setMethod(
         #-------------------------#
 
         # main issue:
-        # meta_consequence seqs are reverse complement, fix it in create_sge_object
-        # but it may change later
         # oligo names are not unique to sequence, cannot use as reference
         # a seq has a consequence, but has many names, don't which name is right
         # so, vep must have right seq, otherwise cannot determine the consequence
@@ -299,12 +297,15 @@ setMethod(
 
             # assuming all the samples have the sample library sequences and corresponding consequences
             # using sequences in vep annotation to identify consequences
+            # assuming unique_oligo_name in vep_anno is unique
             vep_anno <- object@samples[[1]]@vep_anno[, c("unique_oligo_name", "seq", "summary_plot")]
             colnames(vep_anno) <- c("oligo_name", "sequence", "consequence")
 
             # merge counts, but use data table in case rownames of data frame is not unique
             library_counts_anno <- merge_list_to_dt(object@library_counts, "sequence", "count")
-            library_counts_anno[vep_anno, consequence := i.consequence, on = .(sequence)]
+            cols <- colnames(library_counts_anno)
+            library_counts_anno[vep_anno, c("oligo_name", "consequence") := .(oligo_name, consequence), on = .(sequence)]
+            setcolorder(library_counts_anno, c("oligo_name", "consequence", cols))
             object@library_counts_anno <- library_counts_anno
 
             # merge all the sorted library counts
@@ -320,7 +321,9 @@ setMethod(
                 }
             }
 
-            library_counts_pos_anno[vep_anno, consequence := i.consequence, on = .(sequence)]
+            cols <- colnames(library_counts_pos_anno)[-2]
+            library_counts_pos_anno[vep_anno, c("oligo_name", "consequence") := .(oligo_name, consequence), on = .(sequence)]
+            setcolorder(library_counts_pos_anno, c("oligo_name", "consequence", "position", cols))
             object@library_counts_pos_anno <- library_counts_pos_anno
         }
 

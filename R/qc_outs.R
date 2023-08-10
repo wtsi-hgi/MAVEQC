@@ -701,6 +701,7 @@ setMethod(
         }
 
         qcout_expqc_corr(object = object, out_dir = out_dir)
+        qcout_expqc_deseq(object = object, out_dir = out_dir)
     }
 )
 
@@ -777,6 +778,40 @@ setMethod(
         } else {
             write.table(df_outs,
                         file = paste0(out_dir, "/", "experiment_qc_corr.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
+        }
+    }
+)
+
+#' initialize function
+setGeneric("qcout_expqc_deseq", function(object, ...) {
+  standardGeneric("qcout_expqc_deseq")
+})
+
+#' create all the output files
+#'
+#' @export
+#' @param object   experimentQC object
+#' @param out_dir  the output directory
+setMethod(
+    "qcout_expqc_deseq",
+    signature = "experimentQC",
+    definition = function(object,
+                          out_dir = NULL) {
+        if (is.null(out_dir)) {
+            stop(paste0("====> Error: out_dir is not provided, no output directory."))
+        }
+
+        for (i in 1:length(object@comparisons)) {
+            df_outs <- object@deseq_res_anno[[i]]
+            df_outs[, sequence := NULL]
+            df_outs <- df_outs[stat != "no impact"]
+
+            write.table(df_outs,
+                        file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".tsv"),
                         quote = FALSE,
                         sep = "\t",
                         row.names = FALSE,
