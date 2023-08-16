@@ -4,7 +4,13 @@
 \alias{run_experiment_qc,experimentQC-method}
 \title{run DESeq2 for the list of samples}
 \usage{
-\S4method{run_experiment_qc}{experimentQC}(object, pcut = 0.05, dcut = 0, ecut = 0, ntop = 500)
+\S4method{run_experiment_qc}{experimentQC}(
+  object,
+  pcut = maveqc_config$expqc_padj,
+  dcut = maveqc_config$expqc_lfc_depleted,
+  ecut = maveqc_config$expqc_lfc_enriched,
+  ntop = maveqc_config$expqc_top_variants
+)
 }
 \arguments{
 \item{object}{experimentQC object}

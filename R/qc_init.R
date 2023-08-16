@@ -57,6 +57,12 @@ create_config <- function(config_dir) {
     cat("sqc_low_per: 0.00005", "\n", sep = "")
     cat("sqc_low_lib_per: 0.7", "\n", sep = "")
 
+    cat("# DESeq2 relevant cutoffs", "\n", sep = "")
+    cat("expqc_padj: 0.05", "\n", sep = "")
+    cat("expqc_lfc_depleted: 0", "\n", sep = "")
+    cat("expqc_lfc_enriched: 0", "\n", sep = "")
+    cat("expqc_top_variants: 500", "\n", sep = "")
+
     sink()
 
 }

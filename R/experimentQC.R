@@ -16,10 +16,10 @@ setMethod(
     "run_experiment_qc",
     signature = "experimentQC",
     definition = function(object,
-                          pcut = 0.05,
-                          dcut = 0,
-                          ecut = 0,
-                          ntop = 500) {
+                          pcut = maveqc_config$expqc_padj,
+                          dcut = maveqc_config$expqc_lfc_depleted,
+                          ecut = maveqc_config$expqc_lfc_enriched,
+                          ntop = maveqc_config$expqc_top_variants) {
         #----------------------------#
         # 1. calculating size factor #
         #----------------------------#
