@@ -29,16 +29,18 @@
 ## Dependencies
 
 ```R
+install.packages("configr")
+install.packages("vroom")
 install.packages("data.table")
 install.packages("Ckmeans.1d.dp")
-install.packages("reshape2")
-install.packages("ggplot2")
 install.packages("gplots")
+install.packages("ggplot2")
 install.packages("plotly")
-install.packages("corrplot")
 install.packages("ggcorrplot")
+install.packages("corrplot")
 install.packages("see")
 install.packages("reactable")
+install.packages("reshape2")
 install.packages("gtools")
 
 install.packages("BiocManager")
@@ -49,20 +51,23 @@ BiocManager::install("apeglm")
 
 Load dependencies if required
 ```
+library(configr)
+library(vroom)
 library(data.table)
 library(Ckmeans.1d.dp)
-library(reshape2)
-library(ggplot2)
 library(gplots)
+library(ggplot2)
 library(plotly)
-library(corrplot)
 library(ggcorrplot)
-library(ggbeeswarm)
+library(corrplot)
+library(see)
+library(reactable)
+library(reshape2)
+library(gtools)
+
 library(DESeq2)
 library(DEGreport)
 library(apeglm)
-library(see)
-library(reactable)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
@@ -152,10 +157,10 @@ sge_objs <- import_sge_files("/path/to/input/directory", "sample_sheet.tsv")
 <a id="pqc1"></a>
 ### QC 1: Sample QC
 ```R
+output_dir <- "/path/to/output/directory"
+
 samqc <- create_sampleqc_object(sge_objs)
 samqc <- run_sample_qc(samqc, "plasmid")
-
-output_dir <- "/path/to/output/directory"
 
 qcplot_samqc_all(samqc, qc_type = "plasmid", plot_dir = output_dir)
 qcout_samqc_all(samqc, qc_type = "plasmid", out_dir = output_dir)
@@ -180,16 +185,22 @@ create_qc_reports("/path/to/sample/sheet", "plasmid", output_dir)
 Reference samples must be assigned. You can use ```select_objects()``` to get this done. ```c(2,5,8)``` is used to point the positions of reference samples in your sample sheet, like 2nd, 5th, 8th line here, or you can use the sample names instead, like ```c("hgsm3_d4_r1","hgsm3_d4_r2","hgsm3_d4_r3")```
 
 ```R
-samqc <- create_sampleqc_object(sge_objs)
-samples <- c(2,5,8)
-samqc@samples_ref <- select_objects(sge_objs, samples)
-samqc <- run_sample_qc(samqc, "screen")
-
 output_dir <- "/path/to/output/directory"
 
-qcplot_samqc_all(samqc, qc_type = "screen", samples = c("hgsm3_d4_r1", "hgsm3_d4_r2", "hgsm3_d4_r3"), plot_dir = output_dir)
+samqc <- create_sampleqc_object(sge_objs)
+ref_samples <- c("hgsm3_d4_r1","hgsm3_d4_r2","hgsm3_d4_r3")
+samqc@samples_ref <- select_objects(sge_objs, ref_samples)
+samqc <- run_sample_qc(samqc, "screen")
+
+qcplot_samqc_all(samqc, qc_type = "screen", samples = ref_samples, plot_dir = output_dir)
 qcout_samqc_all(samqc, qc_type = "screen", out_dir = output_dir)
 ```
+
+<p align="right">(<a href="#top">TOP</a>)</p>
+
+<a id="sqc2"></a>
+### QC 2: Experimental QC
+Prepare the coldata for DESeq2 like below.
 
 #### coldata example:
 | sample_name | replicate | condition |
@@ -207,22 +218,11 @@ qcout_samqc_all(samqc, qc_type = "screen", out_dir = output_dir)
 
 ```R
 coldata <- read.table("sample_coldata.tsv", header = T, row.names = 1)
-expqc <- create_experimentqc_object(samqc, coldata, "D4")
-expqc <- run_experiment_qc(expqc)
+expqc <- create_experimentqc_object(samqc, coldata = coldata, refcond = "D4") 
+expqc <- run_experiment_qc(expqc) 
 
 qcplot_expqc_all(expqc, plot_dir = output_dir)
-```
-
-<p align="right">(<a href="#top">TOP</a>)</p>
-
-<a id="sqc2"></a>
-### QC 2: Experimental QC
-
-> Not ready yet, still testing
-
-```R
-qcplot_expqc_deseq_fc(expqc, plot_dir = output_dir)
-qcplot_expqc_deseq_fc_pos(expqc, plot_dir = output_dir)
+qcout_expqc_all(expqc, out_dir = output_dir)
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
