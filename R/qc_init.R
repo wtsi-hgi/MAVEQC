@@ -31,20 +31,37 @@ create_config <- function(config_dir) {
     cat("# user defined thresholds for QC", "\n", sep = "")
     cat("\n", sep = "")
 
+    cat("#-----------#", "\n", sep = "")
+    cat("# Sample QC #", "\n", sep = "")
+    cat("#-----------#", "\n", sep = "")
+    cat("\n", sep = "")
+
+    cat("# the sample must have more than 1000000 total reads", "\n", sep = "")
+    cat("sqc_total: 1000000", "\n", sep = "")
+    cat("\n", sep = "")
+
+    cat("# the missing varaints in the library must be less than 10%", "\n", sep = "")
+    cat("sqc_missing: 0.01", "\n", sep = "")
+    cat("\n", sep = "")
+
     cat("# the sequence must have at least 5 counts in at least 25% of the samples", "\n", sep = "")
     cat("sqc_low_count: 5", "\n", sep = "")
     cat("sqc_low_sample_per: 0.25", "\n", sep = "")
     cat("\n", sep = "")
 
     cat("# the sample must have more than 1000000 reads after the low count filtering", "\n", sep = "")
-    cat("sqc_filtered: 1000000", "\n", sep = "")
+    cat("sqc_accepted: 1000000", "\n", sep = "")
     cat("\n", sep = "")
 
     cat("# the sample must have more than 60% of reads aligned to the library including reference and PAM reads", "\n", sep = "")
     cat("sqc_mapping_per: 0.6", "\n", sep = "")
     cat("\n", sep = "")
 
-    cat("# the sample must have more than 40% of library reads excluding reference and PAM reads", "\n", sep = "")
+    cat("# the sample must have less than 10% of reads aligned to reference sequence", "\n", sep = "")
+    cat("sqc_ref_per: 0.1", "\n", sep = "")
+    cat("\n", sep = "")
+
+    cat("# the sample must have more than 40% of reads aligned to the library", "\n", sep = "")
     cat("sqc_library_per: 0.4", "\n", sep = "")
     cat("\n", sep = "")
 
@@ -56,6 +73,11 @@ create_config <- function(config_dir) {
     cat("# the majority of the variants (>70%) distributed above the 0.005% cutoff for the reference samples", "\n", sep = "")
     cat("sqc_low_per: 0.00005", "\n", sep = "")
     cat("sqc_low_lib_per: 0.7", "\n", sep = "")
+
+    cat("#---------------#", "\n", sep = "")
+    cat("# Experiment QC #", "\n", sep = "")
+    cat("#---------------#", "\n", sep = "")
+    cat("\n", sep = "")
 
     cat("# DESeq2 relevant cutoffs", "\n", sep = "")
     cat("expqc_padj: 0.05", "\n", sep = "")

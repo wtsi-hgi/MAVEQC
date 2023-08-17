@@ -8,10 +8,13 @@ setGeneric("run_sample_qc", function(object, ...) {
 #' @export
 #' @param object                 sampleQC object
 #' @param qc_type                plasmid or screen
+#' @param cutoff_total           qc cutoff of the total reads
+#' @param cutoff_missing_per     qc cutoff of the missing variant percentage
 #' @param cutoff_low_count       count cutoff of library reads
 #' @param cutoff_low_sample_per  sample percentage cutoff of library reads
-#' @param cutoff_filtered        qc cutoff of the total filtered reads
+#' @param cutoff_accepted        qc cutoff of the total accepted reads
 #' @param cutoff_mapping_per     qc cutoff of mapping percentage (ref + pam + library)
+#' @param cutoff_ref_per         qc cutoff of reference percentage
 #' @param cutoff_library_per     qc cutoff of library reads percentage
 #' @param cutoff_library_cov     qc cutoff of library coverage
 #' @param cutoff_low_per         qc cutoff of low abundance percentage for LOF plot
@@ -22,10 +25,13 @@ setMethod(
     signature = "sampleQC",
     definition = function(object,
                           qc_type = c("plasmid", "screen"),
+                          cutoff_total = maveqc_config$sqc_total,
+                          cutoff_missing_per = maveqc_config$sqc_missing,
                           cutoff_low_count = maveqc_config$sqc_low_count,
                           cutoff_low_sample_per = maveqc_config$sqc_low_sample_per,
-                          cutoff_filtered = maveqc_config$sqc_filtered,
+                          cutoff_accepted = maveqc_config$sqc_accepted,
                           cutoff_mapping_per = maveqc_config$sqc_mapping_per,
+                          cutoff_ref_per = maveqc_config$sqc_ref_per,
                           cutoff_library_per = maveqc_config$sqc_library_per,
                           cutoff_library_cov = maveqc_config$sqc_library_cov,
                           cutoff_low_per = maveqc_config$sqc_low_per,
@@ -44,20 +50,28 @@ setMethod(
             }
         }
 
-        cols <- c("total_reads",
+        cols <- c("num_total_reads",
+                  "per_missing_variants",
                   "seq_low_count",
                   "seq_low_sample_per",
-                  "library_percent",
+                  "num_accepted_reads",
+                  "per_mapping_reads",
+                  "per_ref_reads",
+                  "per_library_reads",
                   "library_cov",
                   "low_abundance_per",
                   "low_abundance_lib_per")
         df_cutoffs <- data.frame(matrix(NA, 1, length(cols)))
         colnames(df_cutoffs) <- cols
 
-        df_cutoffs$total_reads <- cutoff_filtered
+        df_cutoffs$num_total_reads <- cutoff_total
+        df_cutoffs$per_missing_variants <- cutoff_missing_per
         df_cutoffs$seq_low_count <- cutoff_low_count
         df_cutoffs$seq_low_sample_per <- cutoff_low_sample_per
-        df_cutoffs$library_percent <- cutoff_library_per
+        df_cutoffs$num_accepted_reads <- cutoff_accepted
+        df_cutoffs$per_mapping_reads <- cutoff_mapping_per
+        df_cutoffs$per_ref_reads <- cutoff_ref_per
+        df_cutoffs$per_library_reads <- cutoff_library_per
         df_cutoffs$library_cov <- cutoff_library_cov
         df_cutoffs$low_abundance_per <- cutoff_low_per
         df_cutoffs$low_abundance_lib_per <- cutoff_low_lib_per
@@ -72,6 +86,9 @@ setMethod(
         sample_names <- character()
         for (s in object@samples) {
             sample_names <- append(sample_names, s@sample)
+
+            object@stats[s@sample, ]$per_r1_adaptor <- s@per_r1_adaptor
+            object@stats[s@sample, ]$per_r2_adaptor <- s@per_r2_adaptor
 
             object@stats[s@sample, ]$total_reads <- s@allstats$total_counts
             object@stats[s@sample, ]$ref_reads <- s@allstats_qc$num_ref_reads
@@ -216,6 +233,7 @@ setMethod(
             object@stats[s@sample, ]$per_pam_reads <- object@stats[s@sample, ]$pam_reads / object@stats[s@sample, ]$accepted_reads
 
             object@stats[s@sample, ]$missing_meta_seqs <- length(s@missing_meta_seqs)
+            object@stats[s@sample, ]$per_missing_meta_seqs <- length(s@missing_meta_seqs) / length(s@meta_mseqs)
 
             object@stats[s@sample, ]$library_seqs <- length(s@meta_mseqs)
             object@stats[s@sample, ]$library_cov <- as.integer(object@stats[s@sample, ]$library_reads / length(s@meta_mseqs))
@@ -267,13 +285,29 @@ setMethod(
         #------------------#
         # 8. QC results    #
         #------------------#
+        object@stats$per_missing_meta_seqs <- unlist(lapply(object@stats$per_missing_meta_seqs, function(x) round(x, 4)))
+        object@stats$per_library_reads <- unlist(lapply(object@stats$per_library_reads, function(x) round(x, 4)))
+        object@stats$per_unmapped_reads <- unlist(lapply(object@stats$per_unmapped_reads, function(x) round(x, 4)))
+        object@stats$per_ref_reads <- unlist(lapply(object@stats$per_ref_reads, function(x) round(x, 4)))
+        object@stats$per_pam_reads <- unlist(lapply(object@stats$per_pam_reads, function(x) round(x, 4)))
+        object@stats$per_r1_adaptor <- unlist(lapply(object@stats$per_r1_adaptor, function(x) round(x, 4)))
+        object@stats$per_r2_adaptor <- unlist(lapply(object@stats$per_r2_adaptor, function(x) round(x, 4)))
 
-        object@stats$qcpass_accepted_reads <- unlist(lapply(object@stats$accepted_reads, function(x) ifelse(x >= cutoff_filtered, TRUE, FALSE)))
+        object@stats$qcpass_total_reads <- unlist(lapply(object@stats$total_reads, function(x) ifelse(x >= cutoff_total, TRUE, FALSE)))
+        object@stats$qcpass_missing_per <- unlist(lapply(object@stats$per_missing_meta_seqs, function(x) ifelse(x < cutoff_missing_per, TRUE, FALSE)))
+        object@stats$qcpass_accepted_reads <- unlist(lapply(object@stats$accepted_reads, function(x) ifelse(x >= cutoff_accepted, TRUE, FALSE)))
         object@stats$qcpass_mapping_per <- unlist(lapply(object@stats$per_unmapped_reads, function(x) ifelse(x < (1 - cutoff_mapping_per), TRUE, FALSE)))
+        object@stats$qcpass_ref_per <- unlist(lapply(object@stats$per_ref_reads, function(x) ifelse(x < cutoff_ref_per, TRUE, FALSE)))
         object@stats$qcpass_library_per <- unlist(lapply(object@stats$per_library_reads, function(x) ifelse(x >= cutoff_library_per, TRUE, FALSE)))
         object@stats$qcpass_library_cov <- unlist(lapply(object@stats$library_cov, function(x) ifelse(x >= cutoff_library_cov, TRUE, FALSE)))
 
-        qc_lables <- c("qcpass_accepted_reads", "qcpass_mapping_per", "qcpass_library_per", "qcpass_library_cov")
+        qc_lables <- c("qcpass_total_reads",
+                       "qcpass_missing_per",
+                       "qcpass_accepted_reads",
+                       "qcpass_mapping_per",
+                       "qcpass_ref_per",
+                       "qcpass_library_per",
+                       "qcpass_library_cov")
         object@stats$qcpass <- apply(object@stats[, qc_lables], 1, function(x) all(x))
 
         #------------------------#

@@ -20,6 +20,10 @@ A class representing a SGE object
 
 \item{\code{adapt3}}{adaptor sequence at 3 prime end}
 
+\item{\code{per_r1_adaptor}}{percentage of r1 adatpor in the sample sheet}
+
+\item{\code{per_r2_adaptor}}{percentage of r2 adatpor in the sample sheet}
+
 \item{\code{refseq}}{reference sequence}
 
 \item{\code{pamseq}}{sequence with pam variants}

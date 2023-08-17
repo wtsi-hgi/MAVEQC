@@ -112,8 +112,17 @@ import_sge_files <- function(dir_path = NULL,
 
     # read sample sheet and check format
     samplesheet <- read.table(paste0(dir_path, "/", sample_sheet), sep = "\t", comment.char = "#", header = TRUE, fill = TRUE)
-    require_cols <- c("sample_name", "library_independent_count", "library_dependent_count",
-                      "valiant_meta", "vep_anno", "adapt5", "adapt3", "library_name", "library_type")
+    require_cols <- c("sample_name",
+                     "library_independent_count",
+                     "library_dependent_count",
+                     "valiant_meta",
+                     "vep_anno",
+                     "adapt5",
+                     "adapt3",
+                     "per_r1_adaptor",
+                     "per_r2_adaptor",
+                     "library_name",
+                     "library_type")
     for (s in require_cols) {
         if (s %nin% colnames(samplesheet)) {
             stop(paste0("====> Error: ", s, " must be in the sample sheet as the header"))
@@ -153,10 +162,12 @@ import_sge_files <- function(dir_path = NULL,
                                      file_valiant_meta_cols = file_valiant_meta_cols,
                                      file_vep_anno_cols = file_vep_anno_cols)
         tmp_obj@sample <- samplesheet[i, ]$sample_name
-        tmp_obj@adapt5 <- samplesheet[i, ]$adapt5
-        tmp_obj@adapt3 <- samplesheet[i, ]$adapt3
         tmp_obj@libname <- samplesheet[i, ]$library_name
         tmp_obj@libtype <- samplesheet[i, ]$library_type
+        tmp_obj@adapt5 <- samplesheet[i, ]$adapt5
+        tmp_obj@adapt3 <- samplesheet[i, ]$adapt3
+        tmp_obj@per_r1_adaptor <- ifelse(is.na(samplesheet[i, ]$per_r1_adaptor), 0, samplesheet[i, ]$per_r1_adaptor)
+        tmp_obj@per_r2_adaptor <- ifelse(is.na(samplesheet[i, ]$per_r2_adaptor), 0, samplesheet[i, ]$per_r2_adaptor)
 
         tmp_obj@libcounts <- as.data.table(tmp_obj@libcounts)
         tmp_obj@allcounts <- as.data.table(tmp_obj@allcounts)

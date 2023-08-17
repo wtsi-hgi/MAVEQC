@@ -21,20 +21,16 @@ setMethod(
 
         qc_type <- match.arg(qc_type)
 
-        if (qc_type == "plasmid") {
-            qcout_samqc_cutoffs(object = object, out_dir = out_dir)
-            qcout_samqc_readlens(object = object, out_dir = out_dir)
-            qcout_samqc_total(object = object, out_dir = out_dir)
-            qcout_samqc_accepted(object = object, out_dir = out_dir)
-            qcout_samqc_libcov(object = object, out_dir = out_dir)
-            qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
-        } else {
-            qcout_samqc_cutoffs(object = object, out_dir = out_dir)
-            qcout_samqc_readlens(object = object, out_dir = out_dir)
-            qcout_samqc_total(object = object, out_dir = out_dir)
-            qcout_samqc_accepted(object = object, out_dir = out_dir)
-            qcout_samqc_libcov(object = object, out_dir = out_dir)
-            qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
+        qcout_samqc_cutoffs(object = object, out_dir = out_dir)
+        qcout_samqc_readlens(object = object, out_dir = out_dir)
+        qcout_samqc_total(object = object, out_dir = out_dir)
+        qcout_samqc_missing(object = object, out_dir = out_dir)
+        qcout_samqc_accepted(object = object, out_dir = out_dir)
+        qcout_samqc_libcov(object = object, out_dir = out_dir)
+        qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
+        qcout_samqc_results(object = object, qc_type = qc_type, out_dir = out_dir)
+
+        if (qc_type == "screen") {
             qcout_samqc_pos_anno(object = object, out_dir = out_dir)
         }
     }
@@ -256,6 +252,68 @@ setMethod(
 )
 
 #' initialize function
+setGeneric("qcout_samqc_missing", function(object, ...) {
+  standardGeneric("qcout_samqc_missing")
+})
+
+#' create output file of bad seqs which fail filtering
+#'
+#' @export
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
+setMethod(
+    "qcout_samqc_missing",
+    signature = "sampleQC",
+    definition = function(object,
+                          out_dir = NULL) {
+        cols <- c("Group",
+                  "Sample",
+                  "Number of library sequences",
+                  "Number of missing library sequences",
+                  "Percentage of missing library sequences",
+                  "Pass Threshold",
+                  "Pass")
+        df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
+        colnames(df_outs) <- cols
+
+        df_outs[, 1] <- object@samples[[1]]@libname
+        df_outs[, 2] <- rownames(object@stats)
+        df_outs[, 3] <- object@stats$library_seqs
+        df_outs[, 4] <- object@stats$missing_meta_seqs
+        tmp_out <- object@stats$per_missing_meta_seqs * 100
+        tmp_out <- sapply(tmp_out, function(x) round(x, 1))
+        df_outs[, 5] <- tmp_out
+        tmp_out <- object@cutoffs$per_missing_variants * 100
+        tmp_out <- sapply(tmp_out, function(x) round(x, 1))
+        df_outs[, 6] <- tmp_out
+        df_outs[, 7] <- object@stats$qcpass_missing_per
+
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
+
+        if (length(out_dir) == 0) {
+            reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+                      theme = reactableTheme(
+                          style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
+                      columns = list(
+                          "Group" = colDef(minWidth = 100),
+                          "Sample" = colDef(minWidth = 100),
+                          "Number of library sequences" = colDef(format = colFormat(separators = TRUE)),
+                          "Pass" = colDef(cell = function(value) {
+                                                   if (value) "\u2705" else "\u274c" })),
+                      rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
+                     )
+        } else {
+            write.table(df_outs,
+                        file = paste0(out_dir, "/", "sample_qc_stats_missing.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
+        }
+    }
+)
+
+#' initialize function
 setGeneric("qcout_samqc_total", function(object, ...) {
   standardGeneric("qcout_samqc_total")
 })
@@ -293,7 +351,7 @@ setMethod(
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
         df_outs[, 6] <- tmp_out
         df_outs[, 7] <- object@stats$total_reads
-        df_outs[, 8] <- object@cutoffs$total_reads
+        df_outs[, 8] <- object@cutoffs$num_total_reads
         df_outs[, 9] <- object@stats$qcpass_accepted_reads
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
@@ -309,7 +367,7 @@ setMethod(
                           "Excluded Reads" = colDef(format = colFormat(separators = TRUE)),
                           "Total Reads" = colDef(format = colFormat(separators = TRUE),
                                                  style = function(value) {
-                                                             if (value < object@cutoffs$total_reads) {
+                                                             if (value < object@cutoffs$num_total_reads) {
                                                                  color <- "red"
                                                                  fweight <- "bold"
                                                              } else {
@@ -373,7 +431,7 @@ setMethod(
         tmp_out <- object@stats$per_unmapped_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
         df_outs[, 6] <- tmp_out
-        df_outs[, 7] <- object@cutoffs$library_percent * 100
+        df_outs[, 7] <- object@cutoffs$per_library_reads * 100
         df_outs[, 8] <- object@stats$qcpass_library_per
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
@@ -386,7 +444,7 @@ setMethod(
                           "Group" = colDef(minWidth = 100),
                           "Sample" = colDef(minWidth = 100),
                           "% Library Reads" = colDef(style = function(value) {
-                                                                 if (value < object@cutoffs$library_percent * 100) {
+                                                                 if (value < object@cutoffs$per_library_reads * 100) {
                                                                     color <- "red"
                                                                     fweight <- "bold"
                                                                 } else {
@@ -678,6 +736,86 @@ setMethod(
         }
     }
 )
+
+#' initialize function
+setGeneric("qcout_samqc_results", function(object, ...) {
+  standardGeneric("qcout_samqc_results")
+})
+
+#' create all the output files
+#'
+#' @export
+#' @param object   sampleQC object
+#' @param qc_type  qc type
+#' @param out_dir  the output directory
+setMethod(
+    "qcout_samqc_results",
+    signature = "sampleQC",
+    definition = function(object,
+                          qc_type = c("plasmid", "screen"),
+                          out_dir = NULL) {
+        qc_type <- match.arg(qc_type)
+
+        cols <- c("Group",
+                  "Sample",
+                  "Gini coefficient",
+                  "Number of total reads",
+                  "Percentage of missing variants",
+                  "Number of accepted reads",
+                  "Percentage of mapping reads",
+                  "Percentage of reference reads",
+                  "Percentage of library reads",
+                  "Depth of library coverage",
+                  "Percentage of R1 adatpor",
+                  "Percentage of R2 adaptor")
+        df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
+        colnames(df_outs) <- cols
+
+        df_outs[, 1] <- object@samples[[1]]@libname
+        df_outs[, 2] <- rownames(object@stats)
+        df_outs[, 3] <- object@stats$gini_coeff_before_qc
+        df_outs[, 4] <- object@stats$qcpass_total_reads
+        df_outs[, 5] <- object@stats$qcpass_missing_per
+        df_outs[, 6] <- object@stats$qcpass_accepted_reads
+        df_outs[, 7] <- object@stats$qcpass_mapping_per
+        df_outs[, 8] <- object@stats$qcpass_ref_per
+        df_outs[, 9] <- object@stats$qcpass_library_per
+        df_outs[, 10] <- object@stats$qcpass_library_cov
+        df_outs[, 11] <- object@stats$per_r1_adaptor
+        df_outs[, 12] <- object@stats$per_r2_adaptor
+
+        df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
+
+        if (qc_type == "screen") {
+            df_outs <- df_outs
+        }
+
+        if (length(out_dir) == 0) {
+            reactable(df_outs, highlight = TRUE, bordered = TRUE,  striped = TRUE, compact = TRUE, wrap = FALSE,
+                      theme = reactableTheme(
+                          style = list(fontFamily = "-apple-system", fontSize = "0.75rem")),
+                      columns = list(
+                          "Group" = colDef(minWidth = 100),
+                          "Sample" = colDef(minWidth = 100),
+                          "Number of total reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Percentage of missing variants" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Number of accepted reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Percentage of mapping reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Percentage of reference reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Percentage of library reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Depth of library coverage" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }))
+                     )
+        } else {
+            write.table(df_outs,
+                        file = paste0(out_dir, "/", "sample_qc_results.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
+        }
+    }
+)
+
 
 #####################################################################################################################################################
 

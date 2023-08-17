@@ -7,10 +7,13 @@
 \S4method{run_sample_qc}{sampleQC}(
   object,
   qc_type = c("plasmid", "screen"),
+  cutoff_total = maveqc_config$sqc_total,
+  cutoff_missing_per = maveqc_config$sqc_missing,
   cutoff_low_count = maveqc_config$sqc_low_count,
   cutoff_low_sample_per = maveqc_config$sqc_low_sample_per,
-  cutoff_filtered = maveqc_config$sqc_filtered,
+  cutoff_accepted = maveqc_config$sqc_accepted,
   cutoff_mapping_per = maveqc_config$sqc_mapping_per,
+  cutoff_ref_per = maveqc_config$sqc_ref_per,
   cutoff_library_per = maveqc_config$sqc_library_per,
   cutoff_library_cov = maveqc_config$sqc_library_cov,
   cutoff_low_per = maveqc_config$sqc_low_per,
@@ -22,13 +25,19 @@
 
 \item{qc_type}{plasmid or screen}
 
+\item{cutoff_total}{qc cutoff of the total reads}
+
+\item{cutoff_missing_per}{qc cutoff of the missing variant percentage}
+
 \item{cutoff_low_count}{count cutoff of library reads}
 
 \item{cutoff_low_sample_per}{sample percentage cutoff of library reads}
 
-\item{cutoff_filtered}{qc cutoff of the total filtered reads}
+\item{cutoff_accepted}{qc cutoff of the total accepted reads}
 
 \item{cutoff_mapping_per}{qc cutoff of mapping percentage (ref + pam + library)}
+
+\item{cutoff_ref_per}{qc cutoff of reference percentage}
 
 \item{cutoff_library_per}{qc cutoff of library reads percentage}
 

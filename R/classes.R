@@ -7,6 +7,8 @@
 #' @slot libtype            library type
 #' @slot adapt5             adaptor sequence at 5 prime end
 #' @slot adapt3             adaptor sequence at 3 prime end
+#' @slot per_r1_adaptor     percentage of r1 adatpor in the sample sheet
+#' @slot per_r2_adaptor     percentage of r2 adatpor in the sample sheet
 #' @slot refseq             reference sequence
 #' @slot pamseq             sequence with pam variants
 #' @slot libcounts          QUANTS library-dependent counts, per sequence per count
@@ -26,6 +28,8 @@ setClass("SGE",
         libtype = "character",
         adapt5 = "character",
         adapt3 = "character",
+        per_r1_adaptor = "numeric",
+        per_r2_adaptor = "numeric",
         refseq = "character",
         pamseq = "character",
         libcounts = "data.frame",
@@ -45,6 +49,8 @@ setClass("SGE",
         libtype = character(),
         adapt5 = character(),
         adapt3 = character(),
+        per_r1_adaptor = numeric(),
+        per_r2_adaptor = numeric(),
         refseq = character(),
         pamseq = character(),
         libcounts = data.frame(),
@@ -288,11 +294,14 @@ create_sampleqc_object <- function(samples) {
         list_lengths[[s@sample]] <- lengths
     }
 
-    cols <- c("total_reads",
+    cols <- c("per_r1_adaptor",
+              "per_r2_adaptor",
+              "total_reads",
               "excluded_reads",
               "accepted_reads",
               "library_seqs",
               "missing_meta_seqs",
+              "per_missing_meta_seqs",
               "library_reads",
               "per_library_reads",
               "unmapped_reads",
@@ -304,8 +313,11 @@ create_sampleqc_object <- function(samples) {
               "library_cov",
               "gini_coeff_before_qc",
               "gini_coeff_after_qc",
+              "qcpass_total_reads",
+              "qcpass_missing_per",
               "qcpass_accepted_reads",
               "qcpass_mapping_per",
+              "qcpass_ref_per",
               "qcpass_library_per",
               "qcpass_library_cov",
               "qcpass")

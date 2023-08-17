@@ -1,6 +1,6 @@
 Group	Sample	% Library Reads	% Reference Reads	% PAM Reads	% Unmapped Reads	Pass Threshold	Pass
-SMARCA4_exon26	hgsm3_d4_r1	53.6	0.3	28.3	17.8	40	TRUE
-SMARCA4_exon26	hgsm3_d4_r2	52.8	0.3	27.7	19.2	40	TRUE
+SMARCA4_exon26	hgsm3_d4_r1	53.6	0.4	28.3	17.8	40	TRUE
+SMARCA4_exon26	hgsm3_d4_r2	52.8	0.3	27.7	19.1	40	TRUE
 SMARCA4_exon26	hgsm3_d4_r3	53.3	0.3	28.4	17.9	40	TRUE
 SMARCA4_exon26	hgsm3_d7_r1	52.9	0.1	31.7	15.3	40	TRUE
 SMARCA4_exon26	hgsm3_d7_r2	52.7	0.1	31.5	15.8	40	TRUE
