@@ -31,6 +31,40 @@ bar_style <- function(length = 1,
     )
 }
 
+#' barplot in reactable
+#'
+#' @name bar_chart_pos_neg
+#' @param lable   the length of bar
+#' @param value   the height of bar
+#' @param max_value     the bar color
+#' @param height    the alignment of bar
+#' @param pos_fill    the font color
+#' @param neg_fill  the font weight
+bar_chart_pos_neg <- function(label,
+                              value,
+                              max_value = 1,
+                              height = "1rem",
+                              pos_fill = t_col("tomato", 0.8),
+                              neg_fill = t_col("royalblue", 0.8)) {
+    neg_chart <- div(style = list(flex = "1 1 0"))
+    pos_chart <- div(style = list(flex = "1 1 0"))
+    width <- paste0(abs(value / max_value) * 100, "%")
+
+    if (value < 0) {
+        bar <- div(style = list(marginLeft = "0.5rem", background = neg_fill, width = width, height = height))
+        chart <- div(style = list(display = "flex", alignItems = "center", justifyContent = "flex-end"),
+                     label,
+                     bar)
+        neg_chart <- tagAppendChild(neg_chart, chart)
+    } else {
+        bar <- div(style = list(marginRight = "0.5rem", background = pos_fill, width = width, height = height))
+        chart <- div(style = list(display = "flex", alignItems = "center"), bar, label)
+        pos_chart <- tagAppendChild(pos_chart, chart)
+    }
+
+    div(style = list(display = "flex"), neg_chart, pos_chart)
+}
+
 #' create QC reports
 #'
 #' @export
@@ -453,12 +487,19 @@ create_qc_reports <- function(samplesheet = NULL,
 
                 cat("```{r, echo = FALSE}", "\n", sep = "")
                 cat("df <- as.data.frame(read.table(\"", tsvs[i], "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
+                cat("max_log2fc <- max(abs(df$log2FoldChange))", "\n", sep = "")
                 cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
                 cat("          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),", "\n", sep = "")
                 cat("          theme = reactableTheme(style = list(fontFamily = \"-apple-system\", fontSize = \"0.85em\")),", "\n", sep = "")
                 cat("          columns = list(\"oligo_name\" = colDef(minWidth = 300),", "\n", sep = "")
-                cat("                         \"log2FoldChange\" = colDef(filterMethod = JS(\"filterMinValue\"), filterInput = JS(\"rangeFilter\"),", "\n", sep = "")
-                cat("                                                     format = colFormat(digits = 2)),", "\n", sep = "")
+                cat("                         \"log2FoldChange\" = colDef(filterMethod = JS(\"filterMinValue\"),", "\n", sep = "")
+                cat("                                                     filterInput = JS(\"rangeFilter\"),", "\n", sep = "")
+                cat("                                                     format = colFormat(digits = 2),", "\n", sep = "")
+                cat("                                                     cell = function(value) {", "\n", sep = "")
+                cat("                                                                label <- round(value, 2)", "\n", sep = "")
+                cat("                                                                bar_chart_pos_neg(label, value, max_value = max_log2fc)},", "\n", sep = "")
+                cat("                                                     align = \"center\",", "\n", sep = "")
+                cat("                                                     minWidth = 300),", "\n", sep = "")
                 cat("                         \"padj\" = colDef(format = colFormat(digits = 3)),", "\n", sep = "")
                 cat("                         \"stat\"  = colDef(style = function(value) {", "\n", sep = "")
                 cat("                                                        if (value == \"enriched\") {", "\n", sep = "")

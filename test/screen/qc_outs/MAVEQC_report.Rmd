@@ -1,0 +1,474 @@
+---
+title: "MAVE QC Report"
+author: "MAVEQC-v0.2.1"
+date: "`r Sys.time()`"
+output:
+    html_document:
+        toc: true
+        toc_depth: 4
+        theme: united
+        highlight: tango
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+library(reactable)
+outdir <- "/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs"
+```
+
+```{js, echo = FALSE}
+function formatNumber(num, precision = 1) {
+    const map = [
+        { suffix: 'T', threshold: 1e12 },
+        { suffix: 'B', threshold: 1e9 },
+        { suffix: 'M', threshold: 1e6 },
+        { suffix: 'K', threshold: 1e3 },
+        { suffix: '', threshold: 1 },
+    ];
+    const found = map.find((x) => Math.abs(num) >= x.threshold);
+    if (found) {
+        const formatted = (num / found.threshold).toFixed(precision) + found.suffix;
+        return formatted;
+    }
+    return num;
+}
+
+function rangeFilter(column, state) {
+    let min = Infinity
+    let max = 0
+    state.data.forEach(function(row) {
+        const value = row[column.id]
+        if (value < min) {
+            min = Math.floor(value)
+        }
+        if (value > max) {
+            max = Math.ceil(value)
+        }
+    })
+
+    const filterValue = column.filterValue || min
+    const input = React.createElement('input', {
+        type: 'range',
+        value: filterValue,
+        min: min,
+        max: max,
+        onChange: function(event) {
+            column.setFilter(event.target.value || undefined)
+        },
+        style: { width: '100%', marginRight: '8px' },
+        'aria-label': 'Filter ' + column.name
+    })
+
+    return React.createElement(
+        'div',
+        { style: { display: 'flex', alignItems: 'center', height: '100%' } },
+        [input, formatNumber(filterValue)]
+    )
+}
+
+function filterMinValue(rows, columnId, filterValue) {
+    return rows.filter(function(row) {
+        return row.values[columnId] >= filterValue
+    })
+}
+```
+
+```{ojs}
+filteredData = Generators.observe(change => {
+    return Reactable.onStateChange('tbl-input', state => {
+        change(state.sortedData)
+    })
+})
+```
+
+---
+
+## 1. Introduction
+MAVEQC is a flexible R-package that provides QC analysis of Saturation Genome Editing (SGE) experimental data. Available under GPL 3.0 from https://github.com/wtsi-hgi/MAVEQC
+
+---
+
+## 2. Screen QC
+Displays QC plots and statistics for all samples for QC.
+
+```{r, echo = FALSE}
+samqc_cutoffs <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_cutoffs.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+```
+<br>
+
+### 2.1. Sample Sheet
+
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/sample_sheet.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")))
+```
+<br>
+
+### 2.2. Run Sample QC
+
+#### 2.2.1. Read Length Distrubtion
+Displays the percentage of reads for each sample, based on 50 nucleotide increments.
+
+```{r, echo = FALSE, out.height = "50%", out.width = "50%"}
+knitr::include_graphics(paste0(outdir, "/sample_qc_read_length.png"), rel_path = FALSE)
+```
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_read_length.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("% 0 ~ 50" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                               style = function(value) {bar_style(length = value/100)}),
+                         "% 50 ~ 100" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                 style = function(value) {bar_style(length = value/100)}),
+                         "% 100 ~ 150" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                  style = function(value) {bar_style(length = value/100)}),
+                         "% 150 ~ 200" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                  style = function(value) {bar_style(length = value/100)}),
+                         "% 200 ~ 250" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                  style = function(value) {bar_style(length = value/100)}),
+                         "% 250 ~ 300" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                  style = function(value) {bar_style(length = value/100)}),
+                         "Total Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                  format = colFormat(separators = TRUE)),
+                         "Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+<br>
+
+#### 2.2.2. Missing Variants
+Missing variants in the library
+
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_stats_missing.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("Number of library sequences" = colDef(format = colFormat(separators = TRUE)),
+                         "Number of missing library sequences" = colDef(format = colFormat(separators = TRUE)),
+                         "Percentage of missing library sequences" = colDef(style = function(value) { 
+                                                                                          if (value > samqc_cutoffs$per_missing_variants * 100) {
+                                                                                              color <- "red"
+                                                                                              fweight <- "bold"
+                                                                                          } else {
+                                                                                              color <- "forestgreen"
+                                                                                              fweight <- "bold" }
+                                                                                          list(color = color, fontWeight = fweight)}),
+                         "Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+<br>
+
+#### 2.2.3. Total Reads
+Displays the total number of reads per sample. Filtering based on 1-dimensional Kmean clustering that excludes unique sequences with low read counts.
+
+* **Accepted reads**: Total read count for all unique sequences with sufficient reads.
+* **Excluded reads**: Total read count for all unique sequences with insufficient reads.
+
+```{r, echo = FALSE, out.height = "50%", out.width = "50%"}
+knitr::include_graphics(paste0(outdir, "/sample_qc_stats_total.png"), rel_path = FALSE)
+```
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_stats_total.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("Accepted Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                     format = colFormat(separators = TRUE)),
+                         "% Accepted Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                       style = function(value) {bar_style(length = value/100)}),
+                         "Excluded Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                     format = colFormat(separators = TRUE)),
+                         "% Excluded Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                       style = function(value) {bar_style(length = value/100)}),
+                         "Total Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                  format = colFormat(separators = TRUE),
+                                                  style = function(value) { 
+                                                              if (value < samqc_cutoffs$num_total_reads) {
+                                                                  color <- "red"
+                                                                  fweight <- "bold"
+                                                              } else {
+                                                                  color <- "forestgreen"
+                                                                  fweight <- "bold" }
+                                                              list(color = color, fontWeight = fweight)}),
+                         "Pass Threshold" = colDef(format = colFormat(separators = TRUE)),
+                         "Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+<br>
+
+#### 2.2.4. Accepted Reads
+Displays the percentage of library reads vs non-library reads (ie. Reference, PAM and Unmapped) for Accepted Reads.
+
+* **Library Reads**: Percentage reads mapping to template oligo sequences, including intended variants.
+* **Reference Reads**: Percentage reads mapping to Reference.
+* **PAM_Reads**: Percentage reads mapping to PAM/Protospacer Protection Edits (PPEs), without intended variant.
+* **Unmapped Reads**: Percentage of Unmapped Reads.
+
+```{r, echo = FALSE, out.height = "50%", out.width = "50%"}
+knitr::include_graphics(paste0(outdir, "/sample_qc_stats_accepted.png"), rel_path = FALSE)
+```
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_stats_accepted.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("% Library Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                      style = function(value) {
+                                                                  if (value < samqc_cutoffs$per_library_reads * 100) {
+                                                                      bar_style(length = value/100, color = "red", fweight = "bold")
+                                                                  } else {
+                                                                      bar_style(length = value/100, color = "forestgreen", fweight = "bold") }}),
+                         "% Reference Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                        style = function(value) {bar_style(length = value/100)}),
+                         "% PAM Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                  style = function(value) {bar_style(length = value/100)}),
+                         "% Unmapped Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                       style = function(value) {bar_style(length = value/100)}),
+                         "Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+
+Defines the mean read count per template oligo sequence.
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_stats_coverage.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("Total Library Reads" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                          format = colFormat(separators = TRUE)),
+                         "Total Template Oligo Sequences" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                                     format = colFormat(separators = TRUE)),
+                         "Library Coverage" = colDef(filterMethod = JS("filterMinValue"), filterInput = JS("rangeFilter"),
+                                                       format = colFormat(separators = TRUE),
+                                                       style = function(value) {
+                                                                   if (value < samqc_cutoffs$library_cov) {
+                                                                       color <- "red"
+                                                                       fweight <- "bold"
+                                                                   } else {
+                                                                       color <- "forestgreen"
+                                                                       fweight <- "bold" }
+                                                                   list(color = color, fontWeight = fweight)}),
+                         "Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+<br>
+
+#### 2.2.5. Genomic Coverage
+Distribution of variants across targeton region based on log2(count+1) values.
+
+```{r, echo = FALSE}
+knitr::include_graphics(paste0(outdir, "/sample_qc_position_cov.dots.png"), rel_path = FALSE)
+```
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_stats_pos_coverage.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("Genomic Start" = colDef(format = colFormat(separators = TRUE)),
+                         "Genomic End" = colDef(format = colFormat(separators = TRUE)),
+                         "% Low Abundance" = colDef(style = function(value) {
+                                                                  if (value > (1 - samqc_cutoffs$low_abundance_lib_per) * 100) {
+                                                                      color <- "red"
+                                                                      fweight <- "bold"
+                                                                  } else {
+                                                                      color <- "forestgreen"
+                                                                      fweight <- "bold" }
+                                                                  list(color = color, fontWeight = fweight)}),
+                         "Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+<br>
+
+#### 2.2.6. Genomic Position Percentage
+Displays distribution of "LOF" (loss-of-function) vs all "Other" variants across the targeton region, based on read percentages for reference timepoint. Requires concordant distribution of LOF and Other variants.
+
+```{r, echo = FALSE, out.height = "65%", out.width = "65%"}
+knitr::include_graphics(paste0(outdir, "/sample_qc_position_anno.lof_dots.png"), rel_path = FALSE)
+```
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_stats_pos_percentage.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("Genomic Start" = colDef(format = colFormat(separators = TRUE)),
+                         "Genomic End" = colDef(format = colFormat(separators = TRUE)),
+                         "% Low Abundance (ALL)" = colDef(style = function(value) {
+                                                                        if (value > (1 - samqc_cutoffs$low_abundance_lib_per) * 100) {
+                                                                            color <- "red"
+                                                                            fweight <- "bold"
+                                                                        } else {
+                                                                            color <- "forestgreen"
+                                                                            fweight <- "bold" }
+                                                                        list(color = color, fontWeight = fweight)}),
+                         "Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+<br>
+
+### 2.3. Run Experiment QC
+
+#### 2.3.1. Sample Correlations
+
+```{r, echo = FALSE, out.height = "50%", out.width = "50%"}
+knitr::include_graphics(paste0(outdir, "/experiment_qc_samples_tree.png"), rel_path = FALSE)
+knitr::include_graphics(paste0(outdir, "/experiment_qc_samples_corr.png"), rel_path = FALSE)
+```
+<br>
+
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/experiment_qc_corr.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("Pass" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })),
+          rowStyle = function(index) { if (!(df[index, "Pass"])) { list(background = t_col("tomato", 0.2)) }})
+```
+<br>
+
+#### 2.3.2. Sample PCA
+
+```{r, echo = FALSE, out.height = "75%", out.width = "75%"}
+knitr::include_graphics(paste0(outdir, "/experiment_qc_pca_samples.png"), rel_path = FALSE)
+```
+<br>
+
+#### 2.3.3. Folder Change (by category)
+
+```{r, echo = FALSE, out.height = "75%", out.width = "75%"}
+figs <- list.files(path = outdir, pattern = "experiment_qc_deseq_fc.*.violin.png", full.names = TRUE)
+figs <- mixedsort(figs)
+knitr::include_graphics(figs, rel_path = FALSE)
+```
+<br>
+
+#### 2.3.4. Folder Change (by position)
+
+**condition_D7_vs_D4**
+```{r, echo = FALSE, out.height = "75%", out.width = "75%"}
+knitr::include_graphics("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/experiment_qc_deseq_fc.condition_D7_vs_D4.position.png", rel_path = FALSE)
+```
+
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/experiment_qc_deseq_fc.condition_D7_vs_D4.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+max_log2fc <- max(abs(df$log2FoldChange))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("oligo_name" = colDef(minWidth = 300),
+                         "consequence" = colDef(filterInput = selectFilter("tbl-input")),
+                         "log2FoldChange" = colDef(filterMethod = JS("filterMinValue"),
+                                                     filterInput = JS("rangeFilter"),
+                                                     format = colFormat(digits = 2),
+                                                     cell = function(value) {
+                                                                label <- round(value, 2)
+                                                                bar_chart_pos_neg(label, value, max_value = max_log2fc)},
+                                                     align = "center",
+                                                     minWidth = 300),
+                         "padj" = colDef(format = colFormat(digits = 3)),
+                         "stat"  = colDef(style = function(value) {
+                                                        if (value == "enriched") {
+                                                            color <- "red"
+                                                            fweight <- "bold"
+                                                        } else {
+                                                            color <- "forestgreen"
+                                                            fweight <- "bold" }
+                                                        list(color = color, fontWeight = fweight)})))
+```
+
+**condition_D15_vs_D4**
+```{r, echo = FALSE, out.height = "75%", out.width = "75%"}
+knitr::include_graphics("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/experiment_qc_deseq_fc.condition_D15_vs_D4.position.png", rel_path = FALSE)
+```
+
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/experiment_qc_deseq_fc.condition_D15_vs_D4.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+max_log2fc <- max(abs(df$log2FoldChange))
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("oligo_name" = colDef(minWidth = 300),
+                         "consequence" = colDef(filterInput = selectFilter("tbl-input")),
+                         "log2FoldChange" = colDef(filterMethod = JS("filterMinValue"),
+                                                     filterInput = JS("rangeFilter"),
+                                                     format = colFormat(digits = 2),
+                                                     cell = function(value) {
+                                                                label <- round(value, 2)
+                                                                bar_chart_pos_neg(label, value, max_value = max_log2fc)},
+                                                     align = "center",
+                                                     minWidth = 300),
+                         "padj" = colDef(format = colFormat(digits = 3)),
+                         "stat"  = colDef(style = function(value) {
+                                                        if (value == "enriched") {
+                                                            color <- "red"
+                                                            fweight <- "bold"
+                                                        } else {
+                                                            color <- "forestgreen"
+                                                            fweight <- "bold" }
+                                                        list(color = color, fontWeight = fweight)})))
+```
+
+<br>
+
+---
+
+## 3. QC Results
+Summarising the final results, below are the cutoffs using for PASS/FAIL
+
+```{r, echo = FALSE}
+df <- as.data.frame(matrix(1:21, nrow = 7))
+colnames(df) <- c("QC Tag", "Cutoff", "Description")
+df[, 1] <- c("Number of total reads",
+             "Percentage of missing variants",
+             "Number of accepted reads",
+             "Percentage of mapping reads",
+             "Percentage of reference reads",
+             "Percentage of library reads",
+             "Depth of library coverage")
+df[, 2] <- c(samqc_cutoffs$num_total_reads,
+             samqc_cutoffs$per_missing_variants,
+             samqc_cutoffs$num_accepted_reads,
+             samqc_cutoffs$per_mapping_reads,
+             samqc_cutoffs$per_ref_reads,
+             samqc_cutoffs$per_library_reads,
+             samqc_cutoffs$library_cov)
+df[, 3] <- c("Sample must have more than 1000000 total reads",
+             "Missing varaints in the library must be less than 10%",
+             "Sample must have more than 1000000 reads after the low count filtering",
+             "Sample must have more than 60% of reads aligned to the library including reference and PAM reads",
+             "Sample must have less than 10% of reads aligned to reference sequence",
+             "Sample must have more than 40% of reads aligned to the library",
+             "Sample must have more than 100x average coverage")
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("QC Tag" = colDef(minWidth = 200),
+                         "Description" = colDef(minWidth = 800)))
+```
+<br>
+
+### 3.1. Sample QC Results
+
+```{r, echo = FALSE}
+df <- as.data.frame(read.table("/Users/fs18/Desktop/Sang/HGI/codesRep/MAVEQC/test/screen/qc_outs/sample_qc_results.tsv", header = TRUE, sep = "\t", check.names = FALSE))
+red_pal <- function(x) rgb(colorRamp(c("ivory", "pink", "red"))(x), maxColorValue = 255)
+gini_min <- 0
+gini_max <- 1
+reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,
+          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),
+          theme = reactableTheme(style = list(fontFamily = "-apple-system", fontSize = "0.85em")),
+          columns = list("Gini coefficient" = colDef(style = function(value) {
+                                                                   normalized <- (value - gini_min) / (gini_max - gini_min)
+                                                                   list(background = red_pal(normalized))}),
+                         "Number of total reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                         "Percentage of missing variants" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                         "Number of accepted reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                         "Percentage of mapping reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                         "Percentage of reference reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                         "Percentage of library reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                         "Depth of library coverage" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" })))
+```
+<br>
+

@@ -11,6 +11,7 @@
 #' @import corrplot
 #' @importFrom see geom_violinhalf
 #' @import reactable
+#' @import htmltools
 #' @importFrom reshape2 melt
 #' @importFrom gtools mixedsort
 #' @import DESeq2
