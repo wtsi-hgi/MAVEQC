@@ -9,8 +9,8 @@ bar_chart_pos_neg(
   value,
   max_value = 1,
   height = "1rem",
-  pos_fill = "tomato",
-  neg_fill = "royalblue"
+  pos_fill = t_col("tomato", 0.8),
+  neg_fill = t_col("royalblue", 0.8)
 )
 }
 \arguments{
