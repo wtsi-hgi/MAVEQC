@@ -30,6 +30,8 @@ setMethod(
         qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
         qcout_samqc_results(object = object, qc_type = qc_type, out_dir = out_dir)
 
+        qcout_samqc_badseqs(object = object, out_dir = out_dir)
+
         if (qc_type == "screen") {
             qcout_samqc_pos_anno(object = object, out_dir = out_dir)
         }
@@ -93,17 +95,18 @@ setMethod(
             bad_tmp <- object@bad_seqs_bycluster[[i]]
             colnames(bad_tmp)[1] <- "seq"
             lib_tmp <- object@samples[[i]]@vep_anno
-            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("seq", "count")]
+            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
+            colnames(res_tmp)[3] <- names(object@bad_seqs_bycluster)[i]
 
             if (nrow(bad_seqs) == 0) {
                 bad_seqs <- res_tmp
             } else {
-                bad_seqs <- merge(bad_seqs, res_tmp, by = "seq", all = TRUE)
+                bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
             }
         }
 
         write.table(bad_seqs,
-                    file = paste0(out_dir, "/", "failed_variants_by_cluster.txt"),
+                    file = paste0(out_dir, "/", "failed_variants_by_cluster.tsv"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -115,17 +118,18 @@ setMethod(
             bad_tmp <- object@bad_seqs_bydepth[[i]]
             colnames(bad_tmp)[1] <- "seq"
             lib_tmp <- object@samples[[i]]@vep_anno
-            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0]
+            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
+            colnames(res_tmp)[3] <- names(object@bad_seqs_bydepth)[i]
 
             if (nrow(bad_seqs) == 0) {
                 bad_seqs <- res_tmp
             } else {
-                bad_seqs <- merge(bad_seqs, res_tmp, by = "seq", all = TRUE)
+                bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
             }
         }
 
         write.table(bad_seqs,
-                    file = paste0(out_dir, "/", "failed_variants_by_depth.txt"),
+                    file = paste0(out_dir, "/", "failed_variants_by_depth.tsv"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -137,17 +141,18 @@ setMethod(
             bad_tmp <- object@bad_seqs_bylib[[i]]
             colnames(bad_tmp)[1] <- "seq"
             lib_tmp <- object@samples[[i]]@vep_anno
-            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0]
+            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
+            colnames(res_tmp)[3] <- names(object@bad_seqs_bylib)[i]
 
             if (nrow(bad_seqs) == 0) {
                 bad_seqs <- res_tmp
             } else {
-                bad_seqs <- merge(bad_seqs, res_tmp, by = "seq", all = TRUE)
+                bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
             }
         }
 
         write.table(bad_seqs,
-                    file = paste0(out_dir, "/", "failed_variants_by_mapping.txt"),
+                    file = paste0(out_dir, "/", "failed_variants_by_mapping.tsv"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -167,7 +172,7 @@ setMethod(
         setorder(bad_seqs, cols = "sequence")
 
         write.table(bad_seqs,
-                    file = paste0(out_dir, "/", "missing_variants_in_library.txt"),
+                    file = paste0(out_dir, "/", "missing_variants_in_library.tsv"),
                     quote = FALSE,
                     sep = "\t",
                     row.names = FALSE,
@@ -190,7 +195,7 @@ setMethod(
     "qcout_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
-                          len_bins = seq(0, 300, 50),
+                          len_bins = seq(0, 400, 50),
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
@@ -201,6 +206,8 @@ setMethod(
                   "% 150 ~ 200",
                   "% 200 ~ 250",
                   "% 250 ~ 300",
+                  "% 300 ~ 350",
+                  "% 350 ~ 400",
                   "Pass Threshold",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
@@ -223,8 +230,10 @@ setMethod(
         df_outs[, 7] <- bin_per[, 4]
         df_outs[, 8] <- bin_per[, 5]
         df_outs[, 9] <- bin_per[, 6]
-        df_outs[, 10] <- 90
-        df_outs[, 11] <- (df_outs[, 8] + df_outs[, 9]) > df_outs[, 10]
+        df_outs[, 10] <- bin_per[, 7]
+        df_outs[, 11] <- bin_per[, 8]
+        df_outs[, 12] <- 90
+        df_outs[, 13] <- (df_outs[, 8] + df_outs[, 9] + df_outs[, 10] + df_outs[, 11]) > df_outs[, 12]
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 

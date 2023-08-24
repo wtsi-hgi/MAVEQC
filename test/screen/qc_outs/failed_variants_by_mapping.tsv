@@ -1,0 +1,1 @@
+seq	count	unique_oligo_name	equivalent_codon	gene	symbol	targeton_id	sgrna_id	feature	exon	intron	pam_mut_sgrna_id	chrom	vcf_pos	vcf_ref	vcf_alt	hgvsg	hgvsc	hgvsp	mave_nt	mave_nt_ref	protein_position	amino_acids	consequence	mutator	sift	polyphen	cadd_phred	revel	spliceai_pred	summary_consequence	summary_plot

@@ -1,10 +1,10 @@
 sample_name	library_independent_count	library_dependent_count	valiant_meta	vep_anno	adapt5	adapt3	per_r1_adaptor	per_r2_adaptor	library_name	library_type
-hgsm3_d4_r1	Rep1_HGSM3_Day4.allcounts.tsv.gz	Rep1_HGSM3_Day4.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d7_r1	Rep1_HGSM3_Day7.allcounts.tsv.gz	Rep1_HGSM3_Day7.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d15_r1	Rep1_HGSM3_Day15.allcounts.tsv.gz	Rep1_HGSM3_Day15.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d4_r2	Rep2_HGSM3_Day4.allcounts.tsv.gz	Rep2_HGSM3_Day4.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d7_r2	Rep2_HGSM3_Day7.allcounts.tsv.gz	Rep2_HGSM3_Day7.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d15_r2	Rep2_HGSM3_Day15.allcounts.tsv.gz	Rep2_HGSM3_Day15.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d4_r3	Rep3_HGSM3_Day4.allcounts.tsv.gz	Rep3_HGSM3_Day4.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d7_r3	Rep3_HGSM3_Day7.allcounts.tsv.gz	Rep3_HGSM3_Day7.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
-hgsm3_d15_r3	Rep3_HGSM3_Day15.allcounts.tsv.gz	Rep3_HGSM3_Day15.libcounts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG			SMARCA4_exon26	screen
+hgsm3_d4_r1	Rep1_HGSM3_Day4.query_counts.tsv.gz	Rep1_HGSM3_Day4.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00323127		SMARCA4_exon26	screen
+hgsm3_d7_r1	Rep1_HGSM3_Day7.query_counts.tsv.gz	Rep1_HGSM3_Day7.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00323585		SMARCA4_exon26	screen
+hgsm3_d15_r1	Rep1_HGSM3_Day15.query_counts.tsv.gz	Rep1_HGSM3_Day15.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00323225		SMARCA4_exon26	screen
+hgsm3_d4_r2	Rep2_HGSM3_Day4.query_counts.tsv.gz	Rep2_HGSM3_Day4.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00324527		SMARCA4_exon26	screen
+hgsm3_d7_r2	Rep2_HGSM3_Day7.query_counts.tsv.gz	Rep2_HGSM3_Day7.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00324042		SMARCA4_exon26	screen
+hgsm3_d15_r2	Rep2_HGSM3_Day15.query_counts.tsv.gz	Rep2_HGSM3_Day15.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00324754		SMARCA4_exon26	screen
+hgsm3_d4_r3	Rep3_HGSM3_Day4.query_counts.tsv.gz	Rep3_HGSM3_Day4.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00323722		SMARCA4_exon26	screen
+hgsm3_d7_r3	Rep3_HGSM3_Day7.query_counts.tsv.gz	Rep3_HGSM3_Day7.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.00323301		SMARCA4_exon26	screen
+hgsm3_d15_r3	Rep3_HGSM3_Day15.query_counts.tsv.gz	Rep3_HGSM3_Day15.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	CTGACTGGCACCTCTTCCCCCAGGA	CATTCACGCTGGGGAGGGGTCGGGG	0.0032474		SMARCA4_exon26	screen

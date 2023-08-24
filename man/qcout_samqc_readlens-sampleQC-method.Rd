@@ -4,7 +4,7 @@
 \alias{qcout_samqc_readlens,sampleQC-method}
 \title{create output file of total reads stats}
 \usage{
-\S4method{qcout_samqc_readlens}{sampleQC}(object, len_bins = seq(0, 300, 50), out_dir = NULL)
+\S4method{qcout_samqc_readlens}{sampleQC}(object, len_bins = seq(0, 400, 50), out_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}

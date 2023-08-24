@@ -29,7 +29,8 @@ setMethod(
         # 1. valiant ref and pam seq #
         #----------------------------#
         if ((length(object@refseq) == 0)) {
-            tmp_refseq <- trim_adaptor(unique(object@valiant_meta$ref_seq), object@adapt5, object@adapt3)
+            #tmp_refseq <- trim_adaptor(unique(object@valiant_meta$ref_seq), object@adapt5, object@adapt3)
+            tmp_refseq <- unique(object@valiant_meta$ref_seq)
 
             if (tmp_refseq %in% object@allcounts$sequence) {
                 object@refseq <- tmp_refseq
@@ -46,7 +47,8 @@ setMethod(
         }
 
         if ((length(object@pamseq) == 0)) {
-            tmp_pamseq <- trim_adaptor(unique(object@valiant_meta$pam_seq), object@adapt5, object@adapt3)
+            #tmp_pamseq <- trim_adaptor(unique(object@valiant_meta$pam_seq), object@adapt5, object@adapt3)
+            tmp_pamseq <- unique(object@valiant_meta$pam_seq)
 
             if (tmp_pamseq %in% object@allcounts$sequence) {
                 object@pamseq <- tmp_pamseq

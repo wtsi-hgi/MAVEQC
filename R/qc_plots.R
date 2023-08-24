@@ -56,7 +56,7 @@ setMethod(
     "qcplot_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
-                          len_bins = seq(0, 300, 50),
+                          len_bins = seq(0, 400, 50),
                           plot_dir = NULL) {
         read_lens <- data.table()
         for (i in 1:length(object@lengths)) {
@@ -969,10 +969,24 @@ setMethod(
             pos_max <- tail(pos_tmp, n = 1)
             pos_by <- floor((pos_max - pos_min) / 5)
 
+            stat_unique <- unique(dt_res$stat)
+            stat_level <- levels(dt_res$stat)
+            stat_size <- c(0.5, 2, 2)
+            stat_shape <- c(16, 24, 25)
+
+            stat_size_plot <- vector()
+            stat_shape_plot <- vector()
+            for (j in 1:length(stat_level)) {
+                if (stat_level[j] %in% stat_unique) {
+                    stat_size_plot <- append(stat_size_plot, stat_size[j])
+                    stat_shape_plot <- append(stat_shape_plot, stat_shape[j])
+                }
+            }
+
             p1 <- ggplot(dt_res, aes(x = position, y = log2FoldChange)) +
                     geom_point(aes(size = factor(stat), shape = factor(stat), fill = factor(consequence), color = factor(consequence))) +
-                    scale_size_manual(values = c(0.5, 2, 2)) +
-                    scale_shape_manual(values = c(16, 24, 25)) +
+                    scale_size_manual(values = stat_size_plot) +
+                    scale_shape_manual(values = stat_shape_plot) +
                     scale_color_manual(values = select_colors) +
                     scale_fill_manual(values = fill_colors) +
                     labs(x = "Genomic Coordinate", y = "Log2 Fold Change", title = comparisions[i]) +

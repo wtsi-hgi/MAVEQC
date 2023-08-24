@@ -182,7 +182,9 @@ setMethod(
                 object@accepted_counts[[s@sample]] <- na.omit(accepted_counts[sample_percentage >= cutoff_low_sample_per, ..cols], cols = s@sample)
                 colnames(object@accepted_counts[[s@sample]]) <- c("sequence", "count")
 
-                object@bad_seqs_bydepth[[s@sample]] <- na.omit(accepted_counts[sample_percentage < cutoff_low_sample_per])
+                cols <- c("sequence", s@sample)
+                object@bad_seqs_bydepth[[s@sample]] <- na.omit(accepted_counts[sample_percentage < cutoff_low_sample_per, ..cols], cols = s@sample)
+                colnames(object@bad_seqs_bydepth[[s@sample]]) <- c("sequence", "count")
             }
         } else {
             cat("Filtering by depth...", "\n", sep = "")
