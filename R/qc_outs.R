@@ -195,7 +195,7 @@ setMethod(
     "qcout_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
-                          len_bins = seq(0, 400, 50),
+                          len_bins = seq(0, 300, 50),
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
@@ -206,8 +206,6 @@ setMethod(
                   "% 150 ~ 200",
                   "% 200 ~ 250",
                   "% 250 ~ 300",
-                  "% 300 ~ 350",
-                  "% 350 ~ 400",
                   "Pass Threshold",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
@@ -230,10 +228,8 @@ setMethod(
         df_outs[, 7] <- bin_per[, 4]
         df_outs[, 8] <- bin_per[, 5]
         df_outs[, 9] <- bin_per[, 6]
-        df_outs[, 10] <- bin_per[, 7]
-        df_outs[, 11] <- bin_per[, 8]
-        df_outs[, 12] <- 90
-        df_outs[, 13] <- (df_outs[, 8] + df_outs[, 9] + df_outs[, 10] + df_outs[, 11]) > df_outs[, 12]
+        df_outs[, 10] <- 90
+        df_outs[, 11] <- (df_outs[, 8] + df_outs[, 9]) > df_outs[, 10]
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 

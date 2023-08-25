@@ -56,7 +56,7 @@ setMethod(
     "qcplot_samqc_readlens",
     signature = "sampleQC",
     definition = function(object,
-                          len_bins = seq(0, 400, 50),
+                          len_bins = seq(0, 300, 50),
                           plot_dir = NULL) {
         read_lens <- data.table()
         for (i in 1:length(object@lengths)) {

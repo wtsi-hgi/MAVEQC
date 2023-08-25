@@ -288,7 +288,7 @@ create_sampleqc_object <- function(samples) {
         counts <- s@allcounts[, c("sequence", "count")]
 
         lengths <- s@allcounts[, "sequence", drop = FALSE]
-        lengths$length <- nchar(lengths$sequence)
+        lengths$length <- nchar(lengths$sequence) - nchar(s@adapt5) - nchar(s@adapt3)
 
         list_counts[[s@sample]] <- counts
         list_lengths[[s@sample]] <- lengths
