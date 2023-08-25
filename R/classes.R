@@ -310,6 +310,7 @@ create_sampleqc_object <- function(samples) {
               "per_ref_reads",
               "pam_reads",
               "per_pam_reads",
+              "median_cov",
               "library_cov",
               "gini_coeff_before_qc",
               "gini_coeff_after_qc",

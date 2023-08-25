@@ -953,8 +953,8 @@ setMethod(
             comparisions <- names(object@lib_deseq_res_anno)
             df_list <- object@lib_deseq_res_anno
         } else {
-            comparisions <- names(object@all_deseq_res_anno)
-            df_list <- object@all_deseq_res_anno
+            comparisions <- names(object@all_deseq_res_anno_adj)
+            df_list <- object@all_deseq_res_anno_adj
         }
 
         colors <- select_colorblind("col15")[1:length(cons)]

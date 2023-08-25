@@ -238,6 +238,7 @@ setMethod(
             object@stats[s@sample, ]$per_missing_meta_seqs <- length(s@missing_meta_seqs) / length(s@meta_mseqs)
 
             object@stats[s@sample, ]$library_seqs <- length(s@meta_mseqs)
+            object@stats[s@sample, ]$median_cov <- median(object@library_counts[[s@sample]]$count)
             object@stats[s@sample, ]$library_cov <- as.integer(object@stats[s@sample, ]$library_reads / length(s@meta_mseqs))
         }
 

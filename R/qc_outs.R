@@ -492,6 +492,7 @@ setMethod(
                   "Total Library Reads",
                   "Total Template Oligo Sequences",
                   "Library Coverage",
+                  "Median Coverage",
                   "Pass Threshold",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
@@ -504,8 +505,9 @@ setMethod(
         tmp_out <- object@stats$library_cov
         tmp_out <- sapply(tmp_out, function(x) round(x, 0))
         df_outs[, 5] <- tmp_out
-        df_outs[, 6] <- object@cutoffs$library_cov
-        df_outs[, 7] <- object@stats$qcpass_library_cov
+        df_outs[, 6] <- object@stats$median_cov
+        df_outs[, 7] <- object@cutoffs$library_cov
+        df_outs[, 8] <- object@stats$qcpass_library_cov
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
