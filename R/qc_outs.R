@@ -848,7 +848,7 @@ setMethod(
         }
 
         qcout_expqc_corr(object = object, out_dir = out_dir)
-        qcout_expqc_deseq(object = object, out_dir = out_dir)
+        qcout_expqc_deseq(object = object, eqc_type = "all", out_dir = out_dir)
     }
 )
 
@@ -867,11 +867,11 @@ setMethod(
     signature = "experimentQC",
     definition = function(object,
                           out_dir = NULL) {
-        df_outs <- as.data.frame(object@corr_res)
+        df_outs <- as.data.frame(object@lib_corr_res)
 
         num_clusters <- length(unique(object@coldata$condition))
         name_clusters <- as.vector(unique(object@coldata$condition))
-        sample_clusters <- cutree(object@hclust_res, num_clusters)
+        sample_clusters <- cutree(object@lib_hclust_res, num_clusters)
 
         df_outs <- cbind(object@coldata[rownames(df_outs), ], df_outs)
         colnames(df_outs)[1] <- "Replicate"
@@ -942,27 +942,44 @@ setGeneric("qcout_expqc_deseq", function(object, ...) {
 #'
 #' @export
 #' @param object   experimentQC object
+#' @param eqc_type library counts or all counts
 #' @param out_dir  the output directory
 setMethod(
     "qcout_expqc_deseq",
     signature = "experimentQC",
     definition = function(object,
+                          eqc_type = c("lib", "all"),
                           out_dir = NULL) {
         if (is.null(out_dir)) {
             stop(paste0("====> Error: out_dir is not provided, no output directory."))
         }
 
-        for (i in 1:length(object@comparisons)) {
-            df_outs <- object@deseq_res_anno[[i]]
-            df_outs[, sequence := NULL]
-            df_outs <- df_outs[stat != "no impact"]
+        eqc_type <- match.arg(eqc_type)
 
-            write.table(df_outs,
-                        file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".tsv"),
-                        quote = FALSE,
-                        sep = "\t",
-                        row.names = FALSE,
-                        col.names = TRUE)
+        for (i in 1:length(object@comparisons)) {
+            if (eqc_type == "lib") {
+                df_outs <- object@lib_deseq_res_anno[[i]]
+                df_outs[, sequence := NULL]
+                df_outs <- df_outs[stat != "no impact"]
+
+                write.table(df_outs,
+                            file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".lib.tsv"),
+                            quote = FALSE,
+                            sep = "\t",
+                            row.names = FALSE,
+                            col.names = TRUE)
+            } else {
+                df_outs <- object@all_deseq_res_anno[[i]]
+                df_outs[, sequence := NULL]
+                df_outs <- df_outs[stat != "no impact"]
+
+                write.table(df_outs,
+                            file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".all.tsv"),
+                            quote = FALSE,
+                            sep = "\t",
+                            row.names = FALSE,
+                            col.names = TRUE)
+            }
         }
     }
 )

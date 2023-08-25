@@ -657,8 +657,8 @@ setMethod(
 
         qcplot_expqc_sample_corr(object = object, plot_dir = plot_dir)
         qcplot_expqc_sample_pca(object = object, plot_dir = plot_dir)
-        qcplot_expqc_deseq_fc(object = object, plot_dir = plot_dir)
-        qcplot_expqc_deseq_fc_pos(object = object, plot_dir = plot_dir)
+        qcplot_expqc_deseq_fc(object = object, eqc_type = "all", plot_dir = plot_dir)
+        qcplot_expqc_deseq_fc_pos(object = object, eqc_type = "all", plot_dir = plot_dir)
     }
 )
 
@@ -677,7 +677,7 @@ setMethod(
     signature = "experimentQC",
     definition = function(object,
                           plot_dir = NULL) {
-        sample_dend <- as.dendrogram(object@hclust_res)
+        sample_dend <- as.dendrogram(object@lib_hclust_res)
 
         num_clusters <- length(unique(object@coldata$condition))
         name_clusters <- as.vector(unique(object@coldata$condition))
@@ -687,40 +687,16 @@ setMethod(
         sample_dend <- dendextend::set(sample_dend, "labels_cex", 0.6)
         sample_dend <- dendextend::set(sample_dend, "labels_colors", select_colorblind("col8")[1:num_clusters], k = num_clusters)
 
-        pheight <- 50 * length(object@hclust_res$labels)
+        pheight <- 50 * length(object@lib_hclust_res$labels)
         png(paste0(plot_dir, "/", "experiment_qc_samples_tree.png"), width = 800, height = pheight, res = 200)
         par(mar = c(1, 1, 1, 5))
         plot(sample_dend, axes = FALSE, horiz = TRUE)
         dev.off()
 
-        sample_rlog <- as.matrix(object@deseq_rlog)
+        sample_rlog <- as.matrix(object@lib_deseq_rlog)
 
         min_rlog <- round(min(sample_rlog))
         max_rlog <- round(max(sample_rlog))
-
-        # heatmap, leave it temporarily
-
-        # pwidth <- 100 * ncol(sample_rlog)
-        # png(paste0(plot_dir, "/", "sample_qc_distance_samples.heatmap.png"), width = pwidth, height = 1200, res = 200)
-        # lmat <- rbind(c(4, 3), c(2, 1))
-        # lhei <- c(3, 8)
-        # lwid <- c(3, 8)
-
-        # heatmap.2(sample_rlog,
-        #           distfun = function(x) dist(x, method = "euclidean"),
-        #           hclustfun = function(x) hclust(x, method = "ward.D2"),
-        #           col = colorpanel(100, "royalblue", "ivory", "tomato"),
-        #           na.color = "grey",
-        #           breaks = seq(min_rlog, max_rlog, length.out = 101),
-        #           density.info = "none", trace = "none", dendrogram = "both",
-        #           Rowv = TRUE, Colv = TRUE, labRow = FALSE,
-        #           cexCol = 0.6, cexRow = 0.6,
-        #           key.xlab = "deseq rlog", key.title = "", key.par = list(cex.lab = 1),
-        #           margins = c(8, 1),
-        #           colsep = 1:ncol(sample_dist),
-        #           sepwidth=c(0.01, 0.01),
-        #           lmat = lmat, lhei = lhei, lwid = lwid)
-        # dev.off()
 
         sample_corr <- cor(scale(sample_rlog))
         min_corr <- floor(min(sample_corr) * 10) / 10
@@ -785,7 +761,7 @@ setMethod(
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
-        pca <- object@pca_res
+        pca <- object@lib_pca_res
         percentVar <- pca$sdev^2 / sum(pca$sdev^2)
         percentVar <- round(percentVar, digits = 3) * 100
 
@@ -838,12 +814,14 @@ setGeneric("qcplot_expqc_deseq_fc", function(object, ...) {
 #'
 #' @export
 #' @param object   experimentQC object
+#' @param eqc_type  library counts or all counts
 #' @param cons     a vector of the selected consequences in the vep annotation file
 #' @param plot_dir the output plot directory
 setMethod(
     "qcplot_expqc_deseq_fc",
     signature = "experimentQC",
     definition = function(object,
+                          eqc_type = c("lib", "all"),
                           cons = c("Synonymous_Variant",
                                    "LOF",
                                    "Missense_Variant"),
@@ -852,11 +830,19 @@ setMethod(
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
-        comparisions <- names(object@deseq_res_anno)
+        eqc_type <- match.arg(eqc_type)
+
+        if (eqc_type == "lib") {
+            comparisions <- names(object@lib_deseq_res_anno)
+            df_list <- object@lib_deseq_res_anno
+        } else {
+            comparisions <- names(object@all_deseq_res_anno)
+            df_list <- object@all_deseq_res_anno
+        }
 
         ylimits <- vector()
-        for (i in 1:length(object@deseq_res_anno)) {
-            res <- object@deseq_res_anno[[i]]
+        for (i in 1:length(df_list)) {
+            res <- df_list[[i]]
             res_cons <- res[res$consequence %in% cons]
             ylimits <- append(ylimits, ceiling(max(res_cons$log2FoldChange)))
             ylimits <- append(ylimits, floor(min(res_cons$log2FoldChange)))
@@ -865,8 +851,8 @@ setMethod(
         ymin <- head(ylimits, n = 1)
         ymax <- tail(ylimits, n = 1)
 
-        for (i in 1:length(object@deseq_res_anno)) {
-            res <- object@deseq_res_anno[[i]]
+        for (i in 1:length(df_list)) {
+            res <- df_list[[i]]
             res_cons <- res[res$consequence %in% cons]
 
             p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
@@ -887,31 +873,16 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".violin.png"), width = 1500, height = pheight, res = 200)
-                print(p1)
-                dev.off()
+                if (eqc_type == "lib") {
+                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_violin.png"), width = 1500, height = pheight, res = 200)
+                    print(p1)
+                    dev.off()
+                } else {
+                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_violin.png"), width = 1500, height = pheight, res = 200)
+                    print(p1)
+                    dev.off()
+                }
             }
-
-            # volcano plot has pvaj, may be useful
-
-            # res_cons_volcano <- res_cons
-            # res_cons_volcano$padj <- -log10(res_cons_volcano$padj)
-            # p2 <- ggplot(res_cons_volcano, aes(x = log2FoldChange, y = padj)) +
-            #         geom_point(shape = 19, size = 0.5, aes(color = factor(stat))) +
-            #         scale_color_manual(values = c(t_col("grey", 0.3), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
-            #         labs(x = "log2FoldChange", y = "-log10(padj)", title = comparisions[i]) +
-            #         theme(legend.position = "right", panel.grid.major = element_blank()) +
-            #         theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-            #         theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-            #         theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-            #         theme(axis.text = element_text(size = 12, face = "bold")) +
-            #         xlim(-2, 2) +
-            #         facet_wrap(~consequence, dir = "v")
-
-            # pheight <- 300 * length(cons)
-            # png(paste0(plot_dir, "/", "sample_qc_deseq_fc.", comparisions[i], ".volcano.png"), width = 1200, height = pheight, res = 200)
-            # print(p2)
-            # dev.off()
         }
     }
 )
@@ -926,12 +897,14 @@ setGeneric("qcplot_expqc_deseq_fc_pos", function(object, ...) {
 #'
 #' @export
 #' @param object    experimentQC object
+#' @param eqc_type  library counts or all counts
 #' @param cons      a vector of all the consequences in the vep annotation file
 #' @param plot_dir  the output plot directory
 setMethod(
     "qcplot_expqc_deseq_fc_pos",
     signature = "experimentQC",
     definition = function(object,
+                          eqc_type = c("lib", "all"),
                           cons = c("Synonymous_Variant",
                                    "LOF",
                                    "Missense_Variant",
@@ -945,14 +918,23 @@ setMethod(
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
-        comparisions <- names(object@deseq_res_anno)
+        eqc_type <- match.arg(eqc_type)
+
+        if (eqc_type == "lib") {
+            comparisions <- names(object@lib_deseq_res_anno)
+            df_list <- object@lib_deseq_res_anno
+        } else {
+            comparisions <- names(object@all_deseq_res_anno)
+            df_list <- object@all_deseq_res_anno
+        }
+
         colors <- select_colorblind("col15")[1:length(cons)]
         select_colors <- sapply(colors, function(x) t_col(x, 0.3), USE.NAMES = FALSE)
         fill_colors <- sapply(colors, function(x) t_col(x, 0.8), USE.NAMES = FALSE)
 
         ylimits <- vector()
-        for (i in 1:length(object@deseq_res_anno)) {
-            dt_res <- object@deseq_res_anno[[i]]
+        for (i in 1:length(df_list)) {
+            dt_res <- df_list[[i]]
             ylimits <- append(ylimits, ceiling(max(dt_res$log2FoldChange)))
             ylimits <- append(ylimits, floor(min(dt_res$log2FoldChange)))
         }
@@ -960,11 +942,11 @@ setMethod(
         ymin <- head(ylimits, n = 1)
         ymax <- tail(ylimits, n = 1)
 
-        for (i in 1:length(object@deseq_res_anno)) {
-            dt_res <- object@deseq_res_anno[[i]]
+        for (i in 1:length(df_list)) {
+            dt_res <- df_list[[i]]
             dt_res$consequence <- factor(dt_res$consequence, levels = cons)
 
-            pos_tmp <- unique(sort(object@deseq_res_anno[[i]]$position))
+            pos_tmp <- unique(sort(df_list[[i]]$position))
             pos_min <- head(pos_tmp, n = 1)
             pos_max <- tail(pos_tmp, n = 1)
             pos_by <- floor((pos_max - pos_min) / 5)
@@ -1002,9 +984,15 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".position.png"), width = 1500, height = 1000, res = 200)
-                print(p1)
-                dev.off()
+                if (eqc_type == "lib") {
+                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_position.png"), width = 1500, height = 1000, res = 200)
+                    print(p1)
+                    dev.off()
+                } else {
+                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_position.png"), width = 1500, height = 1000, res = 200)
+                    print(p1)
+                    dev.off()
+                }
             }
         }
     }

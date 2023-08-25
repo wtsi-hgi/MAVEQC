@@ -4,10 +4,12 @@
 \alias{qcout_expqc_deseq,experimentQC-method}
 \title{create all the output files}
 \usage{
-\S4method{qcout_expqc_deseq}{experimentQC}(object, out_dir = NULL)
+\S4method{qcout_expqc_deseq}{experimentQC}(object, eqc_type = c("lib", "all"), out_dir = NULL)
 }
 \arguments{
 \item{object}{experimentQC object}
+
+\item{eqc_type}{library counts or all counts}
 
 \item{out_dir}{the output directory}
 }

@@ -342,46 +342,61 @@ setClass("prcomp")
 #'
 #' @export
 #' @name experimentQC
-#' @slot samples                  a list of SGE objects
-#' @slot coldata                  a data frame of coldata for DESeq2
-#' @slot ref_condition            the reference condition, like D4, others VS D4 in DESeq2
-#' @slot library_counts_anno      a data frame of library counts of all the samples, annotated with consequences
-#' @slot library_counts_pos_anno  a data frame of library counts of all the samples, annotated with consequences, sorted by position
-#' @slot comparisons              a list of comparisons for degComps
-#' @slot deseq_rlog               a data frame of deseq rlog counts of all the samples using library counts
-#' @slot hclust_res               a hclust object for all the samples
-#' @slot corr_res                 the correlation results for all the samples
-#' @slot pca_res                  the pca results for all the samples
-#' @slot deseq_res                a list of deseq results of all the comparison against reference
-#' @slot deseq_res_anno           a list of deseq results with consequence annotations
+#' @slot samples                    a list of SGE objects
+#' @slot coldata                    a data frame of coldata for DESeq2
+#' @slot ref_condition              the reference condition, like D4, others VS D4 in DESeq2
+#' @slot accepted_counts            a data frame of acceptec counts of all the samples
+#' @slot library_counts_anno        a data frame of library counts of all the samples, annotated with consequences
+#' @slot library_counts_pos_anno    a data frame of library counts of all the samples, annotated with consequences, sorted by position
+#' @slot comparisons                a list of comparisons for degComps
+#' @slot lib_deseq_rlog             a data frame of deseq rlog counts of all the samples using library counts
+#' @slot lib_hclust_res             a hclust object for all the samples using library counts
+#' @slot lib_corr_res               the correlation results for all the samples using library counts
+#' @slot lib_pca_res                the pca results for all the samples using library counts
+#' @slot lib_deseq_res              a list of deseq results of all the comparison against reference using library counts
+#' @slot lib_deseq_res_anno         a list of deseq results with consequence annotations using library counts
+#' @slot all_deseq_rlog             a data frame of deseq rlog counts of all the samples using all counts
+#' @slot all_deseq_res              a list of deseq results of all the comparison against reference using all counts
+#' @slot all_deseq_res_anno         a list of deseq results with consequence annotations using all counts
+#' @slot all_deseq_res_anno_adj     a list of deseq results with consequence annotations using all counts and adjusted lfc and p value
 setClass("experimentQC",
     slots = list(
         samples = "list",
         coldata = "data.frame",
         ref_condition = "character",
+        accepted_counts = "data.frame",
         library_counts_anno = "data.frame",
         library_counts_pos_anno = "data.frame",
         comparisons = "list",
-        deseq_rlog = "data.frame",
-        hclust_res = "hclust",
-        corr_res = "matrix",
-        pca_res = "prcomp",
-        deseq_res = "list",
-        deseq_res_anno = "list"
+        lib_deseq_rlog = "data.frame",
+        lib_hclust_res = "hclust",
+        lib_corr_res = "matrix",
+        lib_pca_res = "prcomp",
+        lib_deseq_res = "list",
+        lib_deseq_res_anno = "list",
+        all_deseq_rlog = "data.frame",
+        all_deseq_res = "list",
+        all_deseq_res_anno = "list",
+        all_deseq_res_anno_adj = "list"
     ),
     prototype = list(
         samples = list(),
         coldata = data.frame(),
         ref_condition = character(),
+        accepted_counts = data.frame(),
         library_counts_anno = data.frame(),
         library_counts_pos_anno = data.frame(),
         comparisons = list(),
-        deseq_rlog = data.frame(),
-        hclust_res = hclust(dist(matrix(seq(1:9), nrow = 3))),
-        corr_res = matrix(),
-        pca_res = prcomp(as.data.frame(matrix(round(runif(n = 25, min = 1, max = 20), 0), nrow = 5))),
-        deseq_res = list(),
-        deseq_res_anno = list()
+        lib_deseq_rlog = data.frame(),
+        lib_hclust_res = hclust(dist(matrix(seq(1:9), nrow = 3))),
+        lib_corr_res = matrix(),
+        lib_pca_res = prcomp(as.data.frame(matrix(round(runif(n = 25, min = 1, max = 20), 0), nrow = 5))),
+        lib_deseq_res = list(),
+        lib_deseq_res_anno = list(),
+        all_deseq_rlog = data.frame(),
+        all_deseq_res =  list(),
+        all_deseq_res_anno =  list(),
+        all_deseq_res_anno_adj = list()
     )
 )
 
@@ -431,10 +446,12 @@ create_experimentqc_object <- function(samqc_obj,
         samples = samqc_obj@samples,
         coldata = coldata,
         ref_condition = refcond,
+        accepted_counts = merge_list_to_dt(samqc_obj@accepted_counts, "sequence", "count"),
         library_counts_anno = samqc_obj@library_counts_anno,
         library_counts_pos_anno = samqc_obj@library_counts_pos_anno,
         comparisons = ds_contrast)
 
+    experimentqc_object@accepted_counts <- as.data.table(experimentqc_object@accepted_counts)
     experimentqc_object@library_counts_anno <- as.data.table(experimentqc_object@library_counts_anno)
     experimentqc_object@library_counts_pos_anno <- as.data.table(experimentqc_object@library_counts_pos_anno)
 

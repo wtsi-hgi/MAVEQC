@@ -6,6 +6,7 @@
 \usage{
 \S4method{qcplot_expqc_deseq_fc_pos}{experimentQC}(
   object,
+  eqc_type = c("lib", "all"),
   cons = c("Synonymous_Variant", "LOF", "Missense_Variant", "Intronic_Variant",
     "Inframe_Deletion", "Splice_Variant", "Splice_Polypyrimidine_Tract_Variant",
     "Others"),
@@ -14,6 +15,8 @@
 }
 \arguments{
 \item{object}{experimentQC object}
+
+\item{eqc_type}{library counts or all counts}
 
 \item{cons}{a vector of all the consequences in the vep annotation file}
 

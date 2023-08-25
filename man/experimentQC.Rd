@@ -16,22 +16,32 @@ A class representing a primary qc object
 
 \item{\code{ref_condition}}{the reference condition, like D4, others VS D4 in DESeq2}
 
+\item{\code{accepted_counts}}{a data frame of acceptec counts of all the samples}
+
 \item{\code{library_counts_anno}}{a data frame of library counts of all the samples, annotated with consequences}
 
 \item{\code{library_counts_pos_anno}}{a data frame of library counts of all the samples, annotated with consequences, sorted by position}
 
 \item{\code{comparisons}}{a list of comparisons for degComps}
 
-\item{\code{deseq_rlog}}{a data frame of deseq rlog counts of all the samples using library counts}
+\item{\code{lib_deseq_rlog}}{a data frame of deseq rlog counts of all the samples using library counts}
 
-\item{\code{hclust_res}}{a hclust object for all the samples}
+\item{\code{lib_hclust_res}}{a hclust object for all the samples using library counts}
 
-\item{\code{corr_res}}{the correlation results for all the samples}
+\item{\code{lib_corr_res}}{the correlation results for all the samples using library counts}
 
-\item{\code{pca_res}}{the pca results for all the samples}
+\item{\code{lib_pca_res}}{the pca results for all the samples using library counts}
 
-\item{\code{deseq_res}}{a list of deseq results of all the comparison against reference}
+\item{\code{lib_deseq_res}}{a list of deseq results of all the comparison against reference using library counts}
 
-\item{\code{deseq_res_anno}}{a list of deseq results with consequence annotations}
+\item{\code{lib_deseq_res_anno}}{a list of deseq results with consequence annotations using library counts}
+
+\item{\code{all_deseq_rlog}}{a data frame of deseq rlog counts of all the samples using all counts}
+
+\item{\code{all_deseq_res}}{a list of deseq results of all the comparison against reference using all counts}
+
+\item{\code{all_deseq_res_anno}}{a list of deseq results with consequence annotations using all counts}
+
+\item{\code{all_deseq_res_anno_adj}}{a list of deseq results with consequence annotations using all counts and adjusted lfc and p value}
 }}
 
