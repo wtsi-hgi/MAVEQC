@@ -226,8 +226,6 @@ setMethod(
             res$stat <- factor(res$stat, levels = c("no impact", "enriched", "depleted"))
             setcolorder(res, c("oligo_name", "consequence", "position", "log2FoldChange", "lfcSE", "padj", "stat", "sequence"))
 
-            res <- na.omit(res, cols = "consequence")
-
             object@all_deseq_res_anno[[comparisions[i]]] <- res
         }
 
@@ -236,7 +234,7 @@ setMethod(
         #-----------------------------------#
         cat("    |--> Adjusting DESeq2 LFC & p value...", "\n", sep = "")
 
-        control_consequences <- c("Synonymous_Variant","Intronic_Variant")
+        control_consequences <- c("Synonymous_Variant", "Intronic_Variant")
         for (i in 1:length(object@all_deseq_res_anno)) {
             control_res <- object@all_deseq_res_anno[[i]][consequence %in% control_consequences]
             res <- object@all_deseq_res_anno[[i]]
@@ -253,6 +251,10 @@ setMethod(
             res[(res$adj_bh < pcut) & (res$adj_log2FoldChange < dcut), ]$stat <- "depleted"
 
             res$stat <- factor(res$stat, levels = c("no impact", "enriched", "depleted"))
+
+            res <- na.omit(res, cols = "consequence")
+
+            object@all_deseq_res_anno_adj[[comparisions[i]]] <- res
         }
 
         return(object)

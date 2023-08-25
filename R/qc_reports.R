@@ -479,7 +479,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("#### 2.3.3. Folder Change (by category)", "\n", sep = "")
             cat("\n", sep = "")
             cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
-            cat("figs <- list.files(path = outdir, pattern = \"experiment_qc_deseq_fc.*.all_violin.png\", full.names = TRUE)", "\n", sep = "")
+            cat("figs <- list.files(path = outdir, pattern = \"experiment_qc_deseq_fc.*.all_beeswarm.png\", full.names = TRUE)", "\n", sep = "")
             cat("figs <- mixedsort(figs)", "\n", sep = "")
             cat("knitr::include_graphics(figs, rel_path = FALSE)", "\n", sep = "")
             cat("```", "\n", sep = "")

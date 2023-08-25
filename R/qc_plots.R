@@ -657,7 +657,7 @@ setMethod(
 
         qcplot_expqc_sample_corr(object = object, plot_dir = plot_dir)
         qcplot_expqc_sample_pca(object = object, plot_dir = plot_dir)
-        qcplot_expqc_deseq_fc(object = object, eqc_type = "all", plot_dir = plot_dir)
+        qcplot_expqc_deseq_fc(object = object, eqc_type = "all", plot_type = "beeswarm", plot_dir = plot_dir)
         qcplot_expqc_deseq_fc_pos(object = object, eqc_type = "all", plot_dir = plot_dir)
     }
 )
@@ -813,10 +813,11 @@ setGeneric("qcplot_expqc_deseq_fc", function(object, ...) {
 #' create fold change and consequence plot
 #'
 #' @export
-#' @param object   experimentQC object
-#' @param eqc_type  library counts or all counts
-#' @param cons     a vector of the selected consequences in the vep annotation file
-#' @param plot_dir the output plot directory
+#' @param object     experimentQC object
+#' @param eqc_type   library counts or all counts 
+#' @param cons       a vector of the selected consequences in the vep annotation file
+#' @param plot_type  beeswarm or violin
+#' @param plot_dir   the output plot directory
 setMethod(
     "qcplot_expqc_deseq_fc",
     signature = "experimentQC",
@@ -825,19 +826,21 @@ setMethod(
                           cons = c("Synonymous_Variant",
                                    "LOF",
                                    "Missense_Variant"),
+                          plot_type = c("beeswarm", "violin"),
                           plot_dir = NULL) {
         if (length(plot_dir) == 0) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
         }
 
         eqc_type <- match.arg(eqc_type)
+        plot_type <- match.arg(plot_type)
 
         if (eqc_type == "lib") {
             comparisions <- names(object@lib_deseq_res_anno)
             df_list <- object@lib_deseq_res_anno
         } else {
-            comparisions <- names(object@all_deseq_res_anno)
-            df_list <- object@all_deseq_res_anno
+            comparisions <- names(object@all_deseq_res_anno_adj)
+            df_list <- object@all_deseq_res_anno_adj
         }
 
         ylimits <- vector()
@@ -855,18 +858,37 @@ setMethod(
             res <- df_list[[i]]
             res_cons <- res[res$consequence %in% cons]
 
-            p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
-                    geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen", position = position_nudge(x = .2, y = 0)) +
-                    geom_jitter(width = 0.15, size = 0.75, aes(color = factor(stat))) +
-                    scale_color_manual(values = c(t_col("grey", 0.3), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
-                    ylim(ymin, ymax) +
-                    coord_flip() +
-                    labs(x = "log2FoldChange", title = comparisions[i], color = "Type") +
-                    theme(legend.position = "right", panel.grid.major = element_blank()) +
-                    theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                    theme(axis.title.y = element_blank(), axis.title.x = element_text(size = 12, face = "bold", family = "Arial")) +
-                    theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
-                    theme(axis.text = element_text(size = 8, face = "bold"))
+            if (plot_type == "beeswarm") {
+                p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
+                        geom_violin(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen") +
+                        geom_quasirandom(width = 0.4, aes(color = factor(stat), size = factor(stat))) +
+                        scale_color_manual(values = c(t_col("grey", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
+                        scale_size_manual(values = c(0.5, 1, 1)) +
+                        ylim(ymin, ymax) +
+                        coord_flip() +
+                        labs(x = "log2FoldChange", title = comparisions[i], color = "Type") +
+                        theme(legend.position = "right", panel.grid.major = element_blank()) +
+                        theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
+                        theme(axis.title.y = element_blank(), axis.title.x = element_text(size = 12, face = "bold", family = "Arial")) +
+                        theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
+                        theme(axis.text = element_text(size = 8, face = "bold")) +
+                        guides(size = "none")
+            } else {
+                p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
+                        geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen", position = position_nudge(x = .2, y = 0)) +
+                        geom_jitter(width = 0.15, aes(color = factor(stat), size = factor(stat))) +
+                        scale_color_manual(values = c(t_col("grey", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
+                        scale_size_manual(values = c(0.5, 1, 1)) +
+                        ylim(ymin, ymax) +
+                        coord_flip() +
+                        labs(x = "log2FoldChange", title = comparisions[i], color = "Type") +
+                        theme(legend.position = "right", panel.grid.major = element_blank()) +
+                        theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
+                        theme(axis.title.y = element_blank(), axis.title.x = element_text(size = 12, face = "bold", family = "Arial")) +
+                        theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
+                        theme(axis.text = element_text(size = 8, face = "bold")) +
+                        guides(size = "none")
+            }
 
             pheight <- 200 * length(cons)
 
@@ -874,14 +896,21 @@ setMethod(
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
                 if (eqc_type == "lib") {
-                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_violin.png"), width = 1500, height = pheight, res = 200)
-                    print(p1)
-                    dev.off()
+                    if (plot_type == "beeswarm") {
+                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_beeswarm.png")
+                    } else {
+                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_violin.png")
+                    }
                 } else {
-                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_violin.png"), width = 1500, height = pheight, res = 200)
-                    print(p1)
-                    dev.off()
+                    if (plot_type == "beeswarm") {
+                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_beeswarm.png")
+                    } else {
+                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_violin.png")
+                    }
                 }
+                png(file_path, width = 1500, height = pheight, res = 200)
+                print(p1)
+                dev.off()
             }
         }
     }

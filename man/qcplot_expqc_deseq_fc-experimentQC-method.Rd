@@ -8,6 +8,7 @@
   object,
   eqc_type = c("lib", "all"),
   cons = c("Synonymous_Variant", "LOF", "Missense_Variant"),
+  plot_type = c("beeswarm", "violin"),
   plot_dir = NULL
 )
 }
@@ -17,6 +18,8 @@
 \item{eqc_type}{library counts or all counts}
 
 \item{cons}{a vector of the selected consequences in the vep annotation file}
+
+\item{plot_type}{beeswarm or violin}
 
 \item{plot_dir}{the output plot directory}
 }

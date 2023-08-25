@@ -10,6 +10,7 @@
 #' @import ggcorrplot
 #' @import corrplot
 #' @importFrom see geom_violinhalf
+#' @import ggbeeswarm
 #' @import reactable
 #' @import htmltools
 #' @importFrom reshape2 melt

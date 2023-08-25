@@ -969,7 +969,7 @@ setMethod(
                             row.names = FALSE,
                             col.names = TRUE)
             } else {
-                df_outs <- object@all_deseq_res_anno[[i]]
+                df_outs <- object@all_deseq_res_anno_adj[[i]]
                 df_outs[, sequence := NULL]
                 df_outs <- df_outs[stat != "no impact"]
 
