@@ -858,12 +858,26 @@ setMethod(
             res <- df_list[[i]]
             res_cons <- res[res$consequence %in% cons]
 
+            stat_unique <- unique(res_cons$stat)
+            stat_level <- levels(res_cons$stat)
+            stat_size <- c(0.5, 1, 1)
+            stat_color <- c(t_col("grey", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))
+
+            stat_size_plot <- vector()
+            stat_color_plot <- vector()
+            for (j in 1:length(stat_level)) {
+                if (stat_level[j] %in% stat_unique) {
+                    stat_size_plot <- append(stat_size_plot, stat_size[j])
+                    stat_color_plot <- append(stat_color_plot, stat_color[j])
+                }
+            }
+
             if (plot_type == "beeswarm") {
                 p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
                         geom_violin(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen") +
                         geom_quasirandom(width = 0.4, aes(color = factor(stat), size = factor(stat))) +
-                        scale_color_manual(values = c(t_col("grey", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
-                        scale_size_manual(values = c(0.5, 1, 1)) +
+                        scale_color_manual(values = stat_color_plot) +
+                        scale_size_manual(values = stat_size_plot) +
                         ylim(ymin, ymax) +
                         coord_flip() +
                         labs(x = "log2FoldChange", title = comparisions[i], color = "Type") +
@@ -877,8 +891,8 @@ setMethod(
                 p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
                         geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen", position = position_nudge(x = .2, y = 0)) +
                         geom_jitter(width = 0.15, aes(color = factor(stat), size = factor(stat))) +
-                        scale_color_manual(values = c(t_col("grey", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))) +
-                        scale_size_manual(values = c(0.5, 1, 1)) +
+                        scale_color_manual(values = stat_color_plot) +
+                        scale_size_manual(values = stat_size_plot) +
                         ylim(ymin, ymax) +
                         coord_flip() +
                         labs(x = "log2FoldChange", title = comparisions[i], color = "Type") +
