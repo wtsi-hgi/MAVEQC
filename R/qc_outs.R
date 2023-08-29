@@ -30,11 +30,11 @@ setMethod(
         qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
         qcout_samqc_results(object = object, qc_type = qc_type, out_dir = out_dir)
 
-        qcout_samqc_badseqs(object = object, out_dir = out_dir)
-
         if (qc_type == "screen") {
             qcout_samqc_pos_anno(object = object, out_dir = out_dir)
         }
+
+        qcout_samqc_badseqs(object = object, qc_type = qc_type, out_dir = out_dir)
     }
 )
 
@@ -75,88 +75,90 @@ setGeneric("qcout_samqc_badseqs", function(object, ...) {
 #'
 #' @export
 #' @param object   sampleQC object
+#' @param qc_type  plasmid or screen
 #' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_badseqs",
     signature = "sampleQC",
     definition = function(object,
+                          qc_type = c("plasmid", "screen"),
                           out_dir = NULL) {
         if (is.null(out_dir)) {
             stop(paste0("====> Error: out_dir is not provided, no output directory."))
         }
 
-        if (nrow(object@samples[[1]]@vep_anno) == 0) {
-            stop(paste0("====> Error: bad sequences only for screen QC which requires vep anno file."))
-        }
+        qc_type <- match.arg(qc_type)
 
-        cat("Outputing bad sequences filtered out by clustering...", "\n", sep = "")
-        bad_seqs <- data.table()
-        for (i in 1:length(object@bad_seqs_bycluster)) {
-            bad_tmp <- object@bad_seqs_bycluster[[i]]
-            colnames(bad_tmp)[1] <- "seq"
-            lib_tmp <- object@samples[[i]]@vep_anno
-            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
-            colnames(res_tmp)[3] <- names(object@bad_seqs_bycluster)[i]
+        if (qc_type == "screen") {
+            cat("Outputing bad sequences filtered out by clustering...", "\n", sep = "")
+            bad_seqs <- data.table()
+            for (i in 1:length(object@bad_seqs_bycluster)) {
+                bad_tmp <- object@bad_seqs_bycluster[[i]]
+                colnames(bad_tmp)[1] <- "seq"
+                lib_tmp <- object@samples[[i]]@vep_anno
+                res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
+                colnames(res_tmp)[3] <- names(object@bad_seqs_bycluster)[i]
 
-            if (nrow(bad_seqs) == 0) {
-                bad_seqs <- res_tmp
-            } else {
-                bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
+                if (nrow(bad_seqs) == 0) {
+                    bad_seqs <- res_tmp
+                } else {
+                    bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
+                }
             }
-        }
 
-        write.table(bad_seqs,
-                    file = paste0(out_dir, "/", "failed_variants_by_cluster.tsv"),
-                    quote = FALSE,
-                    sep = "\t",
-                    row.names = FALSE,
-                    col.names = TRUE)
+            write.table(bad_seqs,
+                        file = paste0(out_dir, "/", "failed_variants_by_cluster.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
 
-        cat("Outputing bad sequences filtered out by sequencing depth...", "\n", sep = "")
-        bad_seqs <- data.table()
-        for (i in 1:length(object@bad_seqs_bydepth)) {
-            bad_tmp <- object@bad_seqs_bydepth[[i]]
-            colnames(bad_tmp)[1] <- "seq"
-            lib_tmp <- object@samples[[i]]@vep_anno
-            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
-            colnames(res_tmp)[3] <- names(object@bad_seqs_bydepth)[i]
+            cat("Outputing bad sequences filtered out by sequencing depth...", "\n", sep = "")
+            bad_seqs <- data.table()
+            for (i in 1:length(object@bad_seqs_bydepth)) {
+                bad_tmp <- object@bad_seqs_bydepth[[i]]
+                colnames(bad_tmp)[1] <- "seq"
+                lib_tmp <- object@samples[[i]]@vep_anno
+                res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
+                colnames(res_tmp)[3] <- names(object@bad_seqs_bydepth)[i]
 
-            if (nrow(bad_seqs) == 0) {
-                bad_seqs <- res_tmp
-            } else {
-                bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
+                if (nrow(bad_seqs) == 0) {
+                    bad_seqs <- res_tmp
+                } else {
+                    bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
+                }
             }
-        }
 
-        write.table(bad_seqs,
-                    file = paste0(out_dir, "/", "failed_variants_by_depth.tsv"),
-                    quote = FALSE,
-                    sep = "\t",
-                    row.names = FALSE,
-                    col.names = TRUE)
+            write.table(bad_seqs,
+                        file = paste0(out_dir, "/", "failed_variants_by_depth.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
 
-        cat("Outputing bad sequences filtered out by library mapping...", "\n", sep = "")
-        bad_seqs <- data.table()
-        for (i in 1:length(object@bad_seqs_bylib)) {
-            bad_tmp <- object@bad_seqs_bylib[[i]]
-            colnames(bad_tmp)[1] <- "seq"
-            lib_tmp <- object@samples[[i]]@vep_anno
-            res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
-            colnames(res_tmp)[3] <- names(object@bad_seqs_bylib)[i]
+            cat("Outputing bad sequences filtered out by library mapping...", "\n", sep = "")
+            bad_seqs <- data.table()
+            for (i in 1:length(object@bad_seqs_bylib)) {
+                bad_tmp <- object@bad_seqs_bylib[[i]]
+                colnames(bad_tmp)[1] <- "seq"
+                lib_tmp <- object@samples[[i]]@vep_anno
+                res_tmp <- bad_tmp[lib_tmp, on = .(seq), nomatch = 0][, c("unique_oligo_name", "seq", "count")]
+                colnames(res_tmp)[3] <- names(object@bad_seqs_bylib)[i]
 
-            if (nrow(bad_seqs) == 0) {
-                bad_seqs <- res_tmp
-            } else {
-                bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
+                if (nrow(bad_seqs) == 0) {
+                    bad_seqs <- res_tmp
+                } else {
+                    bad_seqs <- merge(bad_seqs, res_tmp, by = c("unique_oligo_name", "seq"), all = TRUE)
+                }
             }
-        }
 
-        write.table(bad_seqs,
-                    file = paste0(out_dir, "/", "failed_variants_by_mapping.tsv"),
-                    quote = FALSE,
-                    sep = "\t",
-                    row.names = FALSE,
-                    col.names = TRUE)
+            write.table(bad_seqs,
+                        file = paste0(out_dir, "/", "failed_variants_by_mapping.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
+        }
 
         cat("Outputing missing variants in the library...", "\n", sep = "")
         bad_seqs <- data.table()
@@ -166,10 +168,9 @@ setMethod(
             if (nrow(bad_seqs) == 0) {
                 bad_seqs <- bad_tmp
             } else {
-                bad_seqs <- merge(bad_seqs, bad_tmp)
+                bad_seqs <- merge(bad_seqs, bad_tmp, all = TRUE)
             }
         }
-        setorder(bad_seqs, cols = "sequence")
 
         write.table(bad_seqs,
                     file = paste0(out_dir, "/", "missing_variants_in_library.tsv"),
@@ -273,9 +274,9 @@ setMethod(
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
-                  "Number of library sequences",
-                  "Number of missing library sequences",
-                  "Percentage of missing library sequences",
+                  "Library Sequences",
+                  "Missing Library Sequences",
+                  "% Missing Library Sequences",
                   "Pass Threshold",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
@@ -302,7 +303,18 @@ setMethod(
                       columns = list(
                           "Group" = colDef(minWidth = 100),
                           "Sample" = colDef(minWidth = 100),
-                          "Number of library sequences" = colDef(format = colFormat(separators = TRUE)),
+                          "Library Sequences" = colDef(format = colFormat(separators = TRUE)),
+                          "Missing Library Sequences" = colDef(format = colFormat(separators = TRUE)),
+                          "% Missing Library Sequences" = colDef(format = colFormat(separators = TRUE),
+                                                                 style = function(value) {
+                                                                             if (value > object@cutoffs$per_missing_variants * 100) {
+                                                                                 color <- "red"
+                                                                                 fweight <- "bold"
+                                                                             } else {
+                                                                                 color <- "forestgreen"
+                                                                                 fweight <- "plain"
+                                                                             }
+                                                                             list(color = color, fontWeight = fweight)}),
                           "Pass" = colDef(cell = function(value) {
                                                    if (value) "\u2705" else "\u274c" })),
                       rowStyle = function(index) { if (!(df_outs[index, "Pass"])) { list(background = t_col("tomato", 0.2)) } }
@@ -490,7 +502,7 @@ setMethod(
         cols <- c("Group",
                   "Sample",
                   "Total Library Reads",
-                  "Total Template Oligo Sequences",
+                  "Total Library Sequences",
                   "Library Coverage",
                   "Median Coverage",
                   "Pass Threshold",
@@ -519,7 +531,7 @@ setMethod(
                           "Group" = colDef(minWidth = 100),
                           "Sample" = colDef(minWidth = 100),
                           "Total Library Reads" = colDef(format = colFormat(separators = TRUE)),
-                          "Total Template Oligo Sequences" = colDef(format = colFormat(separators = TRUE)),
+                          "Total Library Sequences" = colDef(format = colFormat(separators = TRUE)),
                           "Library Coverage" = colDef(format = colFormat(separators = TRUE),
                                                       style = function(value) {
                                                                   if (value < object@cutoffs$library_cov) {
@@ -765,16 +777,16 @@ setMethod(
 
         cols <- c("Group",
                   "Sample",
-                  "Gini coefficient",
-                  "Number of total reads",
-                  "Percentage of missing variants",
-                  "Number of accepted reads",
-                  "Percentage of mapping reads",
-                  "Percentage of reference reads",
-                  "Percentage of library reads",
-                  "Depth of library coverage",
-                  "Percentage of R1 adatpor",
-                  "Percentage of R2 adaptor")
+                  "Gini Coefficient",
+                  "Total Reads",
+                  "% Missing Variants",
+                  "Accepted Reads",
+                  "% Mapping Reads",
+                  "% Reference Reads",
+                  "% Library Reads",
+                  "Library Coverage",
+                  "% R1 Adatpor",
+                  "% R2 Adaptor")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
 
@@ -804,13 +816,13 @@ setMethod(
                       columns = list(
                           "Group" = colDef(minWidth = 100),
                           "Sample" = colDef(minWidth = 100),
-                          "Number of total reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "Percentage of missing variants" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "Number of accepted reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "Percentage of mapping reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "Percentage of reference reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "Percentage of library reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "Depth of library coverage" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }))
+                          "Total Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "% Missing Variants" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Accepted Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "% Mapping Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "% Reference Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "% Library Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
+                          "Library Coverage" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }))
                      )
         } else {
             write.table(df_outs,
