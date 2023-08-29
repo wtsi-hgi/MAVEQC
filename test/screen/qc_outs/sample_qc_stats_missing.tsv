@@ -1,4 +1,4 @@
-Group	Sample	Number of library sequences	Number of missing library sequences	Percentage of missing library sequences	Pass Threshold	Pass
+Group	Sample	Library Sequences	Missing Library Sequences	% Missing Library Sequences	Pass Threshold	Pass
 SMARCA4_exon26	hgsm3_d4_r1	2338	48	2.1	1	FALSE
 SMARCA4_exon26	hgsm3_d4_r2	2338	48	2.1	1	FALSE
 SMARCA4_exon26	hgsm3_d4_r3	2338	48	2.1	1	FALSE

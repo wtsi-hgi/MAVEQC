@@ -1,4 +1,4 @@
-Group	Sample	Gini coefficient	Number of total reads	Percentage of missing variants	Number of accepted reads	Percentage of mapping reads	Percentage of reference reads	Percentage of library reads	Depth of library coverage	Percentage of R1 adatpor	Percentage of R2 adaptor
+Group	Sample	Gini Coefficient	Total Reads	% Missing Variants	Accepted Reads	% Mapping Reads	% Reference Reads	% Library Reads	Library Coverage	% R1 Adatpor	% R2 Adaptor
 SMARCA4_exon26	hgsm3_d4_r1	0.514	TRUE	FALSE	TRUE	TRUE	TRUE	TRUE	TRUE	0.0032	0
 SMARCA4_exon26	hgsm3_d4_r2	0.513	TRUE	FALSE	TRUE	TRUE	TRUE	TRUE	TRUE	0.0032	0
 SMARCA4_exon26	hgsm3_d4_r3	0.516	TRUE	FALSE	TRUE	TRUE	TRUE	TRUE	TRUE	0.0032	0
