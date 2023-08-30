@@ -20,10 +20,10 @@ setMethod(
                           dcut = maveqc_config$expqc_lfc_depleted,
                           ecut = maveqc_config$expqc_lfc_enriched,
                           ntop = maveqc_config$expqc_top_variants) {
-        cat("Running DESeq2 on library counts...", "\n", sep = "")
-        object <- run_experiment_qc_lib_lfc(object, pcut = pcut, dcut = dcut, ecut = ecut, ntop = ntop)
+        #cat("Running DESeq2 on library counts...", "\n", sep = "")
+        #object <- run_experiment_qc_lib_lfc(object, pcut = pcut, dcut = dcut, ecut = ecut, ntop = ntop)
 
-        cat("Running DESeq2 on all counts...", "\n", sep = "")
+        cat("Running DESeq2 on all counts after filtering...", "\n", sep = "")
         object <- run_experiment_qc_all_lfc(object, pcut = pcut, dcut = dcut, ecut = ecut)
     }
 )
