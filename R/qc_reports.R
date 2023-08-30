@@ -501,7 +501,7 @@ create_qc_reports <- function(samplesheet = NULL,
 
                 cat("```{r, echo = FALSE}", "\n", sep = "")
                 cat("df <- as.data.frame(read.table(\"", tsvs[i], "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
-                cat("df <- df[, c(\"oligo_name\", \"consequence\", \"position\", \"adj_log2FoldChange\", \"adj_bh\", \"stat\")]", "\n", sep = "")
+                cat("df <- df[, c(\"oligo_name\", \"consequence\", \"position\", \"adj_log2FoldChange\", \"adj_fdr\", \"stat\")]", "\n", sep = "")
                 cat("max_log2fc <- max(abs(df$adj_log2FoldChange))", "\n", sep = "")
                 cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
                 cat("          filterable = TRUE, minRows = 10, defaultColDef = colDef(minWidth = 150),", "\n", sep = "")

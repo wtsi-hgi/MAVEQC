@@ -969,7 +969,6 @@ setMethod(
         for (i in 1:length(object@comparisons)) {
             if (eqc_type == "lib") {
                 df_outs <- object@lib_deseq_res_anno[[i]]
-                df_outs[, sequence := NULL]
                 df_outs <- df_outs[stat != "no impact"]
 
                 write.table(df_outs,
@@ -980,7 +979,6 @@ setMethod(
                             col.names = TRUE)
             } else {
                 df_outs <- object@all_deseq_res_anno_adj[[i]]
-                df_outs[, sequence := NULL]
                 df_outs <- df_outs[stat != "no impact"]
 
                 write.table(df_outs,
