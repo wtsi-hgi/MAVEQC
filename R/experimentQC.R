@@ -20,8 +20,8 @@ setMethod(
                           dcut = maveqc_config$expqc_lfc_depleted,
                           ecut = maveqc_config$expqc_lfc_enriched,
                           ntop = maveqc_config$expqc_top_variants) {
-        #cat("Running DESeq2 on library counts...", "\n", sep = "")
-        #object <- run_experiment_qc_lib_lfc(object, pcut = pcut, dcut = dcut, ecut = ecut, ntop = ntop)
+        cat("Running DESeq2 on library counts for PCA...", "\n", sep = "")
+        object <- run_experiment_qc_lib_lfc(object, pcut = pcut, dcut = dcut, ecut = ecut, ntop = ntop)
 
         cat("Running DESeq2 on all counts after filtering...", "\n", sep = "")
         object <- run_experiment_qc_all_lfc(object, pcut = pcut, dcut = dcut, ecut = ecut)
@@ -82,7 +82,7 @@ setMethod(
         ds_obj$condition <- relevel(ds_obj$condition, ref = object@ref_condition)
         sizeFactors(ds_obj) <- sizeFactors(syn_ds_obj)
 
-        suppressMessages(ds_obj <- DESeq(ds_obj, quiet = TRUE))
+        suppressMessages(ds_obj <- DESeq(ds_obj, fitType = "local", quiet = TRUE))
         ds_rlog <- rlog(ds_obj)
 
         object@lib_deseq_rlog <- as.data.frame(assay(ds_rlog))
