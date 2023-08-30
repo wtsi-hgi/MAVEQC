@@ -249,13 +249,17 @@ Pandoc is required to generate the R markdown report. Please download and instal
 <p align="right">(<a href="#top">TOP</a>)</p>
 
 <a id="test"></a>
-### Test datasets: 
-Test datasets are in the ```test``` directory in the repo. ```plasmid``` and ```screen``` are saperated by analysis. 
+### apeglm
+the version of apeglm must be >= 1.22.1, optimHess problem in the lower version like below.
+```
+Error in optimHess(par = init, fn = nbinomFn, gr = nbinomGr, x = x, y = y,  : 
+non-finite value supplied by optim
+```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
 
 <a id="conda"></a>
-### Conda: 
+### Conda
 When installing DESeq2, it may have error (Rlog1) on Mac M1 chip. Try cmd below to fix it.
 
 ```
