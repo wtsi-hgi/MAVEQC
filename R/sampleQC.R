@@ -175,15 +175,22 @@ setMethod(
             # note library independent counts may have different sequences
             accepted_counts <- merge_list_to_dt(object@accepted_counts, "sequence", "count")
             accepted_counts[, sample_number := rowSums(.SD >= cutoff_low_count, na.rm = TRUE), .SDcols = 2:ncol(accepted_counts)]
-            accepted_counts[, sample_percentage := sample_number / length(sample_names)]
+
+            #accepted_counts[, sample_percentage := sample_number / length(sample_names)]
+
+            # now use round the minimal number of samples, rather than percentage
+            # like 0.25 * 9 = 2.25 minimal samples, 2.25 sounds not right, so use round(2.25) = 2
+            min_samples <- round(cutoff_low_sample_per * length(sample_names))
 
             for (s in object@samples) {
                 cols <- c("sequence", s@sample)
-                object@accepted_counts[[s@sample]] <- na.omit(accepted_counts[sample_percentage >= cutoff_low_sample_per, ..cols], cols = s@sample)
+                #object@accepted_counts[[s@sample]] <- na.omit(accepted_counts[sample_percentage >= cutoff_low_sample_per, ..cols], cols = s@sample)
+                object@accepted_counts[[s@sample]] <- na.omit(accepted_counts[sample_number >= min_samples, ..cols], cols = s@sample)
                 colnames(object@accepted_counts[[s@sample]]) <- c("sequence", "count")
 
                 cols <- c("sequence", s@sample)
-                object@bad_seqs_bydepth[[s@sample]] <- na.omit(accepted_counts[sample_percentage < cutoff_low_sample_per, ..cols], cols = s@sample)
+                #object@bad_seqs_bydepth[[s@sample]] <- na.omit(accepted_counts[sample_percentage < cutoff_low_sample_per, ..cols], cols = s@sample)
+                object@bad_seqs_bydepth[[s@sample]] <- na.omit(accepted_counts[sample_number < min_samples, ..cols], cols = s@sample)
                 colnames(object@bad_seqs_bydepth[[s@sample]]) <- c("sequence", "count")
             }
         } else {

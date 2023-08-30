@@ -16,7 +16,9 @@ A class representing a primary qc object
 
 \item{\code{ref_condition}}{the reference condition, like D4, others VS D4 in DESeq2}
 
-\item{\code{accepted_counts}}{a data frame of acceptec counts of all the samples}
+\item{\code{vep_anno}}{a data frame of consequence annotations (should be the same in all the samples for screen qc)}
+
+\item{\code{accepted_counts}}{a data frame of accepted counts of all the samples}
 
 \item{\code{library_counts_anno}}{a data frame of library counts of all the samples, annotated with consequences}
 

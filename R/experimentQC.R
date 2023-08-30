@@ -173,18 +173,18 @@ setMethod(
         # run control
         cat("    |--> Running normalisation using total number of counts...", "\n", sep = "")
 
-        accepted_counts <- as.data.frame(object@accepted_counts)
-        accepted_counts[is.na(accepted_counts)] <- 0
+        deseq_counts <- as.data.frame(object@accepted_counts)
+        deseq_counts[is.na(deseq_counts)] <- 0
         ds_coldata <- object@coldata
 
         # rownames are necessary for DESeq2, otherwise error happens to assign values in function
-        rownames(accepted_counts) <- accepted_counts$sequence
-        accepted_counts <- accepted_counts[, rownames(ds_coldata)]
+        rownames(deseq_counts) <- deseq_counts$sequence
+        deseq_counts <- deseq_counts[, rownames(ds_coldata)]
 
-        sizeFactor <- colSums(accepted_counts) / 1000000
-        normFactor <- t(replicate(nrow(accepted_counts), sizeFactor))
+        sizeFactor <- colSums(deseq_counts) / 1000000
+        normFactor <- t(replicate(nrow(deseq_counts), sizeFactor))
 
-        suppressMessages(ds_obj <- DESeqDataSetFromMatrix(countData = accepted_counts, colData = ds_coldata, design = ~condition))
+        suppressMessages(ds_obj <- DESeqDataSetFromMatrix(countData = deseq_counts, colData = ds_coldata, design = ~condition))
         ds_obj$condition <- factor(ds_obj$condition, levels = mixedsort(levels(ds_obj$condition)))
         ds_obj$condition <- relevel(ds_obj$condition, ref = object@ref_condition)
         normalizationFactors(ds_obj) <- normFactor[, rownames(ds_coldata)]
@@ -209,7 +209,8 @@ setMethod(
 
         object@all_deseq_res <- ds_res
 
-        library_counts_pos_anno <- object@library_counts_pos_anno
+        vep_anno <- object@vep_anno[, c("unique_oligo_name", "seq", "vcf_pos", "summary_plot")]
+        colnames(vep_anno) <- c("oligo_name", "sequence", "position", "consequence")
 
         comparisions <- names(object@all_deseq_res)
         for (i in 1:length(object@all_deseq_res)) {
@@ -217,7 +218,7 @@ setMethod(
             res$sequence <- rownames(res)
             res <- as.data.table(res)
 
-            res[library_counts_pos_anno, c("oligo_name", "position", "consequence") := .(oligo_name, position, consequence), on = .(sequence)]
+            res[vep_anno, c("oligo_name", "position", "consequence") := .(oligo_name, position, consequence), on = .(sequence)]
 
             res$stat <- "no impact"
             res[(res$padj < pcut) & (res$log2FoldChange > ecut), ]$stat <- "enriched"

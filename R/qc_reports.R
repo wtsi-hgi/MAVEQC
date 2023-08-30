@@ -474,7 +474,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("<br>", "\n", sep = "")
             cat("\n", sep = "")
 
-            cat("#### 2.3.3. Folder Change (by category)", "\n", sep = "")
+            cat("#### 2.3.3. Fold Change (by category)", "\n", sep = "")
             cat("\n", sep = "")
             cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
             cat("figs <- list.files(path = outdir, pattern = \"experiment_qc_deseq_fc.*.all_beeswarm.png\", full.names = TRUE)", "\n", sep = "")
@@ -484,7 +484,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("<br>", "\n", sep = "")
             cat("\n", sep = "")
 
-            cat("#### 2.3.4. Folder Change (by position)", "\n", sep = "")
+            cat("#### 2.3.4. Fold Change (by position)", "\n", sep = "")
             cat("\n", sep = "")
             figs <- list.files(path = qc_dir, pattern = "experiment_qc_deseq_fc.*.all_position.png", full.names = TRUE)
             figs <- mixedsort(figs)

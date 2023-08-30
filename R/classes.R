@@ -201,7 +201,7 @@ create_sge_object <- function(file_libcount,
 #' @slot cutoffs                  a data frame of cutoffs using in sample QC
 #' @slot samples                  a list of SGE objects
 #' @slot samples_ref              a list of SGE objects which are the references for screen QC
-#' @slot counts                   a list of sample counts
+#' @slot counts                   a list of sample libraray-independent counts
 #' @slot lengths                  a list of sequence lengths
 #' @slot seq_clusters             a list of dataframes of sequences and cluster IDs
 #' @slot accepted_counts          a list of filtered counts of all the samples
@@ -346,7 +346,8 @@ setClass("prcomp")
 #' @slot samples                    a list of SGE objects
 #' @slot coldata                    a data frame of coldata for DESeq2
 #' @slot ref_condition              the reference condition, like D4, others VS D4 in DESeq2
-#' @slot accepted_counts            a data frame of acceptec counts of all the samples
+#' @slot vep_anno                   a data frame of consequence annotations (should be the same in all the samples for screen qc)
+#' @slot accepted_counts            a data frame of accepted counts of all the samples
 #' @slot library_counts_anno        a data frame of library counts of all the samples, annotated with consequences
 #' @slot library_counts_pos_anno    a data frame of library counts of all the samples, annotated with consequences, sorted by position
 #' @slot comparisons                a list of comparisons for degComps
@@ -365,6 +366,7 @@ setClass("experimentQC",
         samples = "list",
         coldata = "data.frame",
         ref_condition = "character",
+        vep_anno = "data.frame",
         accepted_counts = "data.frame",
         library_counts_anno = "data.frame",
         library_counts_pos_anno = "data.frame",
@@ -384,6 +386,7 @@ setClass("experimentQC",
         samples = list(),
         coldata = data.frame(),
         ref_condition = character(),
+        vep_anno = data.frame(),
         accepted_counts = data.frame(),
         library_counts_anno = data.frame(),
         library_counts_pos_anno = data.frame(),
@@ -447,11 +450,13 @@ create_experimentqc_object <- function(samqc_obj,
         samples = samqc_obj@samples,
         coldata = coldata,
         ref_condition = refcond,
+        vep_anno = samqc_obj@samples[[1]]@vep_anno,
         accepted_counts = merge_list_to_dt(samqc_obj@accepted_counts, "sequence", "count"),
         library_counts_anno = samqc_obj@library_counts_anno,
         library_counts_pos_anno = samqc_obj@library_counts_pos_anno,
         comparisons = ds_contrast)
 
+    experimentqc_object@vep_anno <- as.data.table(experimentqc_object@vep_anno)
     experimentqc_object@accepted_counts <- as.data.table(experimentqc_object@accepted_counts)
     experimentqc_object@library_counts_anno <- as.data.table(experimentqc_object@library_counts_anno)
     experimentqc_object@library_counts_pos_anno <- as.data.table(experimentqc_object@library_counts_pos_anno)

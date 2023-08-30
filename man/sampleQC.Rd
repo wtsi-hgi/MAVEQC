@@ -16,7 +16,7 @@ A class representing a primary qc object
 
 \item{\code{samples_ref}}{a list of SGE objects which are the references for screen QC}
 
-\item{\code{counts}}{a list of sample counts}
+\item{\code{counts}}{a list of sample libraray-independent counts}
 
 \item{\code{lengths}}{a list of sequence lengths}
 
