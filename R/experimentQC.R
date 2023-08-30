@@ -82,7 +82,7 @@ setMethod(
         ds_obj$condition <- relevel(ds_obj$condition, ref = object@ref_condition)
         sizeFactors(ds_obj) <- sizeFactors(syn_ds_obj)
 
-        suppressMessages(ds_obj <- DESeq(ds_obj, fitType = "local", quiet = TRUE))
+        suppressMessages(ds_obj <- DESeq(ds_obj, quiet = TRUE))
         ds_rlog <- rlog(ds_obj)
 
         object@lib_deseq_rlog <- as.data.frame(assay(ds_rlog))
@@ -245,11 +245,11 @@ setMethod(
 
             res$adj_score <- res$adj_log2FoldChange / res$lfcSE
             res$adj_pval <- pnorm(abs(res$adj_score), lower.tail = FALSE) * 2
-            res$adj_bh <- p.adjust(res$adj_pval, method = "BH")
+            res$adj_fdr <- p.adjust(res$adj_pval, method = "fdr")
 
             res$stat <- "no impact"
-            res[(res$adj_bh < pcut) & (res$adj_log2FoldChange > ecut), ]$stat <- "enriched"
-            res[(res$adj_bh < pcut) & (res$adj_log2FoldChange < dcut), ]$stat <- "depleted"
+            res[(res$adj_fdr < pcut) & (res$adj_log2FoldChange > ecut), ]$stat <- "enriched"
+            res[(res$adj_fdr < pcut) & (res$adj_log2FoldChange < dcut), ]$stat <- "depleted"
 
             res$stat <- factor(res$stat, levels = c("no impact", "enriched", "depleted"))
 

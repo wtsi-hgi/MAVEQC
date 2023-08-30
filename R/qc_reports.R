@@ -515,7 +515,7 @@ create_qc_reports <- function(samplesheet = NULL,
                 cat("                                                                bar_chart_pos_neg(label, value, max_value = max_log2fc)},", "\n", sep = "")
                 cat("                                                     align = \"center\",", "\n", sep = "")
                 cat("                                                     minWidth = 300),", "\n", sep = "")
-                cat("                         \"adj_bh\" = colDef(format = colFormat(digits = 3)),", "\n", sep = "")
+                cat("                         \"adj_fdr\" = colDef(format = colFormat(digits = 3)),", "\n", sep = "")
                 cat("                         \"stat\"  = colDef(style = function(value) {", "\n", sep = "")
                 cat("                                                        if (value == \"enriched\") {", "\n", sep = "")
                 cat("                                                            color <- \"red\"", "\n", sep = "")
