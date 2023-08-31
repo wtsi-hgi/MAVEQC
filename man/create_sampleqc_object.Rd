@@ -2,7 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{create_sampleqc_object}
 \alias{create_sampleqc_object}
-\title{Create a new sampleQC object}
+\title{Create a new sample QC object}
 \usage{
 create_sampleqc_object(samples)
 }
@@ -13,5 +13,5 @@ create_sampleqc_object(samples)
 An object of class sampleQC
 }
 \description{
-Create a new sampleQC object
+Create a new sample QC object
 }

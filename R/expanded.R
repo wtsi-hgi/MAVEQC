@@ -1,5 +1,8 @@
 #' transparent color function
 #'
+#' creating a transparent color using color name,
+#' alpha rate is 0 to 1
+#'
 #' @name t_col
 #' @param col  color name
 #' @param rate alpha rate

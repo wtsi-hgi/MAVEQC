@@ -194,7 +194,7 @@ create_sge_object <- function(file_libcount,
     return(sge_object)
 }
 
-#' A class representing a primary qc object
+#' A class representing a sample QC object
 #'
 #' @export
 #' @name sampleQC
@@ -259,7 +259,7 @@ setClass("sampleQC",
     )
 )
 
-#' Create a new sampleQC object
+#' Create a new sample QC object
 #'
 #' @export
 #' @name create_sampleqc_object
@@ -342,7 +342,7 @@ create_sampleqc_object <- function(samples) {
 
 setClass("hclust")
 setClass("prcomp")
-#' A class representing a primary qc object
+#' A class representing a experiment QC object
 #'
 #' @export
 #' @name experimentQC
@@ -407,7 +407,7 @@ setClass("experimentQC",
     )
 )
 
-#' Create a new experimentQC object
+#' Create a new experiment QC object
 #'
 #' @export
 #' @name create_experimentqc_object

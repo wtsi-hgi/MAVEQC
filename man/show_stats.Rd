@@ -14,5 +14,5 @@ show_stats(object, ...)
 \description{
 initialize function
 
-show basic stats of the object
+show basic stats of a SGE object
 }

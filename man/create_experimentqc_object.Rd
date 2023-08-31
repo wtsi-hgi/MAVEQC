@@ -2,7 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{create_experimentqc_object}
 \alias{create_experimentqc_object}
-\title{Create a new experimentQC object}
+\title{Create a new experiment QC object}
 \usage{
 create_experimentqc_object(samqc_obj, coldata = NULL, refcond)
 }
@@ -17,5 +17,5 @@ create_experimentqc_object(samqc_obj, coldata = NULL, refcond)
 An object of class sampleQC
 }
 \description{
-Create a new experimentQC object
+Create a new experiment QC object
 }

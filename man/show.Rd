@@ -2,17 +2,17 @@
 % Please edit documentation in R/display.R
 \name{show}
 \alias{show}
-\title{show basic info of the object}
+\title{show basic info of a SGE object}
 \usage{
 \S4method{show}{SGE}(object)
 
 \S4method{show}{sampleQC}(object)
 }
 \arguments{
-\item{object}{primary object}
+\item{object}{sampleQC object}
 }
 \description{
-show basic info of the object
+show basic info of a SGE object
 
-show basic info of the object
+show basic info of a SGE object
 }

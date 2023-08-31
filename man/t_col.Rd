@@ -15,5 +15,6 @@ t_col(col, rate)
 transparent color
 }
 \description{
-transparent color function
+creating a transparent color using color name,
+alpha rate is 0 to 1
 }

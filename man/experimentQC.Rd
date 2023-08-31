@@ -3,9 +3,9 @@
 \docType{class}
 \name{experimentQC}
 \alias{experimentQC}
-\title{A class representing a primary qc object}
+\title{A class representing a experiment QC object}
 \description{
-A class representing a primary qc object
+A class representing a experiment QC object
 }
 \section{Slots}{
 

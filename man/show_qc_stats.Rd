@@ -14,5 +14,5 @@ show_qc_stats(object, ...)
 \description{
 initialize function
 
-show qc stats of the object
+show qc stats of a SGE object
 }
