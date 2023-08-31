@@ -5,7 +5,25 @@
 \title{initialize function}
 \usage{
 qcplot_samqc_all(object, ...)
+
+\S4method{qcplot_samqc_all}{sampleQC}(
+  object,
+  qc_type = c("plasmid", "screen"),
+  samples = NULL,
+  plot_dir = NULL
+)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{qc_type}{qc type}
+
+\item{samples}{samples for LOF annotation plot}
+
+\item{plot_dir}{the output plot directory}
 }
 \description{
 initialize function
+
+create all the plot figures
 }

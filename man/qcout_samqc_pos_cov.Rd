@@ -5,7 +5,18 @@
 \title{initialize function}
 \usage{
 qcout_samqc_pos_cov(object, ...)
+
+\S4method{qcout_samqc_pos_cov}{sampleQC}(object, qc_type = c("plasmid", "screen"), out_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{qc_type}{screen or plasmid}
+
+\item{out_dir}{the output directory}
 }
 \description{
 initialize function
+
+create output file of lof percentages
 }

@@ -5,7 +5,16 @@
 \title{initialize function}
 \usage{
 qcplot_expqc_all(object, ...)
+
+\S4method{qcplot_expqc_all}{experimentQC}(object, plot_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{plot_dir}{the output plot directory}
 }
 \description{
 initialize function
+
+create all the plot figures
 }

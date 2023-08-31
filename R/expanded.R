@@ -5,7 +5,11 @@
 #' @param rate alpha rate
 #' @return transparent color
 t_col <- function(col, rate) {
-    newcol <- rgb(col2rgb(col)["red",], col2rgb(col)["green",], col2rgb(col)["blue",], as.integer(rate*255), maxColorValue = 255)
+    newcol <- rgb(col2rgb(col)["red", ],
+                  col2rgb(col)["green", ],
+                  col2rgb(col)["blue", ],
+                  as.integer(rate * 255),
+                  maxColorValue = 255)
     return(newcol)
 }
 
@@ -85,7 +89,7 @@ trim_adaptor <- function(seq, adapt5, adapt3) {
     }
 }
 
-#' reverse complement
+#' column binding with filling NAs
 #'
 #' @name cbind_fill
 #' @return matrix
@@ -98,6 +102,7 @@ cbind_fill <- function(...) {
 
 #' calculate gini coefficiency for a sample
 #'
+#' @name cal_gini
 #' @param x a vector
 #' @return a value
 cal_gini <- function(x, corr = FALSE, na.rm = TRUE) {
@@ -117,6 +122,7 @@ cal_gini <- function(x, corr = FALSE, na.rm = TRUE) {
 
 #' merge a list of data tables into a data table
 #'
+#' @name merge_list_to_dt
 #' @param objects   a list of data tables
 #' @param by_val    join data tables by which column
 #' @param join_val  join which column in the data tables
@@ -143,6 +149,7 @@ merge_list_to_dt <- function(list_dt, by_val, join_val) {
 
 #' color blind friendly
 #'
+#' @name select_colorblind
 #' @param col_id a character to select colors
 #' @return a vector of colors
 select_colorblind <- function(col_id) {
@@ -185,6 +192,7 @@ select_colorblind <- function(col_id) {
 #' fetch objects from list by the names or indexes
 #'
 #' @export
+#' @name select_objects
 #' @param objects a list of objects
 #' @param tags    a vector of names or indexes
 #' @return a list of objects

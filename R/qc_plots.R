@@ -6,6 +6,7 @@ setGeneric("qcplot_samqc_all", function(object, ...) {
 #' create all the plot figures
 #'
 #' @export
+#' @name qcplot_samqc_all
 #' @param object   sampleQC object
 #' @param qc_type  qc type
 #' @param samples  samples for LOF annotation plot
@@ -49,6 +50,7 @@ setGeneric("qcplot_samqc_readlens", function(object, ...) {
 #' create the read length plot
 #'
 #' @export
+#' @name qcplot_samqc_readlens
 #' @param object   sampleQC object
 #' @param len_bins the bins of length distribution
 #' @param plot_dir the output plot directory
@@ -122,6 +124,7 @@ setGeneric("qcplot_samqc_clusters", function(object, ...) {
 #' create the sequence counts and clusters plot
 #'
 #' @export
+#' @name qcplot_samqc_clusters
 #' @param object    sampleQC object
 #' @param qc_type   qc type for plot
 #' @param plot_dir  the output plot directory
@@ -211,6 +214,7 @@ setGeneric("qcplot_samqc_total", function(object, ...) {
 #' create the stats plot
 #'
 #' @export
+#' @name qcplot_samqc_total
 #' @param object   sampleQC object
 #' @param plot_dir the output plot directory
 setMethod(
@@ -260,6 +264,7 @@ setGeneric("qcplot_samqc_accepted", function(object, ...) {
 #' create the stats plot
 #'
 #' @export
+#' @name qcplot_samqc_accepted
 #' @param object   sampleQC object
 #' @param plot_dir the output plot directory
 setMethod(
@@ -354,6 +359,7 @@ setGeneric("qcplot_samqc_gini", function(object, ...) {
 #' create the gini plot
 #'
 #' @export
+#' @name qcplot_samqc_gini
 #' @param object   sampleQC object
 #' @param plot_dir the output plot directory
 setMethod(
@@ -420,6 +426,7 @@ setGeneric("qcplot_samqc_pos_cov", function(object, ...) {
 #' create the position plot
 #'
 #' @export
+#' @name qcplot_samqc_pos_cov
 #' @param object   sampleQC object
 #' @param qc_type  plot type, screen or plasmid
 #' @param plot_dir the output plot directory
@@ -517,6 +524,7 @@ setGeneric("qcplot_samqc_pos_anno", function(object, ...) {
 #' create the position plot
 #'
 #' @export
+#' @name qcplot_samqc_pos_anno
 #' @param object    sampleQC object
 #' @param samples   a vector of sample names
 #' @param type      plot type, lof or all
@@ -644,6 +652,7 @@ setGeneric("qcplot_expqc_all", function(object, ...) {
 #' create all the plot figures
 #'
 #' @export
+#' @name qcplot_expqc_all
 #' @param object   sampleQC object
 #' @param plot_dir the output plot directory
 setMethod(
@@ -670,6 +679,7 @@ setGeneric("qcplot_expqc_sample_corr", function(object, ...) {
 #' create the heatmap of samples
 #'
 #' @export
+#' @name qcplot_expqc_sample_corr
 #' @param object   experimentQC object
 #' @param plot_dir the output plot directory
 setMethod(
@@ -750,6 +760,7 @@ setGeneric("qcplot_expqc_sample_pca", function(object, ...) {
 #' create the pca of samples
 #'
 #' @export
+#' @name qcplot_expqc_sample_pca
 #' @param object     experimentQC object
 #' @param plot_dir   the output plot directory
 setMethod(
@@ -813,6 +824,7 @@ setGeneric("qcplot_expqc_deseq_fc", function(object, ...) {
 #' create fold change and consequence plot
 #'
 #' @export
+#' @name qcplot_expqc_deseq_fc
 #' @param object     experimentQC object
 #' @param eqc_type   library counts or all counts 
 #' @param cons       a vector of the selected consequences in the vep annotation file
@@ -939,6 +951,7 @@ setGeneric("qcplot_expqc_deseq_fc_pos", function(object, ...) {
 #' create fold change and consequence plot
 #'
 #' @export
+#' @name qcplot_expqc_deseq_fc_pos
 #' @param object    experimentQC object
 #' @param eqc_type  library counts or all counts
 #' @param cons      a vector of all the consequences in the vep annotation file

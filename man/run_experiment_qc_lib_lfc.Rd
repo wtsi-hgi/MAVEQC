@@ -5,7 +5,25 @@
 \title{initialize function}
 \usage{
 run_experiment_qc_lib_lfc(object, ...)
+
+\S4method{run_experiment_qc_lib_lfc}{experimentQC}(object, pcut, dcut, ecut, ntop)
+}
+\arguments{
+\item{object}{experimentQC object}
+
+\item{pcut}{the padj cutoff}
+
+\item{dcut}{the depleted log2 fold change cutoff}
+
+\item{ecut}{the enriched log2 fold change cutoff}
+
+\item{ntop}{the number of top variances}
+}
+\value{
+object
 }
 \description{
 initialize function
+
+run DESeq2 for the list of samples
 }

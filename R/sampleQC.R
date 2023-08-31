@@ -6,6 +6,7 @@ setGeneric("run_sample_qc", function(object, ...) {
 #' run sample QC for the list of samples
 #'
 #' @export
+#' @name run_sample_qc
 #' @param object                 sampleQC object
 #' @param qc_type                plasmid or screen
 #' @param cutoff_total           qc cutoff of the total reads

@@ -5,7 +5,18 @@
 \title{initialize function}
 \usage{
 qcout_samqc_all(object, ...)
+
+\S4method{qcout_samqc_all}{sampleQC}(object, qc_type = c("plasmid", "screen"), out_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{qc_type}{qc type}
+
+\item{out_dir}{the output directory}
 }
 \description{
 initialize function
+
+create all the output files
 }

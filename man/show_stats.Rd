@@ -5,7 +5,14 @@
 \title{initialize function}
 \usage{
 show_stats(object, ...)
+
+\S4method{show_stats}{SGE}(object)
+}
+\arguments{
+\item{object}{SGE object}
 }
 \description{
 initialize function
+
+show basic stats of the object
 }

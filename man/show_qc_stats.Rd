@@ -5,7 +5,14 @@
 \title{initialize function}
 \usage{
 show_qc_stats(object, ...)
+
+\S4method{show_qc_stats}{SGE}(object)
+}
+\arguments{
+\item{object}{SGE object}
 }
 \description{
 initialize function
+
+show qc stats of the object
 }

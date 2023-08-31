@@ -5,7 +5,20 @@
 \title{initialize function}
 \usage{
 qcplot_samqc_pos_anno(object, ...)
+
+\S4method{qcplot_samqc_pos_anno}{sampleQC}(object, samples = NULL, type = "lof", plot_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{samples}{a vector of sample names}
+
+\item{type}{plot type, lof or all}
+
+\item{plot_dir}{the output plot directory}
 }
 \description{
 initialize function
+
+create the position plot
 }

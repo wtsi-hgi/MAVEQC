@@ -6,6 +6,7 @@ setGeneric("format_count", function(object, ...) {
 #' format library dependent and independent counts with extra info and remove duplicate/useless info
 #'
 #' @export
+#' @name format_count
 #' @param object SGE object
 #' @return object
 setMethod(
@@ -102,6 +103,7 @@ setGeneric("sge_stats", function(object, ...) {
 #' format library dependent and independent counts with extra info and remove duplicate/useless info
 #'
 #' @export
+#' @name sge_stats
 #' @param object SGE object
 #' @param lowcut cutoff which determines the oligo count is low, user's definition
 #' @return object
@@ -150,6 +152,7 @@ setGeneric("sge_qc_stats", function(object, ...) {
 #' format library dependent and independent counts with extra info and remove duplicate/useless info
 #'
 #' @export
+#' @name sge_qc_stats
 #' @param object SGE object
 #' @param lowcut cutoff which determines the oligo count is low, user's definition
 #' @return object

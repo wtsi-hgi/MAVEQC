@@ -6,6 +6,7 @@ setGeneric("run_experiment_qc", function(object, ...) {
 #' run DESeq2 for the list of samples
 #'
 #' @export
+#' @name run_experiment_qc
 #' @param object  experimentQC object
 #' @param pcut    the padj cutoff
 #' @param dcut    the depleted log2 fold change cutoff
@@ -37,6 +38,7 @@ setGeneric("run_experiment_qc_lib_lfc", function(object, ...) {
 #' run DESeq2 for the list of samples
 #'
 #' @export
+#' @name run_experiment_qc_lib_lfc
 #' @param object  experimentQC object
 #' @param pcut    the padj cutoff
 #' @param dcut    the depleted log2 fold change cutoff
@@ -155,6 +157,7 @@ setGeneric("run_experiment_qc_all_lfc", function(object, ...) {
 #' run DESeq2 for the list of samples
 #'
 #' @export
+#' @name run_experiment_qc_all_lfc
 #' @param object  experimentQC object
 #' @param pcut    the padj cutoff
 #' @param dcut    the depleted log2 fold change cutoff

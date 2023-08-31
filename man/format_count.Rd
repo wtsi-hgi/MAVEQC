@@ -5,7 +5,17 @@
 \title{initialize function}
 \usage{
 format_count(object, ...)
+
+\S4method{format_count}{SGE}(object)
+}
+\arguments{
+\item{object}{SGE object}
+}
+\value{
+object
 }
 \description{
 initialize function
+
+format library dependent and independent counts with extra info and remove duplicate/useless info
 }

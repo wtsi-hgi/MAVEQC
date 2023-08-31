@@ -2,7 +2,7 @@
 % Please edit documentation in R/expanded.R
 \name{cbind_fill}
 \alias{cbind_fill}
-\title{reverse complement}
+\title{column binding with filling NAs}
 \usage{
 cbind_fill(...)
 }
@@ -10,5 +10,5 @@ cbind_fill(...)
 matrix
 }
 \description{
-reverse complement
+column binding with filling NAs
 }

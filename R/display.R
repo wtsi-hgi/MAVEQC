@@ -1,6 +1,7 @@
 #' show basic info of the object
 #'
 #' @export
+#' @name show
 #' @param object SGE object
 setMethod(
     "show",
@@ -29,6 +30,7 @@ setGeneric("show_stats", function(object, ...) {
 #' show basic stats of the object
 #'
 #' @export
+#' @name show_stats
 #' @param object SGE object
 setMethod(
     "show_stats",
@@ -64,6 +66,7 @@ setGeneric("show_qc_stats", function(object, ...) {
 #' show qc stats of the object
 #'
 #' @export
+#' @name show_qc_stats
 #' @param object SGE object
 setMethod(
     "show_qc_stats",
@@ -94,6 +97,7 @@ setMethod(
 #' show basic info of the object
 #'
 #' @export
+#' @name show
 #' @param object primary object
 setMethod(
     "show",

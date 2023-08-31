@@ -21,8 +21,8 @@
 #' create the template of config file
 #'
 #' @export
-#' @param config_dir  the directory of config file
 #' @name create_config
+#' @param config_dir  the directory of config file
 create_config <- function(config_dir) {
     config_path <- paste0(config_dir, "/", "config.yaml")
 
@@ -92,8 +92,8 @@ create_config <- function(config_dir) {
 #' load the user's config file
 #'
 #' @export
-#' @param config_path  the path of config file
 #' @name load_config
+#' @param config_path  the path of config file
 load_config <- function(config_path) {
     if (file.exists(config_path)) {
         user_config <- read.config(file = config_path)

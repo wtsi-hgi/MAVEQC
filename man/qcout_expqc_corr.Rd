@@ -5,7 +5,16 @@
 \title{initialize function}
 \usage{
 qcout_expqc_corr(object, ...)
+
+\S4method{qcout_expqc_corr}{experimentQC}(object, out_dir = NULL)
+}
+\arguments{
+\item{object}{experimentQC object}
+
+\item{out_dir}{the output directory}
 }
 \description{
 initialize function
+
+create output file of clustering and correlation results
 }

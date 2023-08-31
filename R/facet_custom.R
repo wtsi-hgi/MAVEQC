@@ -1,6 +1,6 @@
 #' scale_override for facet_custom
 #'
-#' @name t_col
+#' @name scale_override
 #' @param which  which grid in the facet
 #' @param scale  x or y scale
 #' @return a structure

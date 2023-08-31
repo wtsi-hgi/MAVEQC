@@ -6,6 +6,7 @@ setGeneric("qcout_samqc_all", function(object, ...) {
 #' create all the output files
 #'
 #' @export
+#' @name qcout_samqc_all
 #' @param object   sampleQC object
 #' @param qc_type  qc type
 #' @param out_dir  the output directory
@@ -46,6 +47,7 @@ setGeneric("qcout_samqc_cutoffs", function(object, ...) {
 #' create output file of bad seqs which fail filtering
 #'
 #' @export
+#' @name qcout_samqc_cutoffs
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -74,6 +76,7 @@ setGeneric("qcout_samqc_badseqs", function(object, ...) {
 #' create output file of bad seqs which fail filtering for screen qc
 #'
 #' @export
+#' @name qcout_samqc_badseqs
 #' @param object   sampleQC object
 #' @param qc_type  plasmid or screen
 #' @param out_dir  the output directory
@@ -189,6 +192,7 @@ setGeneric("qcout_samqc_readlens", function(object, ...) {
 #' create output file of total reads stats
 #'
 #' @export
+#' @name qcout_samqc_readlens
 #' @param object    sampleQC object
 #' @param len_bins  the bins of length distribution
 #' @param out_dir   the output directory
@@ -265,6 +269,7 @@ setGeneric("qcout_samqc_missing", function(object, ...) {
 #' create output file of bad seqs which fail filtering
 #'
 #' @export
+#' @name qcout_samqc_missing
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -338,6 +343,7 @@ setGeneric("qcout_samqc_total", function(object, ...) {
 #' create output file of total reads stats
 #'
 #' @export
+#' @name qcout_samqc_total
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -416,6 +422,7 @@ setGeneric("qcout_samqc_accepted", function(object, ...) {
 #' create output file of library reads stats
 #'
 #' @export
+#' @name qcout_samqc_accepted
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -492,6 +499,7 @@ setGeneric("qcout_samqc_libcov", function(object, ...) {
 #' create output file of library coverage
 #'
 #' @export
+#' @name qcout_samqc_libcov
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -565,6 +573,7 @@ setGeneric("qcout_samqc_pos_cov", function(object, ...) {
 #' create output file of lof percentages
 #'
 #' @export
+#' @name qcout_samqc_pos_cov
 #' @param object   sampleQC object
 #' @param qc_type  screen or plasmid
 #' @param out_dir  the output directory
@@ -659,6 +668,7 @@ setGeneric("qcout_samqc_pos_anno", function(object, ...) {
 #' create output file of lof percentages
 #'
 #' @export
+#' @name qcout_samqc_pos_anno
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -764,6 +774,7 @@ setGeneric("qcout_samqc_results", function(object, ...) {
 #' create all the output files
 #'
 #' @export
+#' @name qcout_samqc_results
 #' @param object   sampleQC object
 #' @param qc_type  qc type
 #' @param out_dir  the output directory
@@ -846,6 +857,7 @@ setGeneric("qcout_expqc_all", function(object, ...) {
 #' create all the output files
 #'
 #' @export
+#' @name qcout_expqc_all
 #' @param object   experimentQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -870,6 +882,7 @@ setGeneric("qcout_expqc_corr", function(object, ...) {
 #' create output file of clustering and correlation results
 #'
 #' @export
+#' @name qcout_expqc_corr
 #' @param object   experimentQC object
 #' @param out_dir  the output directory
 setMethod(
@@ -951,6 +964,7 @@ setGeneric("qcout_expqc_deseq", function(object, ...) {
 #' create all the output files
 #'
 #' @export
+#' @name qcout_expqc_deseq
 #' @param object   experimentQC object
 #' @param eqc_type library counts or all counts
 #' @param out_dir  the output directory

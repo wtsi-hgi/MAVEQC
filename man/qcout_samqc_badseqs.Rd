@@ -5,7 +5,18 @@
 \title{initialize function}
 \usage{
 qcout_samqc_badseqs(object, ...)
+
+\S4method{qcout_samqc_badseqs}{sampleQC}(object, qc_type = c("plasmid", "screen"), out_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{qc_type}{plasmid or screen}
+
+\item{out_dir}{the output directory}
 }
 \description{
 initialize function
+
+create output file of bad seqs which fail filtering for screen qc
 }

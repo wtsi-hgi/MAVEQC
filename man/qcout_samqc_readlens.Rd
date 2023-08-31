@@ -5,7 +5,18 @@
 \title{initialize function}
 \usage{
 qcout_samqc_readlens(object, ...)
+
+\S4method{qcout_samqc_readlens}{sampleQC}(object, len_bins = seq(0, 300, 50), out_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{len_bins}{the bins of length distribution}
+
+\item{out_dir}{the output directory}
 }
 \description{
 initialize function
+
+create output file of total reads stats
 }

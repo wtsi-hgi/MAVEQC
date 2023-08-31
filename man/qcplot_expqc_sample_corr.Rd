@@ -5,7 +5,16 @@
 \title{initialize function}
 \usage{
 qcplot_expqc_sample_corr(object, ...)
+
+\S4method{qcplot_expqc_sample_corr}{experimentQC}(object, plot_dir = NULL)
+}
+\arguments{
+\item{object}{experimentQC object}
+
+\item{plot_dir}{the output plot directory}
 }
 \description{
 initialize function
+
+create the heatmap of samples
 }

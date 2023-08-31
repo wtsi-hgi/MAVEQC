@@ -5,7 +5,19 @@
 \title{initialize function}
 \usage{
 sge_stats(object, ...)
+
+\S4method{sge_stats}{SGE}(object, lowcut = 10)
+}
+\arguments{
+\item{object}{SGE object}
+
+\item{lowcut}{cutoff which determines the oligo count is low, user's definition}
+}
+\value{
+object
 }
 \description{
 initialize function
+
+format library dependent and independent counts with extra info and remove duplicate/useless info
 }

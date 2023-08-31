@@ -5,7 +5,28 @@
 \title{initialize function}
 \usage{
 qcplot_expqc_deseq_fc(object, ...)
+
+\S4method{qcplot_expqc_deseq_fc}{experimentQC}(
+  object,
+  eqc_type = c("lib", "all"),
+  cons = c("Synonymous_Variant", "LOF", "Missense_Variant"),
+  plot_type = c("beeswarm", "violin"),
+  plot_dir = NULL
+)
+}
+\arguments{
+\item{object}{experimentQC object}
+
+\item{eqc_type}{library counts or all counts}
+
+\item{cons}{a vector of the selected consequences in the vep annotation file}
+
+\item{plot_type}{beeswarm or violin}
+
+\item{plot_dir}{the output plot directory}
 }
 \description{
 initialize function
+
+create fold change and consequence plot
 }

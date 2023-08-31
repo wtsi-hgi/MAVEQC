@@ -5,7 +5,16 @@
 \title{initialize function}
 \usage{
 qcout_samqc_pos_anno(object, ...)
+
+\S4method{qcout_samqc_pos_anno}{sampleQC}(object, out_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{out_dir}{the output directory}
 }
 \description{
 initialize function
+
+create output file of lof percentages
 }

@@ -5,7 +5,22 @@
 \title{initialize function}
 \usage{
 qcplot_samqc_clusters(object, ...)
+
+\S4method{qcplot_samqc_clusters}{sampleQC}(
+  object,
+  qc_type = c("plasmid", "screen"),
+  plot_dir = NULL
+)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{qc_type}{qc type for plot}
+
+\item{plot_dir}{the output plot directory}
 }
 \description{
 initialize function
+
+create the sequence counts and clusters plot
 }

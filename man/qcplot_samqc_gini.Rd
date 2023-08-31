@@ -5,7 +5,16 @@
 \title{initialize function}
 \usage{
 qcplot_samqc_gini(object, ...)
+
+\S4method{qcplot_samqc_gini}{sampleQC}(object, plot_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{plot_dir}{the output plot directory}
 }
 \description{
 initialize function
+
+create the gini plot
 }

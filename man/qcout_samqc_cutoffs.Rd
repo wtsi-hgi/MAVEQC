@@ -5,7 +5,16 @@
 \title{initialize function}
 \usage{
 qcout_samqc_cutoffs(object, ...)
+
+\S4method{qcout_samqc_cutoffs}{sampleQC}(object, out_dir = NULL)
+}
+\arguments{
+\item{object}{sampleQC object}
+
+\item{out_dir}{the output directory}
 }
 \description{
 initialize function
+
+create output file of bad seqs which fail filtering
 }
