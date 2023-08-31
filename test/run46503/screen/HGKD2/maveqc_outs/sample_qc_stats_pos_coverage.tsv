@@ -1,0 +1,10 @@
+Group	Sample	Chromosome	Strand	Genomic Start	Genomic End	% Low Abundance	Low Abundance cutoff	Pass Threshold	Pass
+KMT2D_exon53	hgkd2_d4_r1	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d4_r2	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d4_r3	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d7_r1	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d7_r2	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d7_r3	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d21_r1	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d21_r2	chr12	-	49022233	49022483	0	5	30	TRUE
+KMT2D_exon53	hgkd2_d21_r3	chr12	-	49022233	49022483	0	5	30	TRUE

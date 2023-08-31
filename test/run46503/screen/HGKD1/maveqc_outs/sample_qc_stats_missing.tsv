@@ -1,0 +1,10 @@
+Group	Sample	Library Sequences	Missing Library Sequences	% Missing Library Sequences	Pass Threshold	Pass
+KMT2D_exon52	hgkd1_d4_r1	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d4_r2	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d4_r3	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d7_r1	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d7_r2	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d7_r3	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d21_r1	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d21_r2	2429	48	2	1	FALSE
+KMT2D_exon52	hgkd1_d21_r3	2429	48	2	1	FALSE

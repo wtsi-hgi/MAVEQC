@@ -1,0 +1,10 @@
+Group	Sample	Library Sequences	Missing Library Sequences	% Missing Library Sequences	Pass Threshold	Pass
+chr14_95096466_95096760_minus	cmdc3_d4_r1	2476	50	2	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d4_r2	2476	48	1.9	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d4_r3	2476	50	2	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d7_r1	2476	51	2.1	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d7_r2	2476	49	2	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d7_r3	2476	49	2	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d15_r1	2476	72	2.9	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d15_r2	2476	83	3.4	1	FALSE
+chr14_95096466_95096760_minus	cmdc3_d15_r3	2476	83	3.4	1	FALSE

@@ -1,0 +1,11 @@
+sample_name	library_independent_count	library_dependent_count	valiant_meta	vep_anno	adapt5	adapt3	per_r1_adaptor	per_r2_adaptor	library_name	library_type
+cmdc1_d0_r1	Rep1_CMDC1_Day0.query_counts.tsv.gz	Rep1_CMDC1_Day0.lib_counts.tsv.gz	cmdc1_meta.csv.gz		GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.318267		chr14_95103285_95103579_minus	plasmid
+cmdc3_d0_r1	Rep1_CMDC3_Day0.query_counts.tsv.gz	Rep1_CMDC3_Day0.lib_counts.tsv.gz	cmdc3_meta.csv.gz		AAACAGCAGCTATGTTTCCCCTCCT	CTGCATATGAATGGAAAATGCCCAA	0.321144		chr14_95096466_95096760_minus	plasmid
+hgch1_d0_r1	Rep1_HGCH1_Day0.query_counts.tsv.gz	Rep1_HGCH1_Day0.lib_counts.tsv.gz	hgch1_meta.csv.gz		ATTCACGTTATGCTGTCCAATCTCT	GAAATCTAAAATTACCTTCCCAGGG	0.315031		CHD7_exon16	plasmid
+hgch2_d0_r1	Rep1_HGCH2_Day0.query_counts.tsv.gz	Rep1_HGCH2_Day0.lib_counts.tsv.gz	hgch2_meta.csv.gz		AATGATACGGCGACCACCGAGGCCTCCTTGTTCACACTGATGTTT	AATGCACAAGAAAGTCCTGATGCCTTCGTATGCCGTCTTCTGCTTG	0.331205		CHD7_exon17	plasmid
+hgeh1_d0_r1	Rep1_HGEH1_Day0.query_counts.tsv.gz	Rep1_HGEH1_Day0.lib_counts.tsv.gz	hgeh1_meta.csv.gz		AATGATACGGCGACCACCGAGAACCAGTTTTCTTCCTCATTTCAG	CCTGGTGTCATTTCTGGGACGGAGGTCGTATGCCGTCTTCTGCTTG	0.328052		EHMT1_exon24	plasmid
+hgeh2_d0_r1	Rep1_HGEH2_Day0.query_counts.tsv.gz	Rep1_HGEH2_Day0.lib_counts.tsv.gz	hgeh2_meta.csv.gz		AATGATACGGCGACCACCGAATGTTCTTCTGGTGTGCCCTGCTCT	ACTTGTGAACTGTAAAACCTGAATGTCGTATGCCGTCTTCTGCTTG	0.330669		EHMT1_exon25	plasmid
+hgkd1_d0_r1	Rep1_HGKD1_Day0.query_counts.tsv.gz	Rep1_HGKD1_Day0.lib_counts.tsv.gz	hgkd1_meta.csv.gz		AGCATGTCTAAGGCATATCAGAGCA	TGAGCTGGCAGAGGGGCCATTGTGG	0.320588		KMT2D_exon52	plasmid
+hgkd2_d0_r1	Rep1_HGKD2_Day0.query_counts.tsv.gz	Rep1_HGKD2_Day0.lib_counts.tsv.gz	hgkd2_meta.csv.gz		AATGATACGGCGACCACCGAGGGAAAGGCAGGAGAAATGAAGTAC	GGATTTAGTGGTCCCTGAGAGTGGCTCGTATGCCGTCTTCTGCTTG	0.328408		KMT2D_exon53	plasmid
+hgsm2_d0_r1	Rep1_HGSM2_Day0.query_counts.tsv.gz	Rep1_HGSM2_Day0.lib_counts.tsv.gz	hgsm2_meta.csv.gz		AATGATACGGCGACCACCGACGCTGACCCTGTTCTCCTCTGTGCC	AAGGAAGGGGGTGCCTGCAAAACCTTCGTATGCCGTCTTCTGCTTG	0.330412		SMARCA4_exon25	plasmid
+hgsm3_d0_r1	Rep1_HGSM3_Day0.query_counts.tsv.gz	Rep1_HGSM3_Day0.lib_counts.tsv.gz	hgsm3_meta.csv.gz		CTGACTGGCACCTCTTCCCCCAGGA	CCCCGACCCCTCCCCAGCGTGAATG	0.318769		SMARCA4_exon26	plasmid

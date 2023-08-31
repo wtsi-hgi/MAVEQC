@@ -1,0 +1,2 @@
+num_total_reads	per_missing_variants	seq_low_count	seq_low_sample_per	num_accepted_reads	per_mapping_reads	per_ref_reads	per_library_reads	library_cov	low_abundance_per	low_abundance_lib_per
+1000000	0.01	5	0.25	1000000	0.6	0.1	0.4	100	5e-05	0.7

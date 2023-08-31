@@ -1,0 +1,10 @@
+sample_name	library_independent_count	library_dependent_count	valiant_meta	vep_anno	adapt5	adapt3	per_r1_adaptor	per_r2_adaptor	library_name	library_type
+cmdc1_d4_r1	Rep1_CMDC1_Day4.query_counts.tsv.gz	Rep1_CMDC1_Day4.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.315567		chr14_95103285_95103579_minus	screen
+cmdc1_d7_r1	Rep1_CMDC1_Day7.query_counts.tsv.gz	Rep1_CMDC1_Day7.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.31848		chr14_95103285_95103579_minus	screen
+cmdc1_d15_r1	Rep1_CMDC1_Day15.query_counts.tsv.gz	Rep1_CMDC1_Day15.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.319963		chr14_95103285_95103579_minus	screen
+cmdc1_d4_r2	Rep2_CMDC1_Day4.query_counts.tsv.gz	Rep2_CMDC1_Day4.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.317277		chr14_95103285_95103579_minus	screen
+cmdc1_d7_r2	Rep2_CMDC1_Day7.query_counts.tsv.gz	Rep2_CMDC1_Day7.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.317567		chr14_95103285_95103579_minus	screen
+cmdc1_d15_r2	Rep2_CMDC1_Day15.query_counts.tsv.gz	Rep2_CMDC1_Day15.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.319126		chr14_95103285_95103579_minus	screen
+cmdc1_d4_r3	Rep3_CMDC1_Day4.query_counts.tsv.gz	Rep3_CMDC1_Day4.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.317387		chr14_95103285_95103579_minus	screen
+cmdc1_d7_r3	Rep3_CMDC1_Day7.query_counts.tsv.gz	Rep3_CMDC1_Day7.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.317943		chr14_95103285_95103579_minus	screen
+cmdc1_d15_r3	Rep3_CMDC1_Day15.query_counts.tsv.gz	Rep3_CMDC1_Day15.lib_counts.tsv.gz	meta.csv.gz	meta_consequences.tsv.gz	GGCAGGATGGATTCTGAGCAGAGCC	TTCAGTGTGCCTGAAAGTGGTTTGC	0.31836		chr14_95103285_95103579_minus	screen

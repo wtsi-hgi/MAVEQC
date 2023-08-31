@@ -1,0 +1,10 @@
+Group	Sample	Chromosome	Strand	Genomic Start	Genomic End	% Low Abundance	Low Abundance cutoff	Pass Threshold	Pass
+CHD7_exon16	hgch1_d4_r1	chr8	+	60836044	60836339	0.09	5	30	TRUE
+CHD7_exon16	hgch1_d4_r2	chr8	+	60836044	60836339	0.05	5	30	TRUE
+CHD7_exon16	hgch1_d4_r3	chr8	+	60836044	60836339	0.14	5	30	TRUE
+CHD7_exon16	hgch1_d7_r1	chr8	+	60836044	60836339	0.09	5	30	TRUE
+CHD7_exon16	hgch1_d7_r2	chr8	+	60836044	60836339	0.09	5	30	TRUE
+CHD7_exon16	hgch1_d7_r3	chr8	+	60836044	60836339	0.05	5	30	TRUE
+CHD7_exon16	hgch1_d15_r1	chr8	+	60836044	60836339	0.19	5	30	TRUE
+CHD7_exon16	hgch1_d15_r2	chr8	+	60836044	60836339	0.14	5	30	TRUE
+CHD7_exon16	hgch1_d15_r3	chr8	+	60836044	60836339	0.05	5	30	TRUE
