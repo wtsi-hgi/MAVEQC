@@ -10,9 +10,12 @@
 read_sge_file <- function(file_path,
                           hline = 0,
                           colnums = vector()) {
-    # check input format
+    # check if file path is a symbolic link
     if (!file.exists(file_path)) {
         stop(paste0("====> Error: ", file_path, " doesn't exist"))
+    } else {
+        tmp_path <- Sys.readlink(file_path)
+        file_path <- ifelse(nzchar(tmp_path), tmp_path, file_path)
     }
 
     if (hline < 0) {
