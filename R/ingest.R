@@ -169,11 +169,6 @@ import_sge_files <- function(dir_path = NULL,
         tmp_obj@per_r1_adaptor <- ifelse(is.na(samplesheet[i, ]$per_r1_adaptor), 0, samplesheet[i, ]$per_r1_adaptor)
         tmp_obj@per_r2_adaptor <- ifelse(is.na(samplesheet[i, ]$per_r2_adaptor), 0, samplesheet[i, ]$per_r2_adaptor)
 
-        tmp_obj@libcounts <- as.data.table(tmp_obj@libcounts)
-        tmp_obj@allcounts <- as.data.table(tmp_obj@allcounts)
-        tmp_obj@valiant_meta <- as.data.table(tmp_obj@valiant_meta)
-        tmp_obj@vep_anno <- as.data.table(tmp_obj@vep_anno)
-
         tmp_obj <- format_count(tmp_obj)
         tmp_obj <- sge_stats(tmp_obj)
         tmp_obj <- sge_qc_stats(tmp_obj)
