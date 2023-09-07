@@ -114,47 +114,52 @@ import_sge_files <- function(dir_path = NULL,
     }
 
     # read sample sheet and check format
-    samplesheet <- read.table(paste0(dir_path, "/", sample_sheet), sep = "\t", comment.char = "#", header = TRUE, fill = TRUE)
+    qc_samplesheet <<- read.table(paste0(dir_path, "/", sample_sheet), sep = "\t", comment.char = "#", header = TRUE, fill = TRUE)
     require_cols <- c("sample_name",
-                     "library_independent_count",
-                     "library_dependent_count",
-                     "valiant_meta",
-                     "vep_anno",
-                     "adapt5",
-                     "adapt3",
-                     "per_r1_adaptor",
-                     "per_r2_adaptor",
-                     "library_name",
-                     "library_type")
+                      "replicate",
+                      "condition",
+                      "library_independent_count",
+                      "library_dependent_count",
+                      "valiant_meta",
+                      "vep_anno",
+                      "adapt5",
+                      "adapt3",
+                      "per_r1_adaptor",
+                      "per_r2_adaptor",
+                      "library_name",
+                      "library_type")
     for (s in require_cols) {
-        if (s %nin% colnames(samplesheet)) {
+        if (s %nin% colnames(qc_samplesheet)) {
             stop(paste0("====> Error: ", s, " must be in the sample sheet as the header"))
         }
     }
 
-    if (length(unique(samplesheet$sample_name)) != nrow(samplesheet)) {
+    if (length(unique(qc_samplesheet$sample_name)) != nrow(qc_samplesheet)) {
         stop(paste0("====> Error: ", sample_sheet, " has duplicated sample names!"))
     }
 
+    qc_deseq_coldata <<- qc_samplesheet[, c("replicate", "condition")]
+    rownames(qc_deseq_coldata) <<- qc_samplesheet$sample_name
+
     list_objects <- list()
     cat("Importing files for samples:", "\n", sep = "")
-    for (i in 1:nrow(samplesheet)) {
-        cat("    |--> ", samplesheet[i, ]$sample_name, "\n", sep = "")
+    for (i in 1:nrow(qc_samplesheet)) {
+        cat("    |--> ", qc_samplesheet[i, ]$sample_name, "\n", sep = "")
 
         # leave the access in case user provides vep anno
-        if (is.null(samplesheet[i, ]$vep_anno)) {
+        if (is.null(qc_samplesheet[i, ]$vep_anno)) {
             file_vep_anno <- NULL
         } else {
-            if (is.na(samplesheet[i, ]$vep_anno)) {
+            if (is.na(qc_samplesheet[i, ]$vep_anno)) {
                 file_vep_anno <- NULL
             } else {
-                file_vep_anno <- paste0(dir_path, "/", samplesheet[i, ]$vep_anno)
+                file_vep_anno <- paste0(dir_path, "/", qc_samplesheet[i, ]$vep_anno)
             }
         }
 
-        tmp_obj <- create_sge_object(file_libcount = paste0(dir_path, "/", samplesheet[i, ]$library_dependent_count),
-                                     file_allcount = paste0(dir_path, "/", samplesheet[i, ]$library_independent_count),
-                                     file_valiant_meta = paste0(dir_path, "/", samplesheet[i, ]$valiant_meta),
+        tmp_obj <- create_sge_object(file_libcount = paste0(dir_path, "/", qc_samplesheet[i, ]$library_dependent_count),
+                                     file_allcount = paste0(dir_path, "/", qc_samplesheet[i, ]$library_independent_count),
+                                     file_valiant_meta = paste0(dir_path, "/", qc_samplesheet[i, ]$valiant_meta),
                                      file_vep_anno = file_vep_anno,
                                      file_libcount_hline = file_libcount_hline,
                                      file_allcount_hline = file_allcount_hline,
@@ -164,13 +169,13 @@ import_sge_files <- function(dir_path = NULL,
                                      file_allcount_cols = file_allcount_cols,
                                      file_valiant_meta_cols = file_valiant_meta_cols,
                                      file_vep_anno_cols = file_vep_anno_cols)
-        tmp_obj@sample <- samplesheet[i, ]$sample_name
-        tmp_obj@libname <- samplesheet[i, ]$library_name
-        tmp_obj@libtype <- samplesheet[i, ]$library_type
-        tmp_obj@adapt5 <- samplesheet[i, ]$adapt5
-        tmp_obj@adapt3 <- samplesheet[i, ]$adapt3
-        tmp_obj@per_r1_adaptor <- ifelse(is.na(samplesheet[i, ]$per_r1_adaptor), 0, samplesheet[i, ]$per_r1_adaptor)
-        tmp_obj@per_r2_adaptor <- ifelse(is.na(samplesheet[i, ]$per_r2_adaptor), 0, samplesheet[i, ]$per_r2_adaptor)
+        tmp_obj@sample <- qc_samplesheet[i, ]$sample_name
+        tmp_obj@libname <- qc_samplesheet[i, ]$library_name
+        tmp_obj@libtype <- qc_samplesheet[i, ]$library_type
+        tmp_obj@adapt5 <- qc_samplesheet[i, ]$adapt5
+        tmp_obj@adapt3 <- qc_samplesheet[i, ]$adapt3
+        tmp_obj@per_r1_adaptor <- ifelse(is.na(qc_samplesheet[i, ]$per_r1_adaptor), 0, qc_samplesheet[i, ]$per_r1_adaptor)
+        tmp_obj@per_r2_adaptor <- ifelse(is.na(qc_samplesheet[i, ]$per_r2_adaptor), 0, qc_samplesheet[i, ]$per_r2_adaptor)
 
         tmp_obj <- format_count(tmp_obj)
         tmp_obj <- sge_stats(tmp_obj)

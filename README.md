@@ -101,13 +101,14 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 ## File Format
 
 ### sample sheet -- tsv
-| sample_name  | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | per_r1_adaptor | per_r2_adaptor | library_name | library_type|
-| - | - | - | - | - | - | - | - | - | - | - |
-| sample1 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
-| sample2 | s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
-| sample3 | s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
+| sample_name | replicate | condition | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | per_r1_adaptor | per_r2_adaptor | library_name | library_type|
+| - | - | - | - | - | - | - | - | - | - | - | - | - |
+| sample1 | R1 | D4 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
+| sample2 | R2 | D4 | s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
+| sample3 | R3 | D4 | s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
 
 * *please use the same headers in the example*
+* *replicate and condition are optional, but required for screen qc*
 * *adapt5 and adapt3 are required if you don't provide the ref seq and pam seq*
 * *vep_anno, library_name and library_type are not necessary, leave them blank if not available*
 
@@ -206,7 +207,7 @@ qcout_samqc_all(samqc, qc_type = "screen", out_dir = output_dir)
 
 <a id="sqc2"></a>
 ### QC 2: Experimental QC
-Prepare the coldata for DESeq2 like below.
+Now MAVEQC automatically creates the coldata (```qc_deseq_coldata```) from sample sheet for Screen QC.
 
 #### coldata example:
 | sample_name | replicate | condition |
@@ -223,8 +224,7 @@ Prepare the coldata for DESeq2 like below.
 
 
 ```R
-coldata <- read.table("sample_coldata.tsv", header = T, row.names = 1)
-expqc <- create_experimentqc_object(samqc, coldata = coldata, refcond = "D4") 
+expqc <- create_experimentqc_object(samqc, coldata = qc_deseq_coldata, refcond = "D4") 
 expqc <- run_experiment_qc(expqc) 
 
 qcplot_expqc_all(expqc, plot_dir = output_dir)
