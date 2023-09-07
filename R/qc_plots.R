@@ -991,6 +991,10 @@ setMethod(
         ymin <- head(ylimits, n = 1)
         ymax <- tail(ylimits, n = 1)
 
+        # user defined
+        ymin <- maveqc_config$expqc_lfc_min
+        ymax <- maveqc_config$expqc_lfc_max
+
         for (i in 1:length(df_list)) {
             dt_res <- df_list[[i]]
             dt_res$consequence <- factor(dt_res$consequence, levels = cons)
