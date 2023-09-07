@@ -570,7 +570,7 @@ setMethod(
                     labs(x = "Genomic Coordinate", y = "Percentage", title = "Sample QC position percentage", color = "Type") +
                     scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
                     coord_trans(y = "log2") +
-                    scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
+                    scale_y_continuous(breaks = c(0.005, 0.01, 0.05, 0.2, 0.5, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                     theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
@@ -621,7 +621,7 @@ setMethod(
                     labs(x = "Genomic Coordinate", y = "Percentage", title = "Sample QC position percentage", color = "Type") +
                     scale_x_continuous(limits = libcounts_pos_range, breaks = libcounts_pos_range) +
                     coord_trans(y = "log2") +
-                    scale_y_continuous(breaks = c(0.001, 0.005, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1)) +
+                    scale_y_continuous(breaks = c(0.005, 0.01, 0.05, 0.2, 0.5, 1)) +
                     theme(legend.position = "right", panel.grid.major = element_blank()) +
                     theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
                     theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +

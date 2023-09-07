@@ -375,6 +375,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("* **Reference Reads**: Percentage reads mapping to Reference.", "\n", sep = "")
         cat("* **PAM_Reads**: Percentage reads mapping to PAM/Protospacer Protection Edits (PPEs), without intended variant.", "\n", sep = "")
         cat("* **Unmapped Reads**: Percentage of Unmapped Reads.", "\n", sep = "")
+        cat("* **Library Coverage**: Mean read count per template oligo sequence.", "\n", sep = "")
         cat("\n", sep = "")
 
         cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
@@ -434,6 +435,7 @@ create_qc_reports <- function(samplesheet = NULL,
 
         cat("#### 2.2.5. Genomic Coverage", "\n", sep = "")
         cat("Distribution of variants across targeton region based on log2(count+1) values.", "\n", sep = "")
+        cat("<p style=\"color:red\">Note: missing variants (0 count in the library) are not included.</p>", "\n", sep = "")
         cat("\n", sep = "")
 
         cat("```{r, echo = FALSE}", "\n", sep = "")
@@ -466,6 +468,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("Displays distribution of \"LOF\" (loss-of-function) vs all \"Other\" variants across the targeton region, ",
                 "based on read percentages for reference timepoint. ",
                 "Requires concordant distribution of LOF and Other variants.", "\n", sep = "")
+            cat("<p style=\"color:red\">Note: missing variants (0 count in the library) are not included.</p>", "\n", sep = "")
             cat("\n", sep = "")
 
             cat("```{r, echo = FALSE, out.height = \"65%\", out.width = \"65%\"}", "\n", sep = "")
@@ -509,8 +512,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
             cat("          filterable = TRUE, minRows = min_row, defaultColDef = colDef(minWidth = 150),", "\n", sep = "")
             cat("          theme = reactableTheme(style = list(fontFamily = \"-apple-system\", fontSize = \"0.85em\")),", "\n", sep = "")
-            cat("          columns = list(\"Pass\" = colDef(cell = function(value) { if (value) \"\\u2705\" else \"\\u274c\" })),", "\n", sep = "")
-            cat("          rowStyle = function(index) { if (!(df[index, \"Pass\"])) { list(background = t_col(\"tomato\", 0.2)) }})", "\n", sep = "")
+            cat("          columns = list(\"Pass\" = colDef(cell = function(value) { if (value) \"\\u2705\" else \"\\u274c\" })))", "\n", sep = "")
             cat("```", "\n", sep = "")
             cat("<br>", "\n", sep = "")
             cat("\n", sep = "")
