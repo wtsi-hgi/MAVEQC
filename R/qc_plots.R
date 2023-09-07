@@ -866,6 +866,10 @@ setMethod(
         ymin <- head(ylimits, n = 1)
         ymax <- tail(ylimits, n = 1)
 
+        # user defined
+        ymin <- maveqc_config$expqc_lfc_min
+        ymax <- maveqc_config$expqc_lfc_max
+
         for (i in 1:length(df_list)) {
             res <- df_list[[i]]
             res_cons <- res[res$consequence %in% cons]
@@ -873,7 +877,7 @@ setMethod(
             stat_unique <- unique(res_cons$stat)
             stat_level <- levels(res_cons$stat)
             stat_size <- c(0.5, 1, 1)
-            stat_color <- c(t_col("grey", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))
+            stat_color <- c(t_col("black", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))
 
             stat_size_plot <- vector()
             stat_color_plot <- vector()
@@ -921,19 +925,8 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                if (eqc_type == "lib") {
-                    if (plot_type == "beeswarm") {
-                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_beeswarm.png")
-                    } else {
-                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_violin.png")
-                    }
-                } else {
-                    if (plot_type == "beeswarm") {
-                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_beeswarm.png")
-                    } else {
-                        file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_violin.png")
-                    }
-                }
+                file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".", eqc_type, "_", plot_type, ".png")
+
                 png(file_path, width = 1500, height = pheight, res = 200)
                 print(p1)
                 dev.off()
@@ -1040,15 +1033,11 @@ setMethod(
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
             } else {
-                if (eqc_type == "lib") {
-                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".lib_position.png"), width = 1500, height = 1000, res = 200)
-                    print(p1)
-                    dev.off()
-                } else {
-                    png(paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".all_position.png"), width = 1500, height = 1000, res = 200)
-                    print(p1)
-                    dev.off()
-                }
+                file_path <- paste0(plot_dir, "/", "experiment_qc_deseq_fc.", comparisions[i], ".", eqc_type, "_position.png")
+
+                png(file_path, width = 1500, height = 1000, res = 200)
+                print(p1)
+                dev.off()
             }
         }
     }

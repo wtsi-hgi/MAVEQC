@@ -983,25 +983,37 @@ setMethod(
         for (i in 1:length(object@comparisons)) {
             if (eqc_type == "lib") {
                 df_outs <- object@lib_deseq_res_anno[[i]]
-                df_outs <- df_outs[stat != "no impact"]
-
-                write.table(df_outs,
-                            file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".lib.tsv"),
-                            quote = FALSE,
-                            sep = "\t",
-                            row.names = FALSE,
-                            col.names = TRUE)
             } else {
                 df_outs <- object@all_deseq_res_anno_adj[[i]]
-                df_outs <- df_outs[stat != "no impact"]
-
-                write.table(df_outs,
-                            file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".all.tsv"),
-                            quote = FALSE,
-                            sep = "\t",
-                            row.names = FALSE,
-                            col.names = TRUE)
             }
+
+            cols <- c("stat", "lfc range", "total number", "total number of outside range")
+            df_outs_summary <- data.frame(matrix(NA, 3, length(cols)))
+            colnames(df_outs_summary) <- cols
+
+            df_outs_summary[, 1] <- c("enriched", "no impact", "depleted")
+            df_outs_summary[, 2] <- paste0(maveqc_config$expqc_lfc_min, " ~ ", maveqc_config$expqc_lfc_max)
+            for (j in 1:nrow(df_outs_summary)) {
+                df_tmp <- df_outs[stat == df_outs_summary[j, ]$stat]
+                df_outs_summary[j, 3] <- nrow(df_tmp)
+
+                df_tmp$lfc_range <- df_tmp$log2FoldChange < maveqc_config$expqc_lfc_min | df_tmp$log2FoldChange > maveqc_config$expqc_lfc_max
+                df_outs_summary[j, 4] <- sum(df_tmp$lfc_range)
+            }
+
+            write.table(df_outs,
+                        file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".", eqc_type, ".tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
+
+            write.table(df_outs_summary,
+                        file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".", eqc_type, "_sum.tsv"),
+                        quote = FALSE,
+                        sep = "\t",
+                        row.names = FALSE,
+                        col.names = TRUE)
         }
     }
 )

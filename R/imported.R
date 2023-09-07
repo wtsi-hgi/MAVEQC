@@ -13,6 +13,7 @@
 #' @import ggbeeswarm
 #' @import reactable
 #' @import htmltools
+#' @import sparkline
 #' @importFrom reshape2 melt
 #' @importFrom gtools mixedsort
 #' @import DESeq2

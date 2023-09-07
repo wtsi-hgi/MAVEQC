@@ -43,3 +43,7 @@ expqc_padj: 0.05
 expqc_lfc_depleted: 0
 expqc_lfc_enriched: 0
 expqc_top_variants: 500
+
+# Log2 Fold Change cutoffs
+expqc_lfc_min: -6
+expqc_lfc_max: 2

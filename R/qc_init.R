@@ -84,6 +84,11 @@ create_config <- function(config_dir) {
     cat("expqc_lfc_depleted: 0", "\n", sep = "")
     cat("expqc_lfc_enriched: 0", "\n", sep = "")
     cat("expqc_top_variants: 500", "\n", sep = "")
+    cat("\n", sep = "")
+
+    cat("# Log2 Fold Change cutoffs", "\n", sep = "")
+    cat("expqc_lfc_min: -6", "\n", sep = "")
+    cat("expqc_lfc_max: 2", "\n", sep = "")
 
     sink()
 
