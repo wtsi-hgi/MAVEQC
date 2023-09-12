@@ -4,7 +4,11 @@
 \alias{create_experimentqc_object}
 \title{Create a new experiment QC object}
 \usage{
-create_experimentqc_object(samqc_obj, coldata = NULL, refcond)
+create_experimentqc_object(
+  samqc_obj,
+  coldata = maveqc_deseq_coldata,
+  refcond = maveqc_ref_time_point
+)
 }
 \arguments{
 \item{samqc_obj}{a sampleQC object}

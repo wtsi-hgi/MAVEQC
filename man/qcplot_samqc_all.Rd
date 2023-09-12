@@ -9,7 +9,7 @@ qcplot_samqc_all(object, ...)
 \S4method{qcplot_samqc_all}{sampleQC}(
   object,
   qc_type = c("plasmid", "screen"),
-  samples = NULL,
+  samples = maveqc_ref_time_point_samples,
   plot_dir = NULL
 )
 }
