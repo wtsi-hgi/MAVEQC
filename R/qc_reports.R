@@ -508,6 +508,7 @@ create_qc_reports <- function(samplesheet = NULL,
             cat("\n", sep = "")
             cat("```{r, echo = FALSE}", "\n", sep = "")
             cat("df <- as.data.frame(read.table(\"", qc_dir, "/experiment_qc_corr.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
+            cat("df$Pass <- NULL", "\n", sep = "")
             cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
             cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
             cat("          filterable = TRUE, minRows = min_row, defaultColDef = colDef(minWidth = 150),", "\n", sep = "")
