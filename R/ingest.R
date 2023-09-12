@@ -118,6 +118,7 @@ import_sge_files <- function(dir_path = NULL,
     require_cols <- c("sample_name",
                       "replicate",
                       "condition",
+                      "ref_time_point",
                       "library_independent_count",
                       "library_dependent_count",
                       "valiant_meta",
@@ -138,8 +139,21 @@ import_sge_files <- function(dir_path = NULL,
         stop(paste0("====> Error: ", sample_sheet, " has duplicated sample names!"))
     }
 
-    qc_deseq_coldata <<- qc_samplesheet[, c("replicate", "condition")]
-    rownames(qc_deseq_coldata) <<- qc_samplesheet$sample_name
+    maveqc_ref_time_point <<- unique(qc_samplesheet$ref_time_point)
+    if (is.null(maveqc_ref_time_point) || is.na(maveqc_ref_time_point) || maveqc_ref_time_point == "") {
+        maveqc_ref_time_point_samples <<- "NoRef"
+    } else {
+        if (maveqc_ref_time_point %in% qc_samplesheet$condition) {
+            if (length(maveqc_ref_time_point) == 1) {
+                maveqc_ref_time_point_samples <<- qc_samplesheet[qc_samplesheet$condition == maveqc_ref_time_point, ]$sample_name
+            } else {
+                stop(paste0("====> Error: ", sample_sheet, " has duplicated ref_time_point! It must be only one time point!"))
+            }
+        }
+    }
+
+    maveqc_deseq_coldata <<- qc_samplesheet[, c("replicate", "condition")]
+    rownames(maveqc_deseq_coldata) <<- qc_samplesheet$sample_name
 
     list_objects <- list()
     cat("Importing files for samples:", "\n", sep = "")

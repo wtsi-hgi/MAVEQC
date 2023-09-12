@@ -16,7 +16,7 @@ setMethod(
     signature = "sampleQC",
     definition = function(object,
                           qc_type = c("plasmid", "screen"),
-                          samples = NULL,
+                          samples = maveqc_ref_time_point_samples,
                           plot_dir = NULL) {
         if (is.null(plot_dir)) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))

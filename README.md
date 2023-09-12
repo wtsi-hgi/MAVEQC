@@ -101,14 +101,17 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 ## File Format
 
 ### sample sheet -- tsv
-| sample_name | replicate | condition | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | per_r1_adaptor | per_r2_adaptor | library_name | library_type|
-| - | - | - | - | - | - | - | - | - | - | - | - | - |
-| sample1 | R1 | D4 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
-| sample2 | R2 | D4 | s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
-| sample3 | R3 | D4 | s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
+| sample_name | replicate | condition | ref_time_point | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | per_r1_adaptor | per_r2_adaptor | library_name | library_type|
+| - | - | - | - | - | - | - | - | - | - | - | - | - | - |
+| sample1 | R1 | D4 | D4 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
+| sample2 | R2 | D4 | D4 |s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
+| sample3 | R3 | D4 | D4 |s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
+| sample4 | R1 | D7 | D4 | s4.allcounts.tsv.gz | s4.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
+| sample5 | R2 | D7 | D4 |s5.allcounts.tsv.gz | s5.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
+| sample6 | R3 | D7 | D4 |s6.allcounts.tsv.gz | s6.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
 
 * *please use the same headers in the example*
-* *replicate and condition are optional, but required for screen qc*
+* *replicate, condition and ref_time_point are optional, but required for screen qc*
 * *adapt5 and adapt3 are required if you don't provide the ref seq and pam seq*
 * *vep_anno, library_name and library_type are not necessary, leave them blank if not available*
 
@@ -189,17 +192,15 @@ create_qc_reports("/path/to/sample/sheet", "plasmid", output_dir)
 
 <a id="sqc1"></a>
 ### QC 1: Sample QC
-Reference samples must be assigned. You can use ```select_objects()``` to get this done. ```c(2,5,8)``` is used to point the positions of reference samples in your sample sheet, like 2nd, 5th, 8th line here, or you can use the sample names instead, like ```c("hgsm3_d4_r1","hgsm3_d4_r2","hgsm3_d4_r3")```
+Reference samples must be assigned. MAVEQC automatically creates reference samples (```maveqc_ref_time_point``` and ```maveqc_ref_time_point_samples```) from the sample sheet using ```ref_time_point``` and ```sampe_name```.
 
 ```R
 output_dir <- "/path/to/output/directory"
 
 samqc <- create_sampleqc_object(sge_objs)
-ref_samples <- c("hgsm3_d4_r1","hgsm3_d4_r2","hgsm3_d4_r3")
-samqc@samples_ref <- select_objects(sge_objs, ref_samples)
 samqc <- run_sample_qc(samqc, "screen")
 
-qcplot_samqc_all(samqc, qc_type = "screen", samples = ref_samples, plot_dir = output_dir)
+qcplot_samqc_all(samqc, qc_type = "screen", plot_dir = output_dir)
 qcout_samqc_all(samqc, qc_type = "screen", out_dir = output_dir)
 ```
 
@@ -207,7 +208,7 @@ qcout_samqc_all(samqc, qc_type = "screen", out_dir = output_dir)
 
 <a id="sqc2"></a>
 ### QC 2: Experimental QC
-Now MAVEQC automatically creates the coldata (```qc_deseq_coldata```) from sample sheet for Screen QC.
+MAVEQC automatically creates the coldata (```maveqc_deseq_coldata```) from sample sheet for Screen QC.
 
 #### coldata example:
 | sample_name | replicate | condition |
@@ -224,7 +225,7 @@ Now MAVEQC automatically creates the coldata (```qc_deseq_coldata```) from sampl
 
 
 ```R
-expqc <- create_experimentqc_object(samqc, coldata = qc_deseq_coldata, refcond = "D4") 
+expqc <- create_experimentqc_object(samqc) 
 expqc <- run_experiment_qc(expqc) 
 
 qcplot_expqc_all(expqc, plot_dir = output_dir)

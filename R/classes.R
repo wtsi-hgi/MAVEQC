@@ -282,6 +282,13 @@ create_sampleqc_object <- function(samples) {
         stop(paste0("====> Error: duplicated sample names:", " ", dup_names))
     }
 
+    # get reference sampels if ref_time_point is not null in the sample sheet
+    if (length(maveqc_ref_time_point_samples) > 1) {
+        ref_samples <- select_objects(samples, maveqc_ref_time_point_samples)
+    } else {
+        ref_samples <- list()
+    }
+
     list_counts <- list()
     list_lengths <- list()
     for (s in samples) {
@@ -332,6 +339,7 @@ create_sampleqc_object <- function(samples) {
     # Create the object
     sampleqc_object <- new("sampleQC",
         samples = samples,
+        samples_ref = ref_samples,
         counts = list_counts,
         lengths = list_lengths,
         stats = df_stats)
@@ -416,8 +424,8 @@ setClass("experimentQC",
 #' @param refcond   the reference condition, eg. D4
 #' @return An object of class sampleQC
 create_experimentqc_object <- function(samqc_obj,
-                                       coldata = NULL,
-                                       refcond) {
+                                       coldata = maveqc_deseq_coldata,
+                                       refcond = maveqc_ref_time_point) {
     # checking
     if (is.null(coldata)) {
          stop(paste0("====> Error: no coldata found in the input!"))
