@@ -10,7 +10,7 @@ bar_chart_pos_neg(
   max_value = 1,
   height = "1rem",
   pos_fill = t_col("tomato", 0.8),
-  neg_fill = t_col("royalblue", 0.8)
+  neg_fill = t_col("yellowgreen", 0.8)
 )
 }
 \arguments{
