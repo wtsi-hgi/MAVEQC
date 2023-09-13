@@ -877,7 +877,7 @@ setMethod(
             stat_unique <- unique(res_cons$stat)
             stat_level <- levels(res_cons$stat)
             stat_size <- c(0.5, 1, 1)
-            stat_color <- c(t_col("black", 0.4), t_col("tomato", 0.8), t_col("royalblue", 0.8))
+            stat_color <- c(t_col("black", 0.4), t_col("tomato", 0.8), t_col("yellowgreen", 0.8))
 
             stat_size_plot <- vector()
             stat_color_plot <- vector()
@@ -890,7 +890,7 @@ setMethod(
 
             if (plot_type == "beeswarm") {
                 p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
-                        geom_violin(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen") +
+                        geom_violin(trim = FALSE, scale = "width", fill = t_col("lightblue", 0.5), color = "royalblue") +
                         geom_quasirandom(width = 0.4, aes(color = factor(stat), size = factor(stat))) +
                         scale_color_manual(values = stat_color_plot) +
                         scale_size_manual(values = stat_size_plot) +
@@ -905,7 +905,7 @@ setMethod(
                         guides(size = "none")
             } else {
                 p1 <- ggplot(res_cons, aes(x = consequence, y = log2FoldChange)) +
-                        geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("yellowgreen", 0.5), color = "yellowgreen", position = position_nudge(x = .2, y = 0)) +
+                        geom_violinhalf(trim = FALSE, scale = "width", fill = t_col("lightblue", 0.5), color = "royalblue", position = position_nudge(x = .2, y = 0)) +
                         geom_jitter(width = 0.15, aes(color = factor(stat), size = factor(stat))) +
                         scale_color_manual(values = stat_color_plot) +
                         scale_size_manual(values = stat_size_plot) +

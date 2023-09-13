@@ -7,12 +7,16 @@
 \S4method{show}{SGE}(object)
 
 \S4method{show}{sampleQC}(object)
+
+\S4method{show}{experimentQC}(object)
 }
 \arguments{
-\item{object}{sampleQC object}
+\item{object}{experimentQC object}
 }
 \description{
 show basic info of a SGE object
 
-show basic info of a SGE object
+show basic info of a sample QC object
+
+show basic info of a experiment QC object
 }

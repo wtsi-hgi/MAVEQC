@@ -94,7 +94,7 @@ setMethod(
     }
 )
 
-#' show basic info of a SGE object
+#' show basic info of a sample QC object
 #'
 #' @export
 #' @name show
@@ -121,6 +121,31 @@ setMethod(
         cat("|--> QC results: ", "\n", sep = "")
         for (i in 1:nrow(object@stats)) {
             cat("    |--> ", rownames(object@stats)[i], ": ", object@stats[i, ]$qcpass, "\n", sep = "")
+        }
+    }
+)
+
+#' show basic info of a experiment QC object
+#'
+#' @export
+#' @name show
+#' @param object experimentQC object
+setMethod(
+    "show",
+    signature = "experimentQC",
+    definition = function(object) {
+        cat("An object of class ", class(object), "\n", sep = "")
+        cat("|--> samples: ", "\n", sep = "")
+        for (s in object@samples) {
+            cat("    |--> ", s@sample, "\n", sep = "")
+        }
+
+        cat("|--> reference condition: ", object@ref_condition, "\n", sep = "")
+
+        cat("|--> DESeq coldata: ", "\n", sep = "")
+        tmp_coldata <- as.matrix(object@coldata)
+        for (i in 1:nrow(object@coldata)) {
+            cat("    |--> ", rownames(tmp_coldata)[i], "\t", tmp_coldata[i, 1], "\t", tmp_coldata[i, 2], "\n", sep = "")
         }
     }
 )

@@ -987,18 +987,28 @@ setMethod(
                 df_outs <- object@all_deseq_res_anno_adj[[i]]
             }
 
-            cols <- c("stat", "lfc range", "total number", "total number of outside range")
-            df_outs_summary <- data.frame(matrix(NA, 3, length(cols)))
+            tmpcons <- sort(unique(df_outs$consequence))
+            cols <- c("consequence",
+                      "number of depleted",
+                      "number of no impact",
+                      "number of enriched",
+                      "lfc range",
+                      "total number",
+                      "total number of outside range")
+            df_outs_summary <- data.frame(matrix(NA, length(tmpcons), length(cols)))
             colnames(df_outs_summary) <- cols
 
-            df_outs_summary[, 1] <- c("enriched", "no impact", "depleted")
-            df_outs_summary[, 2] <- paste0(maveqc_config$expqc_lfc_min, " ~ ", maveqc_config$expqc_lfc_max)
+            df_outs_summary[, 1] <- tmpcons
+            df_outs_summary[, 5] <- paste0(maveqc_config$expqc_lfc_min, " ~ ", maveqc_config$expqc_lfc_max)
             for (j in 1:nrow(df_outs_summary)) {
-                df_tmp <- df_outs[stat == df_outs_summary[j, ]$stat]
-                df_outs_summary[j, 3] <- nrow(df_tmp)
+                df_tmp <- df_outs[consequence == df_outs_summary$consequence[j]]
 
-                df_tmp$lfc_range <- df_tmp$log2FoldChange < maveqc_config$expqc_lfc_min | df_tmp$log2FoldChange > maveqc_config$expqc_lfc_max
-                df_outs_summary[j, 4] <- sum(df_tmp$lfc_range)
+                df_outs_summary[j, 2] <- nrow(df_tmp[stat == "depleted"])
+                df_outs_summary[j, 3] <- nrow(df_tmp[stat == "no impact"])
+                df_outs_summary[j, 4] <- nrow(df_tmp[stat == "enriched"])
+
+                df_outs_summary[j, 6] <- nrow(df_tmp)
+                df_outs_summary[j, 7] <- nrow(df_tmp[adj_log2FoldChange < maveqc_config$expqc_lfc_min | adj_log2FoldChange > maveqc_config$expqc_lfc_max])
             }
 
             write.table(df_outs,

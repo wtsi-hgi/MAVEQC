@@ -1,4 +1,8 @@
-stat	lfc range	total number	total number of outside range
-enriched	-6 ~ 2	0	0
-no impact	-6 ~ 2	2256	0
-depleted	-6 ~ 2	34	0
+consequence	number of depleted	number of no impact	number of enriched	lfc range	total number	total number of outside range
+Inframe_Deletion	5	66	0	-6 ~ 2	71	0
+Intronic_Variant	0	29	0	-6 ~ 2	29	0
+LOF	1	99	0	-6 ~ 2	100	0
+Missense_Variant	28	1819	0	-6 ~ 2	1847	0
+Others	0	1	0	-6 ~ 2	1	0
+Splice_Variant	0	63	0	-6 ~ 2	63	0
+Synonymous_Variant	0	179	0	-6 ~ 2	179	0
