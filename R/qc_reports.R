@@ -569,7 +569,8 @@ create_qc_reports <- function(samplesheet = NULL,
                 cat("                                                                       chartRangeMin = boxplot_min, chartRangeMax = boxplot_max) }}),", "\n", sep = "")
                 cat("                         \"barplot\" = colDef(cell = function(value, index) {", "\n", sep = "")
                 cat("                                                         if (length(df_sum$data[[index]]) > 5) {", "\n", sep = "")
-                cat("                                                             sparkline(df_sum$data[[index]], type = \"tristate\", width = 120) }}) ))", "\n", sep = "")
+                cat("                                                             sparkline(df_sum$data[[index]], type = \"tristate\", width = 120,", "\n", sep = "")
+                cat("                                                                       posBarColor = \"red\", negBarColor = \"yellowgreen\") }}) ))", "\n", sep = "")
                 cat("```", "\n", sep = "")
                 cat("\n", sep = "")
             }

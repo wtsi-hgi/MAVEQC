@@ -724,7 +724,7 @@ setMethod(
                         tl.cex = 12)
         p1 <- p + scale_fill_gradient2(limit = c(min_corr, 1),
                                        low = "royalblue",
-                                       high =  "tomato",
+                                       high =  "red",
                                        mid = "ivory",
                                        midpoint = (1 + min_corr) / 2,
                                        name = "correlation")
@@ -736,7 +736,7 @@ setMethod(
             corrplot(sample_corr,
                      method = "color",
                      order = "hclust",
-                     col = colorpanel(100, "royalblue", "ivory", "tomato"),
+                     col = colorpanel(100, "royalblue", "ivory", "red"),
                      col.lim = c(min_corr, 1),
                      is.corr = FALSE,
                      addrect = 3,
@@ -877,7 +877,7 @@ setMethod(
             stat_unique <- unique(res_cons$stat)
             stat_level <- levels(res_cons$stat)
             stat_size <- c(0.5, 1, 1)
-            stat_color <- c(t_col("black", 0.4), t_col("tomato", 0.8), t_col("yellowgreen", 0.8))
+            stat_color <- c(t_col("black", 0.4), t_col("red", 0.8), t_col("yellowgreen", 0.8))
 
             stat_size_plot <- vector()
             stat_color_plot <- vector()
