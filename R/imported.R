@@ -14,6 +14,7 @@
 #' @import reactable
 #' @import htmltools
 #' @import sparkline
+#' @import dendextend
 #' @importFrom reshape2 melt
 #' @importFrom gtools mixedsort
 #' @import DESeq2

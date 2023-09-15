@@ -30,6 +30,7 @@ Depends:
     reactable (>= 0.4.4),
     htmltools (>= 0.5.5),
     sparkline (>= 2.0)
+    dendextend (>= 1.17.1)
 Imports:
     reshape2 (>= 1.4.4),
     gtools (>= 3.9.4),
