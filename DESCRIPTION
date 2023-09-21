@@ -29,10 +29,10 @@ Depends:
     ggbeeswarm (>= 0.7.2),
     reactable (>= 0.4.4),
     htmltools (>= 0.5.5),
-    sparkline (>= 2.0),
-    dendextend (>= 1.17.1)
+    sparkline (>= 2.0)
 Imports:
     reshape2 (>= 1.4.4),
-    gtools (>= 3.9.4),
+    dendextend (>= 1.17.1),
     plotly (>= 4.10.2),
+    gtools (>= 3.9.4),
     ggcorrplot (>= 0.1.4)
