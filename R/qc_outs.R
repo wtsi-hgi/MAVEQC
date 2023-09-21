@@ -1011,6 +1011,11 @@ setMethod(
                 df_outs_summary[j, 7] <- nrow(df_tmp[adj_log2FoldChange < maveqc_config$expqc_lfc_min | adj_log2FoldChange > maveqc_config$expqc_lfc_max])
             }
 
+            dt_outs_summary <- as.data.table(df_outs_summary)
+            dt1 <- setorder(dt_outs_summary[consequence %in% c("Synonymous_Variant", "LOF")], -consequence)
+            dt2 <- dt_outs_summary[consequence %nin% c("Synonymous_Variant", "LOF")]
+            dt_outs_summary <- rbind(dt1, dt2)
+
             write.table(df_outs,
                         file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".", eqc_type, ".tsv"),
                         quote = FALSE,
@@ -1018,7 +1023,7 @@ setMethod(
                         row.names = FALSE,
                         col.names = TRUE)
 
-            write.table(df_outs_summary,
+            write.table(dt_outs_summary,
                         file = paste0(out_dir, "/", "experiment_qc_deseq_fc.", object@comparisons[[i]], ".", eqc_type, "_sum.tsv"),
                         quote = FALSE,
                         sep = "\t",

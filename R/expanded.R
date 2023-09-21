@@ -16,6 +16,21 @@ t_col <- function(col, rate) {
     return(newcol)
 }
 
+#' capitalise the first character in the string
+#'
+#' creating the capitalised names for data frame
+#'
+#' @name capital_names
+#' @param x  a vector of strings
+#' @return capitalised strings
+capital_names <- function(x) {
+    y <- x
+    for (i in 1:length(x)) {
+        y[i] <- paste(toupper(substring(x[i], 1, 1)), substring(x[i], 2), sep = "", collapse = " ")
+    }
+    return(y)
+}
+
 #' not in function
 #'
 #' @name %nin%
