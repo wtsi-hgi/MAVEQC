@@ -30,7 +30,6 @@ setMethod(
         # 1. valiant ref and pam seq #
         #----------------------------#
         if ((length(object@refseq) == 0)) {
-            #tmp_refseq <- trim_adaptor(unique(object@valiant_meta$ref_seq), object@adapt5, object@adapt3)
             tmp_refseq <- unique(object@valiant_meta$ref_seq)
 
             if (tmp_refseq %in% object@allcounts$sequence) {
@@ -39,16 +38,14 @@ setMethod(
                 tmp_refseq <- revcomp(tmp_refseq)
                 if (tmp_refseq %in% object@allcounts$sequence) {
                     object@refseq <- tmp_refseq
+                } else {
+                    object@refseq <- unique(object@valiant_meta$ref_seq)
+                    message("         Warning: reference sequence cannot be found in library-independent counts.")
                 }
-            }
-
-            if (length(object@refseq) == 0) {
-                stop(paste0("====> Error: reference sequence cannot be found in library-independent counts."))
             }
         }
 
         if ((length(object@pamseq) == 0)) {
-            #tmp_pamseq <- trim_adaptor(unique(object@valiant_meta$pam_seq), object@adapt5, object@adapt3)
             tmp_pamseq <- unique(object@valiant_meta$pam_seq)
 
             if (tmp_pamseq %in% object@allcounts$sequence) {
@@ -57,11 +54,10 @@ setMethod(
                 tmp_pamseq <- revcomp(tmp_pamseq)
                 if (tmp_pamseq %in% object@allcounts$sequence) {
                     object@pamseq <- tmp_pamseq
+                } else {
+                    object@pamseq <- unique(object@valiant_meta$pam_seq)
+                    message("         Warning: pam sequence cannot be found in library-independent counts.")
                 }
-            }
-
-            if (length(object@pamseq) == 0) {
-                stop(paste0("====> Error: no pam sequence found in the valiant meta file, please check pam_seq tag."))
             }
         }
 
@@ -168,12 +164,12 @@ setMethod(
         unique_libcounts <- unique(object@libcounts[, c("sequence", "count", "is_ref", "is_pam")])
 
         qc_count <- as.numeric(unique_libcounts[unique_libcounts$is_ref == 1, "count"])
-        object@libstats_qc$num_ref_reads <- ifelse(length(qc_count) == 0, 0, qc_count)
+        object@libstats_qc$num_ref_reads <- ifelse(is.na(qc_count), 0, qc_count)
         object@libstats_qc$per_ref_reads <- object@libstats_qc$num_ref_reads / total_num_sequenced_reads * 100
         object@libstats_qc$per_ref_reads <- round(object@libstats_qc$per_ref_reads, 2)
 
         qc_count <- as.numeric(unique_libcounts[unique_libcounts$is_pam == 1, "count"])
-        object@libstats_qc$num_pam_reads <- ifelse(length(qc_count) == 0, 0, qc_count)
+        object@libstats_qc$num_pam_reads <- ifelse(is.na(qc_count), 0, qc_count)
         object@libstats_qc$per_pam_reads <- object@libstats_qc$num_pam_reads / total_num_sequenced_reads * 100
         object@libstats_qc$per_pam_reads <- round(object@libstats_qc$per_pam_reads, 2)
 
@@ -196,12 +192,12 @@ setMethod(
 
         # library independent counts
         qc_count <- as.numeric(object@allcounts[object@allcounts$is_ref == 1, "count"])
-        object@allstats_qc$num_ref_reads <- ifelse(length(qc_count) == 0, 0, qc_count)
+        object@allstats_qc$num_ref_reads <- ifelse(is.na(qc_count), 0, qc_count)
         object@allstats_qc$per_ref_reads <- object@allstats_qc$num_ref_reads / total_num_sequenced_reads * 100
         object@allstats_qc$per_ref_reads <- round(object@allstats_qc$per_ref_reads, 2)
 
         qc_count <- as.numeric(object@allcounts[object@allcounts$is_pam == 1, "count"])
-        object@allstats_qc$num_pam_reads <- ifelse(length(qc_count) == 0, 0, qc_count)
+        object@allstats_qc$num_pam_reads <- ifelse(is.na(qc_count), 0, qc_count)
         object@allstats_qc$per_pam_reads <- object@allstats_qc$num_pam_reads / total_num_sequenced_reads * 100
         object@allstats_qc$per_pam_reads <- round(object@allstats_qc$per_pam_reads, 2)
 
