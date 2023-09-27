@@ -149,6 +149,8 @@ import_sge_files <- function(dir_path = NULL,
             } else {
                 stop(paste0("====> Error: ", sample_sheet, " has duplicated ref_time_point! It must be only one time point!"))
             }
+        } else {
+            stop(paste0("====> Error: ref_time_point cannot be found in condition of ", sample_sheet))
         }
     }
 
