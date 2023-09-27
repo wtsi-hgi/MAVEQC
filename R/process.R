@@ -43,7 +43,7 @@ setMethod(
             }
 
             if (length(object@refseq) == 0) {
-                stop(paste0("====> Error: no reference sequence found in the valiant meta file, please check ref_seq tag."))
+                stop(paste0("====> Error: reference sequence cannot be found in library-independent counts."))
             }
         }
 
