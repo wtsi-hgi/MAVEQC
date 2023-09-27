@@ -186,8 +186,9 @@ import_sge_files <- function(dir_path = NULL,
         tmp_obj@sample <- qc_samplesheet[i, ]$sample_name
         tmp_obj@libname <- qc_samplesheet[i, ]$library_name
         tmp_obj@libtype <- qc_samplesheet[i, ]$library_type
-        tmp_obj@adapt5 <- qc_samplesheet[i, ]$adapt5
-        tmp_obj@adapt3 <- qc_samplesheet[i, ]$adapt3
+
+        tmp_obj@adapt5 <- ifelse(is.na(qc_samplesheet[i, ]$adapt5), "", qc_samplesheet[i, ]$adapt5)
+        tmp_obj@adapt3 <- ifelse(is.na(qc_samplesheet[i, ]$adapt3), "", qc_samplesheet[i, ]$adapt3)
         tmp_obj@per_r1_adaptor <- ifelse(is.na(qc_samplesheet[i, ]$per_r1_adaptor), 0, qc_samplesheet[i, ]$per_r1_adaptor)
         tmp_obj@per_r2_adaptor <- ifelse(is.na(qc_samplesheet[i, ]$per_r2_adaptor), 0, qc_samplesheet[i, ]$per_r2_adaptor)
 
