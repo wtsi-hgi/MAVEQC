@@ -114,7 +114,7 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 
 * *please use the same headers in the example*
 * *replicate, condition and ref_time_point are optional, but required for screen qc*
-* *adapt5 and adapt3 are optional, please leave them blank if you don't have them*
+* *adapt5 and adapt3 are optional, please leave them blank if you don't have them, but required for reads with primers*
 * *vep_anno, library_name and library_type are not necessary, leave them blank if not available*
 
 ### library dependent counts -- tsv or tsv.gz
