@@ -382,9 +382,22 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("* **Library Coverage**: Mean read count per template oligo sequence.", "\n", sep = "")
         cat("\n", sep = "")
 
+        cat("\n", sep = "")
+        df <- as.data.frame(read.table(paste0(qc_dir, "/sample_qc_stats_accepted.tsv"), header = TRUE, sep = "\t", check.names = FALSE))
+        samples_ref0 <- df[df[, 4] == 0, 2]
+        samples_pam0 <- df[df[, 5] == 0, 2]
+        if (length(samples_ref0) != 0) {
+            cat("<p style=\"color:red; font-weight: bold\">Warning: found samples with 0 counts of resequence sequence! Please check table below.</p>", "\n", sep = "")
+        }
+        if (length(samples_pam0) != 0) {
+            cat("<p style=\"color:red; font-weight: bold\">Warning: found samples with 0 counts of pam sequence! Please check table below.</p>", "\n", sep = "")
+        }
+        cat("\n", sep = "")
+
         cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_stats_accepted.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
+
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_accepted.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
@@ -398,9 +411,17 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("                                                                  } else {", "\n", sep = "")
         cat("                                                                      bar_style(length = value/100, color = \"forestgreen\", fweight = \"bold\") }}),", "\n", sep = "")
         cat("                         \"% Reference Reads\" = colDef(filterMethod = JS(\"filterMinValue\"), filterInput = JS(\"rangeMore\"),", "\n", sep = "")
-        cat("                                                        style = function(value) {bar_style(length = value/100)}),", "\n", sep = "")
+        cat("                                                        style = function(value) {", "\n", sep = "")
+        cat("                                                                    if (value == 0) {", "\n", sep = "")
+        cat("                                                                        bar_style(length = value/100, color = \"red\", fweight = \"bold\")", "\n", sep = "")
+        cat("                                                                    } else {", "\n", sep = "")
+        cat("                                                                        bar_style(length = value/100)}}),", "\n", sep = "")
         cat("                         \"% PAM Reads\" = colDef(filterMethod = JS(\"filterMinValue\"), filterInput = JS(\"rangeMore\"),", "\n", sep = "")
-        cat("                                                  style = function(value) {bar_style(length = value/100)}),", "\n", sep = "")
+        cat("                                                  style = function(value) {", "\n", sep = "")
+        cat("                                                                    if (value == 0) {", "\n", sep = "")
+        cat("                                                                        bar_style(length = value/100, color = \"red\", fweight = \"bold\")", "\n", sep = "")
+        cat("                                                                    } else {", "\n", sep = "")
+        cat("                                                                        bar_style(length = value/100)}}),", "\n", sep = "")
         cat("                         \"% Unmapped Reads\" = colDef(filterMethod = JS(\"filterMinValue\"), filterInput = JS(\"rangeMore\"),", "\n", sep = "")
         cat("                                                       style = function(value) {bar_style(length = value/100)}),", "\n", sep = "")
         cat("                         \"Pass\" = colDef(cell = function(value) { if (value) \"\\u2705\" else \"\\u274c\" })),", "\n", sep = "")
@@ -439,7 +460,9 @@ create_qc_reports <- function(samplesheet = NULL,
 
         cat("#### 2.2.5. Genomic Coverage", "\n", sep = "")
         cat("Distribution of variants across targeton region based on log2(count+1) values.", "\n", sep = "")
-        cat("<p style=\"color:red\">Note: missing variants (0 count in the library) are not included.</p>", "\n", sep = "")
+        if (qc_type == "screen") {
+            cat("<p style=\"color:red\">Note: missing variants (0 count in the library) are not included.</p>", "\n", sep = "")
+        }
         cat("\n", sep = "")
 
         cat("```{r, echo = FALSE}", "\n", sep = "")

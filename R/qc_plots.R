@@ -91,7 +91,7 @@ setMethod(
                 theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
                 theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 8, face = "bold")) +
-                facet_wrap(~sample, scales = "free", dir = "v", ncol = 4)
+                facet_wrap(~sample, scales = "free", dir = "h", ncol = 3)
 
         p2 <- ggplot(read_lens, aes(x = length)) +
                 geom_histogram(aes(y = after_stat(width * density)), breaks = len_bins, color = "black", fill = "grey") +
@@ -102,9 +102,9 @@ setMethod(
                 theme(axis.title = element_text(size = 12, face = "bold", family = "Arial")) +
                 theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 8, face = "bold")) +
-                facet_wrap(~sample, scales = "free", dir = "v", ncol = 4)
+                facet_wrap(~sample, scales = "free", dir = "h", ncol = 3)
 
-        pheight <- 400 * as.integer((length(sample_names) / 3))
+        pheight <- 400 * ceiling((length(sample_names) / 3))
 
         if (is.null(plot_dir)) {
             ggplotly(p2)
@@ -191,7 +191,7 @@ setMethod(
                     theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
                     theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
                     theme(axis.text = element_text(size = 12, face = "bold")) +
-                    facet_wrap(~group, scales = "free", dir = "v")
+                    facet_wrap(~group, scales = "free", dir = "h")
 
             p2 <- p1
         }
@@ -502,9 +502,9 @@ setMethod(
                 theme(plot.title = element_text(size = 12, face = "bold.italic", family = "Arial")) +
                 theme(axis.text = element_text(size = 8, face = "bold")) +
                 theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 0.5)) +
-                facet_wrap_custom(~sample, scales = "free", scale_overrides = list_scales)
+                facet_wrap_custom(~sample, scales = "free", scale_overrides = list_scales, ncol = 3)
 
-        pheight <- 400 * as.integer((length(sample_names) / 3))
+        pheight <- 400 * ceiling((length(sample_names) / 3))
 
         if (is.null(plot_dir)) {
             stop(paste0("====> Error: plot_dir is not provided, no output directory."))
@@ -578,7 +578,7 @@ setMethod(
                     theme(axis.text = element_text(size = 8, face = "bold")) +
                     facet_wrap(~samples, scales = "free_x",  dir = "v")
 
-            pheight <- 300 * length(samples)
+            pheight <- 400 * length(samples)
 
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
@@ -629,7 +629,7 @@ setMethod(
                     theme(axis.text = element_text(size = 8, face = "bold")) +
                     facet_wrap(~samples, scales = "free_x", dir = "v")
 
-            pheight <- 300 * length(samples)
+            pheight <- 400 * length(samples)
 
             if (is.null(plot_dir)) {
                 stop(paste0("====> Error: plot_dir is not provided, no output directory."))
