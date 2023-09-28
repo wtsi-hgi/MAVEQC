@@ -585,6 +585,28 @@ setMethod(
                           out_dir = NULL) {
         qc_type <- match.arg(qc_type)
 
+        library_dependent_counts <- data.table()
+        if (qc_type == "screen") {
+            library_dependent_counts <- merge_list_to_dt(object@library_counts, "sequence", "count")
+            library_dependent_counts[, sequence := NULL]
+        } else {
+            list_counts <- list()
+            for (i in 1:length(object@samples)) {
+                sample <- object@samples[[i]]@sample
+                list_counts[[sample]] <- object@samples[[i]]@libcounts[, c("id", "count")]
+            }
+
+            library_dependent_counts <- merge_list_to_dt(list_counts, "id", "count")
+            library_dependent_counts[, id := NULL]
+        }
+
+        write.table(library_dependent_counts,
+                    file = paste0(out_dir, "/", "sample_qc_stats_pos_counts.tsv"),
+                    quote = FALSE,
+                    sep = "\t",
+                    row.names = FALSE,
+                    col.names = TRUE)
+
         cols <- c("Group",
                   "Sample",
                   "Chromosome",

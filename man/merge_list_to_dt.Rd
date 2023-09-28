@@ -7,11 +7,11 @@
 merge_list_to_dt(list_dt, by_val, join_val)
 }
 \arguments{
+\item{list_dt}{a list of data tables}
+
 \item{by_val}{join data tables by which column}
 
 \item{join_val}{join which column in the data tables}
-
-\item{objects}{a list of data tables}
 }
 \value{
 a data table

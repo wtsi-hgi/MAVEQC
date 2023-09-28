@@ -141,7 +141,7 @@ cal_gini <- function(x, corr = FALSE, na.rm = TRUE) {
 #' merge a list of data tables into a data table
 #'
 #' @name merge_list_to_dt
-#' @param objects   a list of data tables
+#' @param list_dt   a list of data tables
 #' @param by_val    join data tables by which column
 #' @param join_val  join which column in the data tables
 #' @return a data table
