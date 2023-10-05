@@ -818,7 +818,7 @@ setMethod(
                   "% Reference Reads",
                   "% Library Reads",
                   "Library Coverage",
-                  "% R1 Adatpor",
+                  "% R1 Adaptor",
                   "% R2 Adaptor")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
