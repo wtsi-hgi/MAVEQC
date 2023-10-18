@@ -7,7 +7,7 @@
 # the sample must have more than 1000000 total reads
 sqc_total: 1000000
 
-# the missing varaints in the library must be less than 10%
+# the missing varaints in the library must be less than 1%
 sqc_missing: 0.01
 
 # the sequence must have at least 5 counts in at least 25% of the samples
