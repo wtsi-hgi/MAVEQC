@@ -254,7 +254,7 @@ create_qc_reports <- function(samplesheet = NULL,
 
         cat("### 2.2. Run Sample QC", "\n", sep = "")
         cat("\n", sep = "")
-        cat("#### 2.2.1. Read Length Distrubtion", "\n", sep = "")
+        cat("#### 2.2.1. Read Length Distribution", "\n", sep = "")
         cat("Displays the percentage of reads for each sample, based on 50 nucleotide increments.", "\n", sep = "")
         cat("\n", sep = "")
 
@@ -377,7 +377,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("\n", sep = "")
         cat("* **Library Reads**: Percentage reads mapping to template oligo sequences, including intended variants.", "\n", sep = "")
         cat("* **Reference Reads**: Percentage reads mapping to Reference.", "\n", sep = "")
-        cat("* **PAM_Reads**: Percentage reads mapping to PAM/Protospacer Protection Edits (PPEs), without intended variant.", "\n", sep = "")
+        cat("* **PAM Reads**: Percentage reads mapping to PAM/Protospacer Protection Edits (PPEs), without intended variant.", "\n", sep = "")
         cat("* **Unmapped Reads**: Percentage of Unmapped Reads.", "\n", sep = "")
         cat("* **Library Coverage**: Mean read count per template oligo sequence.", "\n", sep = "")
         cat("\n", sep = "")
