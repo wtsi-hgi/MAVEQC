@@ -811,6 +811,7 @@ setMethod(
         cols <- c("Group",
                   "Sample",
                   "Gini Coefficient",
+                  "Gini Coefficient Pass",
                   "Total Reads",
                   "% Missing Variants",
                   "Accepted Reads",
@@ -826,15 +827,16 @@ setMethod(
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
         df_outs[, 3] <- object@stats$gini_coeff_before_qc
-        df_outs[, 4] <- object@stats$qcpass_total_reads
-        df_outs[, 5] <- object@stats$qcpass_missing_per
-        df_outs[, 6] <- object@stats$qcpass_accepted_reads
-        df_outs[, 7] <- object@stats$qcpass_mapping_per
-        df_outs[, 8] <- object@stats$qcpass_ref_per
-        df_outs[, 9] <- object@stats$qcpass_library_per
-        df_outs[, 10] <- object@stats$qcpass_library_cov
-        df_outs[, 11] <- object@stats$per_r1_adaptor
-        df_outs[, 12] <- object@stats$per_r2_adaptor
+        df_outs[, 4] <- ifelse(df_outs[, 3] < maveqc_config$gini_coeff, TRUE, FALSE)
+        df_outs[, 5] <- object@stats$qcpass_total_reads
+        df_outs[, 6] <- object@stats$qcpass_missing_per
+        df_outs[, 7] <- object@stats$qcpass_accepted_reads
+        df_outs[, 8] <- object@stats$qcpass_mapping_per
+        df_outs[, 9] <- object@stats$qcpass_ref_per
+        df_outs[, 10] <- object@stats$qcpass_library_per
+        df_outs[, 11] <- object@stats$qcpass_library_cov
+        df_outs[, 12] <- object@stats$per_r1_adaptor
+        df_outs[, 13] <- object@stats$per_r2_adaptor
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
