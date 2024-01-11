@@ -255,12 +255,17 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("### 2.2. Run Sample QC", "\n", sep = "")
         cat("\n", sep = "")
         cat("#### 2.2.1. Read Length Distribution", "\n", sep = "")
-        cat("Displays the percentage of reads for each sample, based on 50 nucleotide increments.", "\n", sep = "")
+        cat("Displays the percentage of reads for each sample, based on 50 nucleotide increments, using the total number of raw reads.", "\n", sep = "")
+        cat("<p style=\"color:red\">Note: expected read length is 300, which is the sequencing length.</p>", "\n", sep = "")
+        cat("<p style=\"color:red\">Note: the read length here is deducted by the length of primers, which assumes the reads in the input files have primers.",
+            "(see 2.1. Sample Sheet: quants_append_start and quants_append_end)</p>", "\n", sep = "")
         cat("\n", sep = "")
 
         cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_read_length.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
+
+        cat("**Pass criterion:** more than 90% of reads are longer than 200 nucleotides", "\n", sep = "")
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_read_length.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
@@ -290,6 +295,8 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("#### 2.2.2. Missing Variants", "\n", sep = "")
         cat("Stats of missing variants in the library", "\n", sep = "")
         cat("\n", sep = "")
+        cat("**Pass criterion:** less than 1% of variants (library sequences) are missing", "\n", sep = "")
+        cat("\n", sep = "")
 
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_missing.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
@@ -314,6 +321,8 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("\n", sep = "")
 
         cat("Records of missing variants in the library", "\n", sep = "")
+        cat("<p style=\"color:red\">Note: Unique indicates that a template sequence occurs only once in the VaLiAnT meta file.",
+            "This is important as a template sequence can occur more than once depending on the mutation types applied in VaLiAnT.</p>", "\n", sep = "")
         cat("\n", sep = "")
 
         cat("```{r, echo = FALSE}", "\n", sep = "")
@@ -330,17 +339,22 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("<br>", "\n", sep = "")
         cat("\n", sep = "")
 
-        cat("#### 2.2.3. Total Reads", "\n", sep = "")
+        cat("#### 2.2.3. Total Reads (Counts)", "\n", sep = "")
         cat("Displays the total number of reads per sample. ",
             "Filtering based on 1-dimensional Kmean clustering that excludes unique sequences with low read counts.", "\n", sep = "")
         cat("\n", sep = "")
-        cat("* **Accepted reads**: Total read count for all unique sequences with sufficient reads.", "\n", sep = "")
-        cat("* **Excluded reads**: Total read count for all unique sequences with insufficient reads.", "\n", sep = "")
+        cat("* **Accepted reads:** Total read count for all unique sequences with sufficient reads.", "\n", sep = "")
+        cat("* **Excluded reads:** Total read count for all unique sequences with insufficient reads.", "\n", sep = "")
         cat("\n", sep = "")
 
         cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_stats_total.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
+
+        cat("Total Reads: the total number of raw reads", "\n", sep = "")
+        cat("\n", sep = "")
+        cat("**Pass criterion:** more than 1,000,000 total reads", "\n", sep = "")
+        cat("<p style=\"color:red\">Note: No filtering happens in this step, only for clustering sequences (variants) based on read abundance</p>", "\n", sep = "")
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_total.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
@@ -372,14 +386,14 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("<br>", "\n", sep = "")
         cat("\n", sep = "")
 
-        cat("#### 2.2.4. Accepted Reads", "\n", sep = "")
-        cat("Displays the percentage of library reads vs non-library reads (ie. Reference, PAM and Unmapped) for Accepted Reads.", "\n", sep = "")
+        cat("#### 2.2.4. Accepted Reads (Percentage)", "\n", sep = "")
+        cat("Displays the percentage of library reads vs non-library reads (ie. Reference, PAM and Unmapped) for Accepted Reads (see 2.2.3 explanation).", "\n", sep = "")
         cat("\n", sep = "")
-        cat("* **Library Reads**: Percentage reads mapping to template oligo sequences, including intended variants.", "\n", sep = "")
-        cat("* **Reference Reads**: Percentage reads mapping to Reference.", "\n", sep = "")
-        cat("* **PAM Reads**: Percentage reads mapping to PAM/Protospacer Protection Edits (PPEs), without intended variant.", "\n", sep = "")
-        cat("* **Unmapped Reads**: Percentage of Unmapped Reads.", "\n", sep = "")
-        cat("* **Library Coverage**: Mean read count per template oligo sequence.", "\n", sep = "")
+        cat("* **Library Reads:** Percentage reads mapping to template oligo sequences, including intended variants.", "\n", sep = "")
+        cat("* **Reference Reads:** Percentage reads mapping to Reference.", "\n", sep = "")
+        cat("* **PAM Reads:** Percentage reads mapping to PAM/Protospacer Protection Edits (PPEs), without intended variant.", "\n", sep = "")
+        cat("* **Unmapped Reads:** Percentage of Unmapped Reads (not mapped to library sequences, PAM sequence, and reference sequence).", "\n", sep = "")
+        cat("* **Library Coverage:** Mean read count per template oligo sequence.", "\n", sep = "")
         cat("\n", sep = "")
 
         cat("\n", sep = "")
@@ -397,6 +411,8 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_stats_accepted.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
+
+        cat("**Pass criterion:** more than 40% of accepted reads are library reads", "\n", sep = "")
 
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_accepted.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
@@ -429,7 +445,11 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("```", "\n", sep = "")
 
         cat("\n", sep = "")
-        cat("Defines the mean read count per template oligo sequence.", "\n", sep = "")
+
+        cat("Defines the mean read count per template oligo sequence (dividing the total number of library reads by the total number of library sequences).", "\n", sep = "")
+        cat("\n", sep = "")
+        cat("**Pass criterion:** library coverage is more than 100", "\n", sep = "")
+        
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_coverage.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
@@ -468,6 +488,14 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_position_cov.dots.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
+
+        cat("Low Abundance cutoff: this cutoff is used to determine if the variant is low abundance (the green dashed line in the figure)", "\n", sep = "")
+        cat("\n", sep = "")
+        cat("% Low Abundance: the percentage of low-abundance variants", "\n", sep = "")
+        cat("\n", sep = "")
+        cat("**Pass criterion:** the percentage of low-abundance variants is lower than 30%", "\n", sep = "")
+        cat("\n", sep = "")
+
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_pos_coverage.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
         cat("df_counts <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_pos_counts.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
@@ -734,6 +762,34 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("```", "\n", sep = "")
         cat("<br>", "\n", sep = "")
         cat("\n", sep = "")
+
+        cat("## 4. Methods and Glossary", "\n", sep = "")
+        cat("### 4.1. Methods", "\n", sep = "")
+        cat("#### 4.1.1. Methods of generating accepted reads (refer to 2.2.3)", "\n", sep = "")
+        cat("1) Apply 1D Kmean clustering on each sequence (variant sequence) using log2 read count. Low read count sequences are removed in this step", "\n", sep = "")
+        cat("2) A valid sequence must have at least 5 count in at least 25% of the samples in an experiment.", "\n", sep = "")
+        cat("\n", sep = "")
+
+        if (qc_type == "screen") {
+            cat("#### 4.1.2. Methods of DESeq2 calculation (refer to 2.3.3 and 2.3.4)", "\n", sep = "")
+            cat("1) using the total number of accepted reads to calculate the size factor which is applied in DESeq2 normalisation", "\n", sep = "")
+            cat("2) run DESeq2 for each consequence", "\n", sep = "")
+            cat("3) select synonymous variant and intronic variant as the control, then calculate the median log2 fold change of the control variants", "\n", sep = "")
+            cat("4) re-calculate log2 fold change of other consequences by deducting the median log2 fold change of the control variants", "\n", sep = "")
+            cat("5) re-calculate p value and adjusted p value", "\n", sep = "")
+            cat("\n", sep = "")
+
+            cat("### 4.2. Glossary", "\n", sep = "")
+            cat("#### 4.2.1. Glossary of DESeq2 calculation (refer to 2.3.3 and 2.3.4)", "\n", sep = "")
+            cat("* **log2FoldChange:** the initial log2FoldChange from DESeq2 using all the accepted reads", "\n", sep = "")
+            cat("* **lfcSE:** the initial lfcSE from DESeq2 using all the accepted reads", "\n", sep = "")
+            cat("* **padj:** the initial padj from DESeq2 using all the accepted reads", "\n", sep = "")
+            cat("* **adj_log2FoldChange:** the re-calculated log2FoldChange by deducting the median control value", "\n", sep = "")
+            cat("* **adj_score:** the re-calculated score derived from adj_log2FoldChange", "\n", sep = "")
+            cat("* **adj_pval:** the re-calculated p-value derived from adj_log2FoldChange", "\n", sep = "")
+            cat("* **adj_fdr:** the re-calculated FDR (adjusted p-value)", "\n", sep = "")
+            cat("* **stat:** adj_log2FoldChange > 0 is enriched, adj_log2FoldChange < 0 is depleted", "\n", sep = "")
+        }
 
         sink()
 

@@ -211,7 +211,7 @@ setMethod(
                   "% 150 ~ 200",
                   "% 200 ~ 250",
                   "% 250 ~ 300",
-                  "Pass Threshold",
+                  "Pass Threshold (%)",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
@@ -282,7 +282,7 @@ setMethod(
                   "Library Sequences",
                   "Missing Library Sequences",
                   "% Missing Library Sequences",
-                  "Pass Threshold",
+                  "Pass Threshold (%)",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
@@ -436,7 +436,7 @@ setMethod(
                   "% Reference Reads",
                   "% PAM Reads",
                   "% Unmapped Reads",
-                  "Pass Threshold",
+                  "Pass Threshold (%)",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
@@ -615,7 +615,7 @@ setMethod(
                   "Genomic End",
                   "% Low Abundance",
                   "Low Abundance cutoff",
-                  "Pass Threshold",
+                  "Pass Threshold (%)",
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
