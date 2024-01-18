@@ -321,9 +321,9 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("\n", sep = "")
 
         cat("Records of missing variants in the library", "\n", sep = "")
-        cat("<p style=\"color:red\">Note: Unique indicates that a template sequence occurs only once in the VaLiAnT meta file. ",
+        cat("<p style=\"color:red\">Note: Unique indicates that a template sequence occurs only once in the VaLiAnT meta file. (1: Unique, 0: Not Unique)",
             "This is important as a template sequence can occur more than once depending on the mutation types applied in VaLiAnT.</p>", "\n", sep = "")
-        cat("\n", sep = "")
+        cat("<p style=\"color:red\">Note: Table below shows all the missing variants in all the samples, so the variants may occur multiple times.</p>", "\n", sep = "")
 
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/missing_variants_in_library.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
