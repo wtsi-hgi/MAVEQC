@@ -350,6 +350,8 @@ setMethod(
             library_counts_anno <- merge_list_to_dt(object@library_counts, "sequence", "count")
             cols <- colnames(library_counts_anno)
             library_counts_anno[vep_anno, c("oligo_name", "consequence") := .(oligo_name, consequence), on = .(sequence)]
+
+            # setcolorder has some issue with data.table >= 1.15
             setcolorder(library_counts_anno, c("oligo_name", "consequence", cols))
             object@library_counts_anno <- library_counts_anno
 
@@ -368,6 +370,8 @@ setMethod(
 
             cols <- colnames(library_counts_pos_anno)[-2]
             library_counts_pos_anno[vep_anno, c("oligo_name", "consequence") := .(oligo_name, consequence), on = .(sequence)]
+
+            # setcolorder has some issue with data.table >= 1.15
             setcolorder(library_counts_pos_anno, c("oligo_name", "consequence", "position", cols))
             object@library_counts_pos_anno <- library_counts_pos_anno
         }

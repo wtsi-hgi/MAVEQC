@@ -138,6 +138,8 @@ setMethod(
             res[(res$padj < pcut) & (res$log2FoldChange < dcut), ]$stat <- "depleted"
 
             res$stat <- factor(res$stat, levels = c("no impact", "enriched", "depleted"))
+
+            # setcolorder has some issue with data.table >= 1.15
             setcolorder(res, c("oligo_name", "consequence", "position", "log2FoldChange", "padj", "stat", "sequence"))
 
             res <- na.omit(res, cols = "consequence")
@@ -228,6 +230,8 @@ setMethod(
             res[(res$padj < pcut) & (res$log2FoldChange < dcut), ]$stat <- "depleted"
 
             res$stat <- factor(res$stat, levels = c("no impact", "enriched", "depleted"))
+
+            # setcolorder has some issue with data.table >= 1.15
             setcolorder(res, c("oligo_name", "consequence", "position", "log2FoldChange", "lfcSE", "padj", "stat", "sequence"))
 
             object@all_deseq_res_anno[[comparisions[i]]] <- res
