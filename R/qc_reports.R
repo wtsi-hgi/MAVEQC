@@ -510,7 +510,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("boxplot_min <- min(df_counts, na.rm = TRUE)", "\n", sep = "")
         cat("boxplot_max <- max(df_counts, na.rm = TRUE)", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
-        cat("reactable(df[, c(1, 2, 12, 7, 3:6, 8:10)], highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
+        cat("reactable(df[, c(1:4, 14, 9, 5:8, 10:12)], highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
         cat("          filterable = TRUE, minRows = min_row, defaultColDef = colDef(minWidth = 150),", "\n", sep = "")
         cat("          theme = reactableTheme(style = list(fontFamily = \"-apple-system\", fontSize = \"0.85em\")),", "\n", sep = "")
         cat("          columns = list(\"Genomic Start\" = colDef(format = colFormat(separators = TRUE)),", "\n", sep = "")

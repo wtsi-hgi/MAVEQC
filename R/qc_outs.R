@@ -204,6 +204,8 @@ setMethod(
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "Total Reads",
                   "% 0 ~ 50",
                   "% 50 ~ 100",
@@ -218,7 +220,9 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@stats$total_reads
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
+        df_outs[, 5] <- object@stats$total_reads
 
         bin_per <- data.frame()
         for (i in 1:length(object@lengths)) {
@@ -227,14 +231,14 @@ setMethod(
             bin_per <- rbind(bin_per, round(h$counts / nrow(object@samples[[i]]@allcounts) * 100, 1))
         }
 
-        df_outs[, 4] <- bin_per[, 1]
-        df_outs[, 5] <- bin_per[, 2]
-        df_outs[, 6] <- bin_per[, 3]
-        df_outs[, 7] <- bin_per[, 4]
-        df_outs[, 8] <- bin_per[, 5]
-        df_outs[, 9] <- bin_per[, 6]
-        df_outs[, 10] <- 90
-        df_outs[, 11] <- (df_outs[, 8] + df_outs[, 9]) > df_outs[, 10]
+        df_outs[, 6] <- bin_per[, 1]
+        df_outs[, 7] <- bin_per[, 2]
+        df_outs[, 8] <- bin_per[, 3]
+        df_outs[, 9] <- bin_per[, 4]
+        df_outs[, 10] <- bin_per[, 5]
+        df_outs[, 11] <- bin_per[, 6]
+        df_outs[, 12] <- 90
+        df_outs[, 13] <- (df_outs[, 10] + df_outs[, 11]) > df_outs[, 12]
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -279,6 +283,8 @@ setMethod(
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "Library Sequences",
                   "Missing Library Sequences",
                   "% Missing Library Sequences",
@@ -289,15 +295,17 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@stats$library_seqs
-        df_outs[, 4] <- object@stats$missing_meta_seqs
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
+        df_outs[, 5] <- object@stats$library_seqs
+        df_outs[, 6] <- object@stats$missing_meta_seqs
         tmp_out <- object@stats$per_missing_meta_seqs * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 5] <- tmp_out
+        df_outs[, 7] <- tmp_out
         tmp_out <- object@cutoffs$per_missing_variants * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 6] <- tmp_out
-        df_outs[, 7] <- object@stats$qcpass_missing_per
+        df_outs[, 8] <- tmp_out
+        df_outs[, 9] <- object@stats$qcpass_missing_per
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -353,6 +361,8 @@ setMethod(
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "Accepted Reads",
                   "% Accepted Reads",
                   "Excluded Reads",
@@ -365,17 +375,19 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@stats$accepted_reads
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
+        df_outs[, 5] <- object@stats$accepted_reads
         tmp_out <- object@stats$accepted_reads / object@stats$total_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 4] <- tmp_out
-        df_outs[, 5] <- object@stats$excluded_reads
+        df_outs[, 6] <- tmp_out
+        df_outs[, 7] <- object@stats$excluded_reads
         tmp_out <- object@stats$excluded_reads / object@stats$total_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 6] <- tmp_out
-        df_outs[, 7] <- object@stats$total_reads
-        df_outs[, 8] <- object@cutoffs$num_total_reads
-        df_outs[, 9] <- object@stats$qcpass_accepted_reads
+        df_outs[, 8] <- tmp_out
+        df_outs[, 9] <- object@stats$total_reads
+        df_outs[, 10] <- object@cutoffs$num_total_reads
+        df_outs[, 11] <- object@stats$qcpass_accepted_reads
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -432,6 +444,8 @@ setMethod(
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "% Library Reads",
                   "% Reference Reads",
                   "% PAM Reads",
@@ -443,20 +457,22 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
         tmp_out <- object@stats$per_library_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 3] <- tmp_out
+        df_outs[, 5] <- tmp_out
         tmp_out <- object@stats$per_ref_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 4] <- tmp_out
+        df_outs[, 6] <- tmp_out
         tmp_out <- object@stats$per_pam_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 5] <- tmp_out
+        df_outs[, 7] <- tmp_out
         tmp_out <- object@stats$per_unmapped_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
-        df_outs[, 6] <- tmp_out
-        df_outs[, 7] <- object@cutoffs$per_library_reads * 100
-        df_outs[, 8] <- object@stats$qcpass_library_per
+        df_outs[, 8] <- tmp_out
+        df_outs[, 9] <- object@cutoffs$per_library_reads * 100
+        df_outs[, 10] <- object@stats$qcpass_library_per
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -509,6 +525,8 @@ setMethod(
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "Total Library Reads",
                   "Total Library Sequences",
                   "Library Coverage",
@@ -520,14 +538,16 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@stats$library_reads
-        df_outs[, 4] <- object@stats$library_seqs
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
+        df_outs[, 5] <- object@stats$library_reads
+        df_outs[, 6] <- object@stats$library_seqs
         tmp_out <- object@stats$library_cov
         tmp_out <- sapply(tmp_out, function(x) round(x, 0))
-        df_outs[, 5] <- tmp_out
-        df_outs[, 6] <- object@stats$median_cov
-        df_outs[, 7] <- object@cutoffs$library_cov
-        df_outs[, 8] <- object@stats$qcpass_library_cov
+        df_outs[, 7] <- tmp_out
+        df_outs[, 8] <- object@stats$median_cov
+        df_outs[, 9] <- object@cutoffs$library_cov
+        df_outs[, 10] <- object@stats$qcpass_library_cov
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -609,6 +629,8 @@ setMethod(
 
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "Chromosome",
                   "Strand",
                   "Genomic Start",
@@ -622,10 +644,12 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- sapply(object@library_counts_chr, function (x) x[[1]])
-        df_outs[, 4] <- sapply(object@library_counts_chr, function (x) x[[2]])
-        df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[3]])
-        df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[4]])
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
+        df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[1]])
+        df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[2]])
+        df_outs[, 7] <- sapply(object@library_counts_chr, function (x) x[[3]])
+        df_outs[, 8] <- sapply(object@library_counts_chr, function (x) x[[4]])
 
         low_per <- vector()
         if (qc_type == "screen") {
@@ -639,11 +663,11 @@ setMethod(
                 low_per <- append(low_per, round(tmp_num / nrow(object@library_counts_pos[[s@sample]]) * 100, 2))
             }
         }
-        df_outs[, 7] <- low_per
+        df_outs[, 9] <- low_per
 
-        df_outs[, 8] <- object@cutoffs$seq_low_count
-        df_outs[, 9] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
-        df_outs[, 10] <- df_outs[, 7] < (1 - object@cutoffs$low_abundance_lib_per) * 100
+        df_outs[, 10] <- object@cutoffs$seq_low_count
+        df_outs[, 11] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
+        df_outs[, 12] <- df_outs[, 9] < (1 - object@cutoffs$low_abundance_lib_per) * 100
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -700,6 +724,8 @@ setMethod(
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "Chromosome",
                   "Strand",
                   "Genomic Start",
@@ -715,10 +741,12 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- sapply(object@library_counts_chr, function (x) x[[1]])
-        df_outs[, 4] <- sapply(object@library_counts_chr, function (x) x[[2]])
-        df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[3]])
-        df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[4]])
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
+        df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[1]])
+        df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[2]])
+        df_outs[, 7] <- sapply(object@library_counts_chr, function (x) x[[3]])
+        df_outs[, 8] <- sapply(object@library_counts_chr, function (x) x[[4]])
 
         libcounts_pos <- as.data.frame(object@library_counts_pos_anno)
         libcounts_pos <- libcounts_pos[, c(rownames(object@stats), "consequence")]
@@ -742,12 +770,12 @@ setMethod(
         others_low_per <- others_low_num / nrow(libcounts_pos) * 100
         others_low_per <- round(others_low_per, 1)
 
-        df_outs[, 7] <- lof_low_per
-        df_outs[, 8] <- others_low_per
-        df_outs[, 9] <- lof_low_per + others_low_per
-        df_outs[, 10] <- object@cutoffs$low_abundance_per * 100
-        df_outs[, 11] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
-        df_outs[, 12] <- df_outs[, 9] < (1 - object@cutoffs$low_abundance_lib_per) * 100
+        df_outs[, 9] <- lof_low_per
+        df_outs[, 10] <- others_low_per
+        df_outs[, 11] <- lof_low_per + others_low_per
+        df_outs[, 12] <- object@cutoffs$low_abundance_per * 100
+        df_outs[, 13] <- (1 - object@cutoffs$low_abundance_lib_per) * 100
+        df_outs[, 14] <- df_outs[, 11] < (1 - object@cutoffs$low_abundance_lib_per) * 100
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -810,6 +838,8 @@ setMethod(
 
         cols <- c("Group",
                   "Sample",
+                  "Sample Info",
+                  "Sample Exon",
                   "Gini Coefficient",
                   "Gini Coefficient Pass",
                   "Total Reads",
@@ -826,17 +856,19 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@stats$gini_coeff_before_qc
-        df_outs[, 4] <- ifelse(df_outs[, 3] < maveqc_config$gini_coeff, TRUE, FALSE)
-        df_outs[, 5] <- object@stats$qcpass_total_reads
-        df_outs[, 6] <- object@stats$qcpass_missing_per
-        df_outs[, 7] <- object@stats$qcpass_accepted_reads
-        df_outs[, 8] <- object@stats$qcpass_mapping_per
-        df_outs[, 9] <- object@stats$qcpass_ref_per
-        df_outs[, 10] <- object@stats$qcpass_library_per
-        df_outs[, 11] <- object@stats$qcpass_library_cov
-        df_outs[, 12] <- object@stats$per_r1_adaptor
-        df_outs[, 13] <- object@stats$per_r2_adaptor
+        df_outs[, 3] <- object@samples_info
+        df_outs[, 4] <- object@samples_exon
+        df_outs[, 5] <- object@stats$gini_coeff_before_qc
+        df_outs[, 6] <- ifelse(df_outs[, 3] < maveqc_config$gini_coeff, TRUE, FALSE)
+        df_outs[, 7] <- object@stats$qcpass_total_reads
+        df_outs[, 8] <- object@stats$qcpass_missing_per
+        df_outs[, 9] <- object@stats$qcpass_accepted_reads
+        df_outs[, 10] <- object@stats$qcpass_mapping_per
+        df_outs[, 11] <- object@stats$qcpass_ref_per
+        df_outs[, 12] <- object@stats$qcpass_library_per
+        df_outs[, 13] <- object@stats$qcpass_library_cov
+        df_outs[, 14] <- object@stats$per_r1_adaptor
+        df_outs[, 15] <- object@stats$per_r2_adaptor
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
