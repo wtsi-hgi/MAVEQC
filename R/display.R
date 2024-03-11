@@ -9,6 +9,10 @@ setMethod(
     definition = function(object) {
         cat("An object of class ", class(object), "\n", sep = "")
         cat("|--> sample name: ", object@sample, "\n", sep = "")
+        cat("|--> sample info: ", object@sample_info, "\n", sep = "")
+        cat("|--> sample gene: ", object@sample_gene, "\n", sep = "")
+        cat("|--> sample transcript: ", object@sample_transcript, "\n", sep = "")
+        cat("|--> sample exon: ", object@sample_exon, "\n", sep = "")
         cat("|--> library type: ", object@libtype, "\n", sep = "")
         cat("|--> library name: ", object@libname, "\n", sep = "")
         cat("    |--> 5' adaptor: ", object@adapt5, "\n", sep = "")

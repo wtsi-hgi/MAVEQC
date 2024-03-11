@@ -3,6 +3,10 @@
 #' @export
 #' @name SGE
 #' @slot sample             the sample name
+#' @slot sample_info        the readable info of the sample
+#' @slot sample_gene        the gene name of the sample
+#' @slot sample_transcript  the transcript ID of the sample
+#' @slot sample_exon        the exon number of the sample
 #' @slot libname            library name
 #' @slot libtype            library type
 #' @slot adapt5             adaptor sequence at 5 prime end
@@ -24,6 +28,10 @@
 setClass("SGE",
     slots = list(
         sample = "character",
+        sample_info = "character",
+        sample_gene = "character",
+        sample_transcript = "character",
+        sample_exon = "character",
         libname = "character",
         libtype = "character",
         adapt5 = "character",
@@ -45,6 +53,10 @@ setClass("SGE",
     ),
     prototype = list(
         sample = character(),
+        sample_info = character(),
+        sample_gene = character(),
+        sample_transcript = character(),
+        sample_exon = character(),
         libname = character(),
         libtype = character(),
         adapt5 = character(),
@@ -201,6 +213,8 @@ create_sge_object <- function(file_libcount,
 #' @slot cutoffs                  a data frame of cutoffs using in sample QC
 #' @slot samples                  a list of SGE objects
 #' @slot samples_ref              a list of SGE objects which are the references for screen QC
+#' @slot samples_info             a vector of all the sample infos
+#' @slot samples_exon             a vector of all the sample exons
 #' @slot counts                   a list of sample libraray-independent counts
 #' @slot lengths                  a list of sequence lengths
 #' @slot seq_clusters             a list of dataframes of sequences and cluster IDs
@@ -221,6 +235,8 @@ setClass("sampleQC",
         cutoffs = "data.frame",
         samples = "list",
         samples_ref = "list",
+        samples_info = "character",
+        samples_exon = "character",
         counts = "list",
         lengths = "list",
         seq_clusters = "list",
@@ -241,6 +257,8 @@ setClass("sampleQC",
         cutoffs = data.frame(),
         samples = list(),
         samples_ref = list(),
+        samples_info = character(),
+        samples_exon = character(),
         counts = list(),
         lengths = list(),
         seq_clusters = list(),
@@ -289,9 +307,14 @@ create_sampleqc_object <- function(samples) {
         ref_samples <- list()
     }
 
+    samples_info <- vector()
+    samples_exon <- vector()
     list_counts <- list()
     list_lengths <- list()
     for (s in samples) {
+        samples_info <- append(samples_info, s@sample_info)
+        samples_exon <- append(samples_exon, paste0(s@sample_gene, ":Exon", s@sample_exon))
+
         counts <- s@allcounts[, c("sequence", "count")]
 
         lengths <- s@allcounts[, "sequence", drop = FALSE]
@@ -340,6 +363,8 @@ create_sampleqc_object <- function(samples) {
     sampleqc_object <- new("sampleQC",
         samples = samples,
         samples_ref = ref_samples,
+        samples_info = samples_info,
+        samples_exon = samples_exon,
         counts = list_counts,
         lengths = list_lengths,
         stats = df_stats)
@@ -355,6 +380,8 @@ setClass("prcomp")
 #' @export
 #' @name experimentQC
 #' @slot samples                    a list of SGE objects
+#' @slot samples_info               a vector of all the sample infos
+#' @slot samples_exon               a vector of all the sample exons
 #' @slot coldata                    a data frame of coldata for DESeq2
 #' @slot ref_condition              the reference condition, like D4, others VS D4 in DESeq2
 #' @slot vep_anno                   a data frame of consequence annotations (should be the same in all the samples for screen qc)
@@ -375,6 +402,8 @@ setClass("prcomp")
 setClass("experimentQC",
     slots = list(
         samples = "list",
+        samples_info = "character",
+        samples_exon = "character",
         coldata = "data.frame",
         ref_condition = "character",
         vep_anno = "data.frame",
@@ -395,6 +424,8 @@ setClass("experimentQC",
     ),
     prototype = list(
         samples = list(),
+        samples_info = character(),
+        samples_exon = character(),
         coldata = data.frame(),
         ref_condition = character(),
         vep_anno = data.frame(),
@@ -435,6 +466,13 @@ create_experimentqc_object <- function(samqc_obj,
         stop(paste0("====> Error: reference condition is not in the coldata!"))
     }
 
+    samples_info <- vector()
+    samples_exon <- vector()
+    for (s in samqc_obj@samples) {
+        samples_info <- append(samples_info, s@sample_info)
+        samples_exon <- append(samples_exon, paste0(s@sample_gene, ":Exon", s@sample_exon))
+    }
+
     # initializing
     if ("condition" %nin% colnames(coldata)) {
         stop(paste0("====> Error: coldata must have condition values!"))
@@ -459,6 +497,8 @@ create_experimentqc_object <- function(samqc_obj,
     # Create the object
     experimentqc_object <- new("experimentQC",
         samples = samqc_obj@samples,
+        samples_info = samples_info,
+        samples_exon = samples_exon,
         coldata = coldata,
         ref_condition = refcond,
         vep_anno = samqc_obj@samples[[1]]@vep_anno,

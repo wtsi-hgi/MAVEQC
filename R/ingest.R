@@ -190,6 +190,13 @@ import_sge_files <- function(dir_path = NULL,
         tmp_obj@per_r1_adaptor <- ifelse(is.na(qc_samplesheet[i, ]$per_r1_adaptor), 0, qc_samplesheet[i, ]$per_r1_adaptor)
         tmp_obj@per_r2_adaptor <- ifelse(is.na(qc_samplesheet[i, ]$per_r2_adaptor), 0, qc_samplesheet[i, ]$per_r2_adaptor)
 
+        tmp_obj@sample_info <- paste(qc_samplesheet[i, ]$targeton_id,
+                                     qc_samplesheet[i, ]$condition,
+                                     qc_samplesheet[i, ]$replicate, sep = "_")
+        tmp_obj@sample_gene <- tmp_obj@vep_anno$symbol[1]
+        tmp_obj@sample_transcript <- tmp_obj@vep_anno$feature[1]
+        tmp_obj@sample_exon <- tmp_obj@vep_anno$exon[1]
+
         tmp_obj <- format_count(tmp_obj)
         tmp_obj <- sge_stats(tmp_obj)
         tmp_obj <- sge_qc_stats(tmp_obj)
