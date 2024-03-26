@@ -102,7 +102,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("---", "\n", sep = "")
         cat("title: \"MAVE QC Report\"", "\n", sep = "")
         cat("author: \"", package_version, "\"", "\n", sep = "")
-        cat("date: \"`r Sys.time()`\"", "\n", sep = "")
+        cat("date: \"`r format(Sys.time(), '%d %B %Y -- %A -- %X')`\"", "\n", sep = "")
         cat("output:", "\n", sep = "")
         cat("    html_document:", "\n", sep = "")
         cat("        toc: true", "\n", sep = "")
@@ -762,6 +762,9 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("                         \"Library Coverage\" = colDef(cell = function(value) { if (value) \"\\u2705\" else \"\\u274c\" })))", "\n", sep = "")
         cat("```", "\n", sep = "")
         cat("<br>", "\n", sep = "")
+        cat("\n", sep = "")
+
+        cat("---", "\n", sep = "")
         cat("\n", sep = "")
 
         cat("## 4. Methods and Glossary", "\n", sep = "")
