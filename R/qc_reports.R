@@ -272,7 +272,7 @@ create_qc_reports <- function(samplesheet = NULL,
             "(see 2.1. Sample Sheet: quants_append_start and quants_append_end)</p>", "\n", sep = "")
         cat("\n", sep = "")
 
-        cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
+        cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_read_length.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
 
@@ -362,7 +362,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("* **Excluded reads:** Total read count for all unique sequences with insufficient reads based 1D Kmean clustering.", "\n", sep = "")
         cat("\n", sep = "")
 
-        cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
+        cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_stats_total.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
 
@@ -423,7 +423,7 @@ create_qc_reports <- function(samplesheet = NULL,
         }
         cat("\n", sep = "")
 
-        cat("```{r, echo = FALSE, out.height = \"50%\", out.width = \"50%\"}", "\n", sep = "")
+        cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_stats_accepted.png\"), rel_path = FALSE)", "\n", sep = "")
         cat("```", "\n", sep = "")
 
@@ -643,7 +643,7 @@ create_qc_reports <- function(samplesheet = NULL,
                 tmp_header <- strsplit(tail(strsplit(figs[i], "/", fixed = TRUE)[[1]], n = 1), ".", fixed = TRUE)[[1]][2]
                 cat("**", tmp_header, "**", "\n", sep = "")
 
-                cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
+                cat("```{r, echo = FALSE, out.height = \"100%\", out.width = \"100%\"}", "\n", sep = "")
                 cat("knitr::include_graphics(\"", figs[i], "\", rel_path = FALSE)", "\n", sep = "")
                 cat("```", "\n", sep = "")
                 cat("\n", sep = "")
@@ -694,7 +694,7 @@ create_qc_reports <- function(samplesheet = NULL,
                 tmp_header <- strsplit(tail(strsplit(figs[i], "/", fixed = TRUE)[[1]], n = 1), ".", fixed = TRUE)[[1]][2]
                 cat("**", tmp_header, "**", "\n", sep = "")
 
-                cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
+                cat("```{r, echo = FALSE, out.height = \"100%\", out.width = \"100%\"}", "\n", sep = "")
                 cat("knitr::include_graphics(\"", figs[i], "\", rel_path = FALSE)", "\n", sep = "")
                 cat("```", "\n", sep = "")
                 cat("\n", sep = "")
