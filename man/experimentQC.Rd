@@ -12,9 +12,7 @@ A class representing a experiment QC object
 \describe{
 \item{\code{samples}}{a list of SGE objects}
 
-\item{\code{samples_info}}{a vector of all the sample infos}
-
-\item{\code{samples_exon}}{a vector of all the sample exons}
+\item{\code{samples_meta}}{a data frame of all the meta info of samples}
 
 \item{\code{coldata}}{a data frame of coldata for DESeq2}
 

@@ -12,13 +12,7 @@ A class representing a SGE object
 \describe{
 \item{\code{sample}}{the sample name}
 
-\item{\code{sample_info}}{the readable info of the sample}
-
-\item{\code{sample_gene}}{the gene name of the sample}
-
-\item{\code{sample_transcript}}{the transcript ID of the sample}
-
-\item{\code{sample_exon}}{the exon number of the sample}
+\item{\code{sample_meta}}{the sample meta info}
 
 \item{\code{libname}}{library name}
 

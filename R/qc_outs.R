@@ -22,6 +22,7 @@ setMethod(
 
         qc_type <- match.arg(qc_type)
 
+        qcout_samqc_meta(object = object, out_dir = out_dir)
         qcout_samqc_cutoffs(object = object, out_dir = out_dir)
         qcout_samqc_readlens(object = object, out_dir = out_dir)
         qcout_samqc_total(object = object, out_dir = out_dir)
@@ -36,6 +37,35 @@ setMethod(
         }
 
         qcout_samqc_badseqs(object = object, qc_type = qc_type, out_dir = out_dir)
+    }
+)
+
+#' initialize function
+setGeneric("qcout_samqc_meta", function(object, ...) {
+  standardGeneric("qcout_samqc_meta")
+})
+
+#' create output file of bad seqs which fail filtering
+#'
+#' @export
+#' @name qcout_samqc_meta
+#' @param object   sampleQC object
+#' @param out_dir  the output directory
+setMethod(
+    "qcout_samqc_meta",
+    signature = "sampleQC",
+    definition = function(object,
+                          out_dir = NULL) {
+        if (is.null(out_dir)) {
+            stop(paste0("====> Error: out_dir is not provided, no output directory."))
+        }
+
+        write.table(object@samples_meta,
+                    file = paste0(out_dir, "/", "sample_qc_meta.tsv"),
+                    quote = FALSE,
+                    sep = "\t",
+                    row.names = FALSE,
+                    col.names = TRUE)
     }
 )
 
@@ -220,8 +250,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- object@stats$total_reads
 
         bin_per <- data.frame()
@@ -295,8 +325,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- object@stats$library_seqs
         df_outs[, 6] <- object@stats$missing_meta_seqs
         tmp_out <- object@stats$per_missing_meta_seqs * 100
@@ -375,8 +405,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- object@stats$accepted_reads
         tmp_out <- object@stats$accepted_reads / object@stats$total_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
@@ -457,8 +487,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         tmp_out <- object@stats$per_library_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
         df_outs[, 5] <- tmp_out
@@ -538,8 +568,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- object@stats$library_reads
         df_outs[, 6] <- object@stats$library_seqs
         tmp_out <- object@stats$library_cov
@@ -644,8 +674,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[1]])
         df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[2]])
         df_outs[, 7] <- sapply(object@library_counts_chr, function (x) x[[3]])
@@ -741,8 +771,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- sapply(object@library_counts_chr, function (x) x[[1]])
         df_outs[, 6] <- sapply(object@library_counts_chr, function (x) x[[2]])
         df_outs[, 7] <- sapply(object@library_counts_chr, function (x) x[[3]])
@@ -856,8 +886,8 @@ setMethod(
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
-        df_outs[, 3] <- object@samples_info
-        df_outs[, 4] <- object@samples_exon
+        df_outs[, 3] <- object@samples_meta$sample_info
+        df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- object@stats$gini_coeff_before_qc
         df_outs[, 6] <- ifelse(df_outs[, 3] < maveqc_config$gini_coeff, TRUE, FALSE)
         df_outs[, 7] <- object@stats$qcpass_total_reads

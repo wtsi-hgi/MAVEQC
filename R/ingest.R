@@ -26,7 +26,7 @@ read_sge_file <- function(file_path,
     # processing speed: vroom > fread > read.table
     csv_pattern <- "\\.csv(\\.gz)?$"
     tsv_pattern <- "\\.tsv(\\.gz)?$"
-    if (grepl(csv_pattern, file_path)) {      
+    if (grepl(csv_pattern, file_path)) {
         suppressWarnings(filedata <- vroom(file_path, delim = ",", comment = "#", skip = hline, col_names = FALSE, show_col_types = FALSE))
     } else if (grepl(tsv_pattern, file_path)) {
         suppressWarnings(filedata <- vroom(file_path, delim = "\t", comment = "#", skip = hline, col_names = FALSE, show_col_types = FALSE))
@@ -196,6 +196,17 @@ import_sge_files <- function(dir_path = NULL,
         tmp_obj@sample_gene <- tmp_obj@vep_anno$symbol[1]
         tmp_obj@sample_transcript <- tmp_obj@vep_anno$feature[1]
         tmp_obj@sample_exon <- tmp_obj@vep_anno$exon[1]
+
+        tmp_obj@sample_meta["sample_name"] <- tmp_obj@sample
+        tmp_obj@sample_meta["sample_info"] <- paste(qc_samplesheet[i, ]$targeton_id,
+                                                    qc_samplesheet[i, ]$condition,
+                                                    qc_samplesheet[i, ]$replicate, sep = "_")
+        tmp_obj@sample_meta["gene_id"] <- tmp_obj@vep_anno$gene[1]
+        tmp_obj@sample_meta["gene_name"] <- tmp_obj@vep_anno$symbol[1]
+        tmp_obj@sample_meta["transcript_id"] <- tmp_obj@vep_anno$feature[1]
+        tmp_obj@sample_meta["exon_num"] <- tmp_obj@vep_anno$exon[1]
+        tmp_obj@sample_meta["targeton_id"] <- tmp_obj@vep_anno$targeton_id[1]
+        tmp_obj@sample_meta["sgrna_id"] <- tmp_obj@vep_anno$sgrna_id[1]
 
         tmp_obj <- format_count(tmp_obj)
         tmp_obj <- sge_stats(tmp_obj)

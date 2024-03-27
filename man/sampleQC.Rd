@@ -16,9 +16,7 @@ A class representing a sample QC object
 
 \item{\code{samples_ref}}{a list of SGE objects which are the references for screen QC}
 
-\item{\code{samples_info}}{a vector of all the sample infos}
-
-\item{\code{samples_exon}}{a vector of all the sample exons}
+\item{\code{samples_meta}}{a data frame of all the meta info of samples}
 
 \item{\code{counts}}{a list of sample libraray-independent counts}
 

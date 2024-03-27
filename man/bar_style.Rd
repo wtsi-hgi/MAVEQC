@@ -8,7 +8,7 @@ bar_style(
   length = 1,
   height = "80\%",
   fill = "#00FFFF7F",
-  align = c("right", "left"),
+  align = c("left", "right"),
   color = "black",
   fweight = "plain"
 )
