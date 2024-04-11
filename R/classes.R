@@ -308,14 +308,9 @@ create_sampleqc_object <- function(samples) {
     }
 
     samples_meta <- data.frame()
-    samples_info <- vector()
-    samples_exon <- vector()
     list_counts <- list()
     list_lengths <- list()
     for (s in samples) {
-        samples_info <- append(samples_info, s@sample_info)
-        samples_exon <- append(samples_exon, paste0(s@sample_gene, ":Exon", s@sample_exon))
-
         if (nrow(samples_meta) == 0) {
             samples_meta <- data.frame(matrix(NA, 0, length(s@sample_meta)))
             colnames(samples_meta) <- names(s@sample_meta)
@@ -373,8 +368,6 @@ create_sampleqc_object <- function(samples) {
         samples = samples,
         samples_ref = ref_samples,
         samples_meta = samples_meta,
-        samples_info = samples_info,
-        samples_exon = samples_exon,
         counts = list_counts,
         lengths = list_lengths,
         stats = df_stats)
@@ -474,12 +467,7 @@ create_experimentqc_object <- function(samqc_obj,
     }
 
     samples_meta <- data.frame()
-    samples_info <- vector()
-    samples_exon <- vector()
     for (s in samqc_obj@samples) {
-        samples_info <- append(samples_info, s@sample_info)
-        samples_exon <- append(samples_exon, paste0(s@sample_gene, ":Exon", s@sample_exon))
-
         if (nrow(samples_meta) == 0) {
             samples_meta <- data.frame(matrix(NA, 0, length(s@sample_meta)))
             colnames(samples_meta) <- names(s@sample_meta)
@@ -514,8 +502,6 @@ create_experimentqc_object <- function(samqc_obj,
     experimentqc_object <- new("experimentQC",
         samples = samqc_obj@samples,
         samples_meta = samples_meta,
-        samples_info = samples_info,
-        samples_exon = samples_exon,
         coldata = coldata,
         ref_condition = refcond,
         vep_anno = samqc_obj@samples[[1]]@vep_anno,
