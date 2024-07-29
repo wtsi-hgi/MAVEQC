@@ -889,7 +889,7 @@ setMethod(
         df_outs[, 3] <- object@samples_meta$sample_info
         df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- object@stats$gini_coeff_before_qc
-        df_outs[, 6] <- ifelse(df_outs[, 3] < maveqc_config$gini_coeff, TRUE, FALSE)
+        df_outs[, 6] <- ifelse(df_outs[, 5] < maveqc_config$gini_coeff, TRUE, FALSE)
         df_outs[, 7] <- object@stats$qcpass_total_reads
         df_outs[, 8] <- object@stats$qcpass_missing_per
         df_outs[, 9] <- object@stats$qcpass_accepted_reads
