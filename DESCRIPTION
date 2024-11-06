@@ -18,7 +18,7 @@ Depends:
     configr (>= 0.3.5),
     vroom (>= 1.6.3),
     data.table (>= 1.14.8),
-    data.table (<= 1.15.0),
+    data.table (<= 1.14.10),
     Ckmeans.1d.dp (>= 4.3.4),
     gplots (>= 3.1.3),
     ggplot2 (>= 3.4.2),
