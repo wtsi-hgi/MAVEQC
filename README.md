@@ -27,8 +27,6 @@
 
 <!-- Dependencies-->
 ## Dependencies
-**R version suggested is 4.3**
-
 ```R
 install.packages("configr", version = '0.3.5')
 install.packages("vroom", version = '1.6.3')
