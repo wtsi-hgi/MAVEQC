@@ -1001,16 +1001,19 @@ setMethod(
         }
 
         df_outs_tmp <- unique(df_outs[df_outs$Pass, c("Condition", "Cluster")])
-        for (i in 1:nrow(df_outs_tmp)) {
-            pass_check <- TRUE
-            for (j in 1:nrow(df_outs_tmp)) {
-                if (i != j) {
-                    if (df_outs_tmp[i, ]$Cluster == df_outs_tmp[j, ]$Cluster) {
-                        pass_check <- FALSE
+        if (nrow(df_outs_tmp) != 0)
+        {
+            for (i in 1:nrow(df_outs_tmp)) {
+                pass_check <- TRUE
+                for (j in 1:nrow(df_outs_tmp)) {
+                    if (i != j) {
+                        if (df_outs_tmp[i, ]$Cluster == df_outs_tmp[j, ]$Cluster) {
+                            pass_check <- FALSE
+                        }
                     }
                 }
+                df_outs[df_outs$Condition == df_outs_tmp[i, ]$Condition, ]$Pass <- pass_check
             }
-            df_outs[df_outs$Condition == df_outs_tmp[i, ]$Condition, ]$Pass <- pass_check
         }
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
