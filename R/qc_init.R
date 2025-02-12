@@ -36,10 +36,6 @@ create_config <- function(config_dir) {
     cat("#-----------#", "\n", sep = "")
     cat("\n", sep = "")
 
-    cat("# gini coefficient must be lower than 0.5", "\n", sep = "")
-    cat("gini_coeff: 0.5", "\n", sep = "")
-    cat("\n", sep = "")
-
     cat("# the sample must have more than 1000000 total reads", "\n", sep = "")
     cat("sqc_total: 1000000", "\n", sep = "")
     cat("\n", sep = "")
