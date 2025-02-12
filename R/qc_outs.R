@@ -891,7 +891,9 @@ setMethod(
         df_outs[, 6] <- object@stats$qcpass_total_reads
         df_outs[, 7] <- object@stats$qcpass_missing_per
         df_outs[, 8] <- object@stats$qcpass_accepted_reads
-        df_outs[, 9] <- object@stats$qcpass_mapping_per
+        tmp_out <- (1 - object@stats$per_unmapped_reads) * 100
+        tmp_out <- sapply(tmp_out, function(x) round(x, 1))
+        df_outs[, 9] <- tmp_out
         df_outs[, 10] <- object@stats$qcpass_ref_per
         df_outs[, 11] <- object@stats$qcpass_library_per
         df_outs[, 12] <- object@stats$qcpass_library_cov
@@ -914,7 +916,6 @@ setMethod(
                           "Total Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "% Missing Variants" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "Accepted Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "% Mapping Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "% Reference Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "% Library Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "Library Coverage" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }))

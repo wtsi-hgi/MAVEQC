@@ -54,6 +54,7 @@ create_config <- function(config_dir) {
     cat("\n", sep = "")
 
     cat("# the sample must have more than 60% of reads aligned to the library including reference and PAM reads", "\n", sep = "")
+    cat("# NOTE: not currently used in sample QC pass/fail", "\n", sep = "")
     cat("sqc_mapping_per: 0.6", "\n", sep = "")
     cat("\n", sep = "")
 
