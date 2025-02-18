@@ -484,11 +484,11 @@ setMethod(
                   "% Unmapped Reads",
                   "Pass Threshold (%)",
                   "Pass",
-                  "QC Type"
+                  "QC_Type"
                 )
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
-        
+
         qc_type <- match.arg(qc_type)
 
         df_outs[, 1] <- object@samples[[1]]@libname
@@ -888,7 +888,7 @@ setMethod(
                   "% R1 Adaptor",
                   "% R2 Adaptor",
                   "QCPass_Library_Per",
-                  "QC Type")
+                  "QC_Type")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
 
