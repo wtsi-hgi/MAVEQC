@@ -467,10 +467,12 @@ setGeneric("qcout_samqc_accepted", function(object, ...) {
 #' @name qcout_samqc_accepted
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
+#' @param qc_type  plasmid or screen
 setMethod(
     "qcout_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
+                          qc_type = c("plasmid", "screen"),
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
@@ -481,9 +483,13 @@ setMethod(
                   "% PAM Reads",
                   "% Unmapped Reads",
                   "Pass Threshold (%)",
-                  "Pass")
+                  "Pass",
+                  "QC Type"
+                )
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
+        
+        qc_type <- match.arg(qc_type)
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
@@ -503,6 +509,7 @@ setMethod(
         df_outs[, 8] <- tmp_out
         df_outs[, 9] <- object@cutoffs$per_library_reads * 100
         df_outs[, 10] <- object@stats$qcpass_library_per
+        df_outs[, 11] <- qc_type
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -879,7 +886,9 @@ setMethod(
                   "% Library Reads",
                   "Library Coverage",
                   "% R1 Adaptor",
-                  "% R2 Adaptor")
+                  "% R2 Adaptor",
+                  "QCPass_Library_Per",
+                  "QC Type")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
 
@@ -897,6 +906,8 @@ setMethod(
         df_outs[, 12] <- object@stats$qcpass_library_cov
         df_outs[, 13] <- object@stats$per_r1_adaptor
         df_outs[, 14] <- object@stats$per_r2_adaptor
+        df_outs[, 15] <- sapply(object@stats$per_library_reads * 100, function(x) round(x, 1))
+        df_outs[, 16] <- qc_type
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
