@@ -786,7 +786,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("gini_max <- 1", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
         cat("qc_type_exists <- \"screen\" %in% df$`QC_Type`", "\n", sep = "")
-        cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value <= 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
+        cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value < 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
         cat("qa_pass_pl <- function(pass_value) { ifelse(pass_value, \"\\u2705\", \"\\u274c\") }", "\n", sep = "")
         cat("if (!qc_type_exists) df$`% Library Reads` <- qa_pass_pl(df$`% Library Reads`) else df <- df %>% mutate(\"% Library Reads\" = qa_pass_sr(df$QCPass_Library_Per))", "\n", sep = "")
         cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
