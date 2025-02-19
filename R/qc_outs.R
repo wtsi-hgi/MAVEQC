@@ -27,7 +27,7 @@ setMethod(
         qcout_samqc_readlens(object = object, out_dir = out_dir)
         qcout_samqc_total(object = object, out_dir = out_dir)
         qcout_samqc_missing(object = object, out_dir = out_dir)
-        qcout_samqc_accepted(object = object, out_dir = out_dir)
+        qcout_samqc_accepted(object = object, qc_type = qc_type, out_dir = out_dir)
         qcout_samqc_libcov(object = object, out_dir = out_dir)
         qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
         qcout_samqc_results(object = object, qc_type = qc_type, out_dir = out_dir)
@@ -466,8 +466,8 @@ setGeneric("qcout_samqc_accepted", function(object, ...) {
 #' @export
 #' @name qcout_samqc_accepted
 #' @param object   sampleQC object
-#' @param out_dir  the output directory
 #' @param qc_type  plasmid or screen
+#' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_accepted",
     signature = "sampleQC",

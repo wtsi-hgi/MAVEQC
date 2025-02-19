@@ -6,10 +6,12 @@
 \usage{
 qcout_samqc_accepted(object, ...)
 
-\S4method{qcout_samqc_accepted}{sampleQC}(object, out_dir = NULL)
+\S4method{qcout_samqc_accepted}{sampleQC}(object, qc_type = c("plasmid", "screen"), out_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
+
+\item{qc_type}{plasmid or screen}
 
 \item{out_dir}{the output directory}
 }
