@@ -18,6 +18,7 @@ sqc_low_sample_per: 0.25
 sqc_accepted: 1000000
 
 # the sample must have more than 60% of reads aligned to the library including reference and PAM reads
+# NOTE: not currently used in sample QC pass/fail
 sqc_mapping_per: 0.6
 
 # the sample must have less than 10% of reads aligned to reference sequence
