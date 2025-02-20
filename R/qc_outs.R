@@ -27,7 +27,7 @@ setMethod(
         qcout_samqc_readlens(object = object, out_dir = out_dir)
         qcout_samqc_total(object = object, out_dir = out_dir)
         qcout_samqc_missing(object = object, out_dir = out_dir)
-        qcout_samqc_accepted(object = object, qc_type = qc_type, out_dir = out_dir)
+        qcout_samqc_accepted(object = object, out_dir = out_dir)
         qcout_samqc_libcov(object = object, out_dir = out_dir)
         qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
         qcout_samqc_results(object = object, qc_type = qc_type, out_dir = out_dir)
@@ -466,8 +466,8 @@ setGeneric("qcout_samqc_accepted", function(object, ...) {
 #' @export
 #' @name qcout_samqc_accepted
 #' @param object   sampleQC object
-#' @param qc_type  plasmid or screen
 #' @param out_dir  the output directory
+#' @param qc_type  plasmid or screen
 setMethod(
     "qcout_samqc_accepted",
     signature = "sampleQC",
@@ -483,9 +483,7 @@ setMethod(
                   "% PAM Reads",
                   "% Unmapped Reads",
                   "Pass Threshold (%)",
-                  "Pass",
-                  "QC_Type"
-                )
+                  "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
 
@@ -509,7 +507,6 @@ setMethod(
         df_outs[, 8] <- tmp_out
         df_outs[, 9] <- object@cutoffs$per_library_reads * 100
         df_outs[, 10] <- object@stats$qcpass_library_per
-        df_outs[, 11] <- qc_type
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -887,8 +884,7 @@ setMethod(
                   "Library Coverage",
                   "% R1 Adaptor",
                   "% R2 Adaptor",
-                  "QCPass_Library_Per",
-                  "QC_Type")
+                  "QCPass_Library_Per")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
 
@@ -907,7 +903,6 @@ setMethod(
         df_outs[, 13] <- object@stats$per_r1_adaptor
         df_outs[, 14] <- object@stats$per_r2_adaptor
         df_outs[, 15] <- sapply(object@stats$per_library_reads * 100, function(x) round(x, 1))
-        df_outs[, 16] <- qc_type
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
