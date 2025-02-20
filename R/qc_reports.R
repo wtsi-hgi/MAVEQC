@@ -767,7 +767,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("             \"Sample must have more than [cutoff] reads after the low count filtering\",", "\n", sep = "")
         cat("             \"Sample must have more than [cutoff] of reads aligned to the library including reference and PAM reads\",", "\n", sep = "")
         cat("             \"Sample must have less than [cutoff] of reads aligned to reference sequence\",", "\n", sep = "")
-        cat("             \"Sample must have more than [cutoff] of reads aligned to the library. For screen samples between 30% to 40% are displayed with \\u2705\\u2757.\",", "\n", sep = "")
+        cat("             \"Sample must have more than [cutoff] of reads aligned to the library. Screen samples between 30% to 40% show \\u2705\\u2757.\",", "\n", sep = "")
         cat("             \"Sample must have more than [cutoff] average coverage\")", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
         cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
