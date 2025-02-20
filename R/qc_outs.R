@@ -467,12 +467,10 @@ setGeneric("qcout_samqc_accepted", function(object, ...) {
 #' @name qcout_samqc_accepted
 #' @param object   sampleQC object
 #' @param out_dir  the output directory
-#' @param qc_type  plasmid or screen
 setMethod(
     "qcout_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
-                          qc_type = c("plasmid", "screen"),
                           out_dir = NULL) {
         cols <- c("Group",
                   "Sample",
@@ -486,8 +484,6 @@ setMethod(
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
-
-        qc_type <- match.arg(qc_type)
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)

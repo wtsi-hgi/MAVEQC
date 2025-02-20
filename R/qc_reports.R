@@ -434,10 +434,13 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("```{r, echo = FALSE}", "\n", sep = "")
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_accepted.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
-        cat("qc_type_exists <- qc_type == \"screen\"", "\n", sep = "")
-        cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value <= 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
-        cat("qa_pass_pl <- function(pass_value) { ifelse(pass_value, \"\\u2705\", \"\\u274c\") }", "\n", sep = "")
-        cat("if (!qc_type_exists) df$Pass <- qa_pass_pl(df$Pass) else df <- df %>% mutate(\"Pass\" = qa_pass_sr(df$`% Library Reads`))", "\n", sep = "")
+        if (qc_type == "screen") {
+            cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value < 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
+            cat("df <- df %>% mutate(\"Pass\" = qa_pass_sr(df$`% Library Reads`))", "\n", sep = "")
+        } else {
+            cat("qa_pass_pl <- function(pass_value) { ifelse(pass_value, \"\\u2705\", \"\\u274c\") }", "\n", sep = "")
+            cat("df$Pass <- qa_pass_pl(df$Pass)", "\n", sep = "")
+        }
         cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
         cat("          filterable = TRUE, minRows = min_row, defaultColDef = colDef(minWidth = 150, align = \"left\"),", "\n", sep = "")
         cat("          theme = reactableTheme(style = list(fontFamily = \"-apple-system\", fontSize = \"0.85em\")),", "\n", sep = "")
@@ -764,7 +767,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("             \"Sample must have more than [cutoff] reads after the low count filtering\",", "\n", sep = "")
         cat("             \"Sample must have more than [cutoff] of reads aligned to the library including reference and PAM reads\",", "\n", sep = "")
         cat("             \"Sample must have less than [cutoff] of reads aligned to reference sequence\",", "\n", sep = "")
-        cat("             \"Sample must have more than [cutoff] of reads aligned to the library\",", "\n", sep = "")
+        cat("             \"Sample must have more than [cutoff] of reads aligned to the library. For screen samples between 30% to 40% are displayed with \\u2705\\u2757.\",", "\n", sep = "")
         cat("             \"Sample must have more than [cutoff] average coverage\")", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
         cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
@@ -784,10 +787,13 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("gini_min <- 0", "\n", sep = "")
         cat("gini_max <- 1", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
-        cat("qc_type_exists <- qc_type == \"screen\"", "\n", sep = "")
-        cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value <= 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
-        cat("qa_pass_pl <- function(pass_value) { ifelse(pass_value, \"\\u2705\", \"\\u274c\") }", "\n", sep = "")
-        cat("if (!qc_type_exists) df$`% Library Reads` <- qa_pass_pl(df$`% Library Reads`) else df <- df %>% mutate(\"% Library Reads\" = qa_pass_sr(df$QCPass_Library_Per))", "\n", sep = "")
+        if (qc_type == "screen") {
+            cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value < 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
+            cat("df <- df %>% mutate(\"% Library Reads\" = qa_pass_sr(df$QCPass_Library_Per))", "\n", sep = "")
+        } else {
+            cat("qa_pass_pl <- function(pass_value) { ifelse(pass_value, \"\\u2705\", \"\\u274c\") }", "\n", sep = "")
+            cat("df$`% Library Reads` <- qa_pass_pl(df$`% Library Reads`)", "\n", sep = "")
+        }
         cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
         cat("          filterable = TRUE, minRows = min_row, defaultColDef = colDef(minWidth = 100, align = \"left\"),", "\n", sep = "")
         cat("          theme = reactableTheme(style = list(fontFamily = \"-apple-system\", fontSize = \"0.85em\")),", "\n", sep = "")
