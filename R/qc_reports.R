@@ -435,7 +435,6 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("df <- as.data.frame(read.table(\"", qc_dir, "/sample_qc_stats_accepted.tsv", "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
         cat("qc_type_exists <- qc_type == \"screen\"", "\n", sep = "")
-        cat("print(qc_type_exists)", "\n", sep = "")
         cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value <= 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
         cat("qa_pass_pl <- function(pass_value) { ifelse(pass_value, \"\\u2705\", \"\\u274c\") }", "\n", sep = "")
         cat("if (!qc_type_exists) df$Pass <- qa_pass_pl(df$Pass) else df <- df %>% mutate(\"Pass\" = qa_pass_sr(df$`% Library Reads`))", "\n", sep = "")
