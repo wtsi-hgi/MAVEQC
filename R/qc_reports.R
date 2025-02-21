@@ -437,9 +437,6 @@ create_qc_reports <- function(samplesheet = NULL,
         if (qc_type == "screen") {
             cat("qa_pass_sr <- function(lr_value) {ifelse(lr_value < 30, \"\\u274c\", ifelse(lr_value >= 30 & lr_value < 40, \"\\u2705\\u2757\", \"\\u2705\"))}", "\n", sep = "")
             cat("df <- df %>% mutate(\"Pass\" = qa_pass_sr(df$`% Library Reads`))", "\n", sep = "")
-        } else {
-            cat("qa_pass_pl <- function(pass_value) { ifelse(pass_value, \"\\u2705\", \"\\u274c\") }", "\n", sep = "")
-            cat("df$Pass <- qa_pass_pl(df$Pass)", "\n", sep = "")
         }
         cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
         cat("          filterable = TRUE, minRows = min_row, defaultColDef = colDef(minWidth = 150, align = \"left\"),", "\n", sep = "")
@@ -466,9 +463,14 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("                         \"% Unmapped Reads\" = colDef(filterMethod = JS(\"filterMinValue\"), filterInput = JS(\"rangeMore\"),", "\n", sep = "")
         cat("                                                       style = function(value) {bar_style(length = value/100)}),", "\n", sep = "")
         cat("                         \"Pass Threshold (%)\" = colDef(minWidth = 100),", "\n", sep = "")
-        cat("                         \"Pass\" = colDef(minWidth = 50, filterable = FALSE)))", "\n", sep = "")
+        if (qc_type == "screen") {
+            cat("                     \"Pass\" = colDef(minWidth = 50)),", "\n", sep = "")
+            cat("          rowStyle = function(index) { if (df$`% Library Reads`[index] < 30) { list(background = t_col(\"tomato\", 0.2)) }})", "\n", sep = "")
+        } else {
+            cat("                     \"Pass\" = colDef(minWidth = 50, cell = function(value) { if (value) \"\\u2705\" else \"\\u274c\" })),", "\n", sep = "")
+            cat("          rowStyle = function(index) { if (!(df$Pass[index])) { list(background = t_col(\"tomato\", 0.2)) }})", "\n", sep = "")
+        }
         cat("```", "\n", sep = "")
-
         cat("\n", sep = "")
 
         cat("Defines the mean read count per template oligo sequence (dividing the total number of library reads by the total number of library sequences).", "\n", sep = "")
