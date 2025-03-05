@@ -879,7 +879,8 @@ setMethod(
                   "% Library Reads",
                   "Library Coverage",
                   "% R1 Adaptor",
-                  "% R2 Adaptor")
+                  "% R2 Adaptor",
+                  "QCPass_Library_Per")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
 
@@ -899,6 +900,7 @@ setMethod(
         df_outs[, 12] <- object@stats$qcpass_library_cov
         df_outs[, 13] <- object@stats$per_r1_adaptor
         df_outs[, 14] <- object@stats$per_r2_adaptor
+        df_outs[, 15] <- sapply(object@stats$per_library_reads * 100, function(x) round(x, 1))
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
