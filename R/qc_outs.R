@@ -871,7 +871,6 @@ setMethod(
                   "Sample Info",
                   "Sample Exon",
                   "Gini Coefficient",
-                  "Gini Coefficient Pass",
                   "Total Reads",
                   "% Missing Variants",
                   "Accepted Reads",
@@ -880,7 +879,8 @@ setMethod(
                   "% Library Reads",
                   "Library Coverage",
                   "% R1 Adaptor",
-                  "% R2 Adaptor")
+                  "% R2 Adaptor",
+                  "QCPass_Library_Per")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
 
@@ -889,16 +889,18 @@ setMethod(
         df_outs[, 3] <- object@samples_meta$sample_info
         df_outs[, 4] <- paste(object@samples_meta$transcript_id, object@samples_meta$exon_num, sep = ":")
         df_outs[, 5] <- object@stats$gini_coeff_before_qc
-        df_outs[, 6] <- ifelse(df_outs[, 5] < maveqc_config$gini_coeff, TRUE, FALSE)
-        df_outs[, 7] <- object@stats$qcpass_total_reads
-        df_outs[, 8] <- object@stats$qcpass_missing_per
-        df_outs[, 9] <- object@stats$qcpass_accepted_reads
-        df_outs[, 10] <- object@stats$qcpass_mapping_per
-        df_outs[, 11] <- object@stats$qcpass_ref_per
-        df_outs[, 12] <- object@stats$qcpass_library_per
-        df_outs[, 13] <- object@stats$qcpass_library_cov
-        df_outs[, 14] <- object@stats$per_r1_adaptor
-        df_outs[, 15] <- object@stats$per_r2_adaptor
+        df_outs[, 6] <- object@stats$qcpass_total_reads
+        df_outs[, 7] <- object@stats$qcpass_missing_per
+        df_outs[, 8] <- object@stats$qcpass_accepted_reads
+        tmp_out <- (1 - object@stats$per_unmapped_reads) * 100
+        tmp_out <- sapply(tmp_out, function(x) round(x, 1))
+        df_outs[, 9] <- tmp_out
+        df_outs[, 10] <- object@stats$qcpass_ref_per
+        df_outs[, 11] <- object@stats$qcpass_library_per
+        df_outs[, 12] <- object@stats$qcpass_library_cov
+        df_outs[, 13] <- object@stats$per_r1_adaptor
+        df_outs[, 14] <- object@stats$per_r2_adaptor
+        df_outs[, 15] <- sapply(object@stats$per_library_reads * 100, function(x) round(x, 1))
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
 
@@ -916,7 +918,6 @@ setMethod(
                           "Total Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "% Missing Variants" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "Accepted Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
-                          "% Mapping Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "% Reference Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "% Library Reads" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }),
                           "Library Coverage" = colDef(cell = function(value) { if (value) "\u2705" else "\u274c" }))

@@ -1,0 +1,32 @@
+# IDE and editor configuration files
+.vscode/
+.idea/
+
+# RStudio project files
+.Rproj.user/
+MAVEQC.Rproj
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session data files
+.RData
+.RDataTmp
+
+# User-specific settings
+.Ruserdata
+
+# R environment variables
+.Renviron
+
+# Package build and check files
+.Rbuildignore
+.Rprofile  # R startup configuration file
+
+# Output directory for package checks
+/*.Rcheck/
+
+# Knitr and R Markdown Default Cache Directories
+*_cache/
+/cache/
