@@ -37,3 +37,6 @@ Imports:
     plotly (>= 4.10.2),
     gtools (>= 3.9.4),
     ggcorrplot (>= 0.1.4)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
