@@ -13,9 +13,9 @@ test_that("Test create_sampleqc_object works correctly", {
     mocked_sampleqc_object <- create_sampleqc_object(mocked_sge_objs)
 
     # test the mocked sampleqc object
-    expect_s4_class(mocked_sampleqc_object, "sampleQC", info = "Expected object to be of class sampleQC")
+    expect_s4_class(mocked_sampleqc_object, "sampleQC")
     expect_equal(length(mocked_sampleqc_object@samples), 1)
-    expect_equal(mocked_sampleqc_object@samples_meta$sample_name, c("testsample_hdr741"), info = "Expected sample name to be testsample_hdr741")
+    expect_equal(mocked_sampleqc_object@samples_meta$sample_name, c("testsample_hdr741"))
     expect_equal(ncol(mocked_sampleqc_object@stats), 28)
     expect_equal(rownames(mocked_sampleqc_object@stats), c("testsample_hdr741"))
     expect_equal(mocked_sampleqc_object@counts[[1]]$sequence, "ATGTTACAGGTTTAGTTTCTGTCGGTCGCCTCAAGGGTGTAGTCTT")
