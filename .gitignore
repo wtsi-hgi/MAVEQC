@@ -34,5 +34,5 @@ renv.lock
 /cache/
 
 
-
+# testthat files
 tests/testthat/README.txt
