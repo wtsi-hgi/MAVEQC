@@ -33,5 +33,5 @@ renv.lock
 *_cache/
 /cache/
 
-# testthat files
-tests/testthat/README.txt
+# testthat auto generated README files
+README.txt
