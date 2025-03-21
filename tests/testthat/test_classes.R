@@ -1,7 +1,7 @@
 # Import unit test library testthat
 library(testthat)
 
-test_that("create_sampleqc_object returns an object of class 'sampleQC'", {
+test_that("create_sampleqc_object returns expected object of class 'sampleQC'", {
    
     # create a relative path to the plasmid data
     plasmid_test_data_path <- test_path("testdata", "plasmid")
