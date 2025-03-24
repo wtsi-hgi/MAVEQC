@@ -34,4 +34,6 @@ renv.lock
 /cache/
 
 # testthat auto generated README files
-README.txt
+# It will ignore README files created by testthat under any new directory
+# created under tests/testthat/testdata/
+tests/testthat/testdata/*/README.txt
