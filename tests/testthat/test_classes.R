@@ -6,15 +6,15 @@ library(withr)
 import_test_sge_files <- function() {
 
     # To create a test fixture for tests, sample test data needs to be created,
-    # including the following files with the required columns and extensions.
+    # for example, the following files with the required columns and file extensions.
     # - sample_sheet.tsv
     # - _meta_consequences.tsv
     # - _meta.csv
     # - _lib_counts.tsv.gz
     # - _query_counts.tsv.gz
-    # Mocking all the values and objects from the above files is intricate. hence,
-    # import_sge_files is used to import the sample sheet and create the sge objects.
-    # sge_objs is not mocked it is the actual object created from the test data.
+    # That's why mocking all the values/attributes and objects from the above files is intricate. 
+    # Hence, import_test_sge_files is used to import the sample sheet and create the sge_objs.
+    # Here, sge_objs is not mocked it is the actual object created from the test data.
 
     plasmid_test_data_path <- test_path("testdata", "plasmid")
 
