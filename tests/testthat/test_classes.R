@@ -5,8 +5,8 @@ library(withr)
 # Helper function to import SGE files
 import_test_sge_files <- function() {
 
-    # To create a test fixture for tests need creating sample test data
-    # Such as the following files with required columns and extensions.
+    # To create a test fixture for tests, sample test data needs to be created,
+    # including the following files with the required columns and extensions.
     # - sample_sheet.tsv
     # - _meta_consequences.tsv
     # - _meta.csv
@@ -52,7 +52,7 @@ test_that("create_sampleqc_object returns expected object of class 'sampleQC'", 
 
     expect_equal(class(sampleqc_object@samples), "list")
     expect_equal(length(sampleqc_object@samples), 2)
-    
+
     # Check if the stats data frame has the expected number of rows and columns
     expect_equal(ncol(sampleqc_object@stats), 28)
 
@@ -71,5 +71,5 @@ test_that("create_sampleqc_object returns expected object of class 'sampleQC'", 
 
     expect_equal(sampleqc_object@samples_ref[[1]]@libcounts$length, c(272, 272))
     expect_equal(sampleqc_object@samples_ref[[1]]@libcounts$count, c(1546465, 4145))
-  
+
 })
