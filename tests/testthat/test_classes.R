@@ -5,7 +5,7 @@ library(withr)
 # Helper function to import SGE files
 import_test_sge_files <- function() {
 
-    # To create a test fixture for for this test need creating sample test data
+    # To create a test fixture for tests need creating sample test data
     # Such as the following files with required columns and extensions.
     # - sample_sheet.tsv
     # - _meta_consequences.tsv
@@ -15,7 +15,7 @@ import_test_sge_files <- function() {
     # Mocking all the values and objects from the above files is intricate. hence,
     # import_sge_files is used to import the sample sheet and create the sge objects.
     # sge_objs is not mocked it is the actual object created from the test data.
-    
+
     plasmid_test_data_path <- test_path("testdata", "plasmid")
 
     import_sge_files(plasmid_test_data_path, "sample_sheet.tsv")
@@ -32,6 +32,12 @@ test_that("create_sampleqc_object returns expected object of class 'sampleQC'", 
                    "qcpass_missing_per", "qcpass_accepted_reads", "qcpass_mapping_per", "qcpass_ref_per",
                    "qcpass_library_per", "qcpass_library_cov", "qcpass")
 
+    # Check if create_sampleqc_object returns an error when no samples are found
+    expect_error(
+        create_sampleqc_object(list()),
+        "====> Error: no sample found in the input!"
+    )
+
     # Use the helper function to import SGE files
     sge_objs <- import_test_sge_files()
 
@@ -40,12 +46,6 @@ test_that("create_sampleqc_object returns expected object of class 'sampleQC'", 
 
     # Test expected sample values in sampleqc object
     sampleqc_object <- create_sampleqc_object(sge_objs)
-
-    # Check if create_sampleqc_object returns an error when no samples are found
-    expect_error(
-        create_sampleqc_object(list()),
-        "====> Error: no sample found in the input!"
-    )
 
     # Check if the returned object is of class 'sampleQC'
     expect_s4_class(sampleqc_object, "sampleQC")
@@ -63,7 +63,6 @@ test_that("create_sampleqc_object returns expected object of class 'sampleQC'", 
 
     expect_equal(sampleqc_object@counts[[1]]$sequence[1], "GAAGAAGAACTGTGACTCATCCTGAAAACCTCTTTGAGGATTGATAGCATTTCATCAGAATCGCCATTTTGATCTACGGTTTTTGATTGCTTAGATTTTGGCAATTTTTTAGGATTAGGATTATCTATAGCACTGTCAGAAGATTTACGCTTATCCTTTTTTCTCACTGGAACTTATAGTTTTTGTTTCTCCTTAACTGTTTCATTACATTCTTCATCTGAATTAGATGTTACAGGTTTAGTTTCTGTCGGTCGCCTCAAGGGTGTAGTCTT")
 
-    
     expect_equal(class(sampleqc_object@samples_ref), "list")
     expect_equal(length(sampleqc_object@samples_ref), 2)
 
