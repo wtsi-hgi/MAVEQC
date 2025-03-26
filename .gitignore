@@ -19,10 +19,12 @@ MAVEQC.Rproj
 
 # R environment variables
 .Renviron
+renv/
+renv.lock
 
 # Package build and check files
 .Rbuildignore
-.Rprofile  # R startup configuration file
+.Rprofile
 
 # Output directory for package checks
 /*.Rcheck/
@@ -30,3 +32,8 @@ MAVEQC.Rproj
 # Knitr and R Markdown Default Cache Directories
 *_cache/
 /cache/
+
+# testthat auto generated README files
+# It will ignore README files created by testthat under any new directory
+# created under tests/testthat/testdata/
+tests/testthat/testdata/*/README.txt
