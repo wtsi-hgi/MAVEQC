@@ -22,6 +22,7 @@
     - [Pandoc](#pandoc)
     - [Test datasets](#test)
     - [Conda](#conda)
+8. [For Developers](#for-developers) 
 
 </details>
 
@@ -272,3 +273,62 @@ export PKG_CPPFLAGS="-DHAVE_WORKING_LOG1P"
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
+
+
+## For Developers
+
+### Development Environment Setup
+
+To quickly set up a development environment for this project, you can use Docker Compose. 
+This will create all the necessary containers and configurations for a smooth development experience.
+
+#### Requirements
+
+Before running `docker compose up`, make sure you have the following installed: Docker and Docker Compose.
+
+#### Running the Development Environment
+
+Once you have Docker and Docker Compose installed, follow these steps:
+
+1. **Clone the repository**:
+```
+git clone https://gitlab.internal.sanger.ac.uk/sci/MAVEQC.git
+cd MAVEQC
+```
+
+2. **Build and start the development containers:**
+
+```
+docker compose up
+```
+This command will build the Docker image and start the MAVEQC development container (maveqc-dev-container) defined in 
+docker-compose.yml. This will also mount the MAVEQC folder onto the container.
+
+If you want to run the container in detached mode, use the -d flag:
+```
+docker compose up -d
+```
+This starts the container in the background, freeing the terminal for other commands.
+
+3. **Access the maveqc-dev-container**
+```
+docker exec -it maveqc-dev-container bash
+```
+4. **Run MAVEQC**
+
+Once inside the maveqc-dev-container, start R and load all the package components:
+```
+R
+```
+Then, load all the package components:
+```
+devtools::load_all()
+```
+After running devtools::load_all(), refer to the documentation above for instructions on using the MAVEQC reporter.
+> **Note**: Use paths relative to `/usr/src/MAVEQC-R`, the container’s working directory.
+
+To stop the running container, use:
+
+```
+docker compose down
+```
