@@ -1,0 +1,16 @@
+services:
+  maveqc-dev:
+    image: maveqc-dev
+    container_name: maveqc-dev-container
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: development
+    user: developer
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./
+        target: /usr/src/MAVEQC-R
+    working_dir: /usr/src/MAVEQC-R
+    command: sleep infinity
