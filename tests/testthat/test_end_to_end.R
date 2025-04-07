@@ -1,8 +1,5 @@
 # Define function that runs the analyses
-generate_outputs <- function(library_type, output_dir) {
-  # Prepare variables
-  maveqc_dir <- normalizePath(file.path(getwd(), "../.."))
-  input_dir <- file.path(maveqc_dir, "test", "screen")      # Currently only screen example data provided
+generate_outputs <- function(library_type, input_dir, output_dir) {
   # Prepare SGE objects
   sge_objs <- suppressWarnings(import_sge_files(input_dir, "sample_sheet.tsv"))
 
@@ -26,12 +23,19 @@ generate_outputs <- function(library_type, output_dir) {
   create_qc_reports(file.path(input_dir, "sample_sheet.tsv"), library_type, output_dir)
 }
 
-withr::with_tempdir("output_dir", {
-  # E2E test Screen QC outputs
-  testthat::test_that("End to end testing (Screen QC): correct output files are generated", {
-    # Run Screen QC analysis
-    library_type <- "screen"
-    generate_outputs(library_type, output_dir)
+# E2E test Screen QC outputs
+testthat::test_that("End to end testing (Screen QC): correct output files are generated", {
+
+  # Prepare variables
+  library_type <- "screen"
+  maveqc_dir <- normalizePath(file.path(getwd(), "../.."))
+  input_dir <- file.path(maveqc_dir, "test", "screen")       # Currently only screen example data provided
+
+  withr::with_tempdir({
+    output_dir <- getwd()
+
+    # Generate Screen QC outputs
+    generate_outputs(library_type, input_dir, output_dir)
 
     # Expected output files
     expected_file_names <- c(
@@ -95,14 +99,14 @@ withr::with_tempdir("output_dir", {
     # Checks
     # All expected files exit
     for (i in seq_along(expected_file_names)) {
-      show_failure(expect_true(!!(expected_file_names[i]) %in% generated_file_names,
-                               sprintf("Missing file: %s", expected_file_names[i])))
+      expect_true(!!(expected_file_names[i]) %in% generated_file_names,
+                  sprintf("Missing file: %s", expected_file_names[i]))
     }
 
     # No unexpected files generated
     for (i in seq_along(generated_file_names)) {
-      show_failure(expect_true(!!(expected_file_names[i]) %in% generated_file_names,
-                               sprintf("Unexpected file generated: %s", generated_file_names[i])))
+      expect_true(!!(expected_file_names[i]) %in% generated_file_names,
+                  sprintf("Unexpected file generated: %s", generated_file_names[i]))
     }
 
     # Check number of lines (tsv, html)
@@ -112,11 +116,11 @@ withr::with_tempdir("output_dir", {
                                              c("file_name", "line_count")]
 
     for (i in seq_along(expected_line_counts$file_name)) {
-      show_failure(expect_true(!!(expected_line_counts$line_count[i]) %in% generated_line_counts$line_count,
-                               sprintf("%s (expected) != %s (generated) for %s",
-                                       expected_line_counts$line_count[i],
-                                       generated_line_counts$line_count[i],
-                                       expected_line_counts$file_name[i])))
+      expect_true(!!(expected_line_counts$line_count[i]) %in% generated_line_counts$line_count,
+                  sprintf("%s (expected) != %s (generated) for %s",
+                          expected_line_counts$line_count[i],
+                          generated_line_counts$line_count[i],
+                          expected_line_counts$file_name[i]))
     }
 
     # Check file size (png)
@@ -126,11 +130,11 @@ withr::with_tempdir("output_dir", {
                                             c("file_name", "file_size")]
 
     for (i in seq_along(expected_file_sizes$file_name)) {
-      show_failure(expect_true(!!(expected_file_sizes$file_size[i]) %in% generated_file_sizes$file_size,
-                               sprintf("%s (expected) != %s (generated) for %s",
-                                       expected_file_sizes$file_size[i],
-                                       generated_file_sizes$file_size[i],
-                                       expected_file_sizes$file_name[i])))
+      expect_true(!!(expected_file_sizes$file_size[i]) %in% generated_file_sizes$file_size,
+                  sprintf("%s (expected) != %s (generated) for %s",
+                          expected_file_sizes$file_size[i],
+                          generated_file_sizes$file_size[i],
+                          expected_file_sizes$file_name[i]))
     }
   })
 })
