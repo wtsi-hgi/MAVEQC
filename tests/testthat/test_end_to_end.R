@@ -99,14 +99,14 @@ testthat::test_that("End to end testing (Screen QC): correct output files are ge
     # Checks
     # All expected files exit
     for (i in seq_along(expected_file_names)) {
-      expect_true(!!(expected_file_names[i]) %in% generated_file_names,
-                  sprintf("Missing file: %s", expected_file_names[i]))
+      testthat::expect_true(!!(expected_file_names[i]) %in% generated_file_names,
+                            sprintf("Missing file: %s", expected_file_names[i]))
     }
 
     # No unexpected files generated
     for (i in seq_along(generated_file_names)) {
-      expect_true(!!(expected_file_names[i]) %in% generated_file_names,
-                  sprintf("Unexpected file generated: %s", generated_file_names[i]))
+      testthat::expect_true(!!(expected_file_names[i]) %in% generated_file_names,
+                            sprintf("Unexpected file generated: %s", generated_file_names[i]))
     }
 
     # Check number of lines (tsv, html)
@@ -116,11 +116,11 @@ testthat::test_that("End to end testing (Screen QC): correct output files are ge
                                              c("file_name", "line_count")]
 
     for (i in seq_along(expected_line_counts$file_name)) {
-      expect_true(!!(expected_line_counts$line_count[i]) %in% generated_line_counts$line_count,
-                  sprintf("%s (expected) != %s (generated) for %s",
-                          expected_line_counts$line_count[i],
-                          generated_line_counts$line_count[i],
-                          expected_line_counts$file_name[i]))
+      testthat::expect_true(!!(expected_line_counts$line_count[i]) %in% generated_line_counts$line_count,
+                            sprintf("%s (expected) != %s (generated) for %s",
+                                    expected_line_counts$line_count[i],
+                                    generated_line_counts$line_count[i],
+                                    expected_line_counts$file_name[i]))
     }
 
     # Check file size (png)
@@ -130,11 +130,11 @@ testthat::test_that("End to end testing (Screen QC): correct output files are ge
                                             c("file_name", "file_size")]
 
     for (i in seq_along(expected_file_sizes$file_name)) {
-      expect_true(!!(expected_file_sizes$file_size[i]) %in% generated_file_sizes$file_size,
-                  sprintf("%s (expected) != %s (generated) for %s",
-                          expected_file_sizes$file_size[i],
-                          generated_file_sizes$file_size[i],
-                          expected_file_sizes$file_name[i]))
+      testthat::expect_true(!!(expected_file_sizes$file_size[i]) %in% generated_file_sizes$file_size,
+                            sprintf("%s (expected) != %s (generated) for %s",
+                                    expected_file_sizes$file_size[i],
+                                    generated_file_sizes$file_size[i],
+                                    expected_file_sizes$file_name[i]))
     }
   })
 })
