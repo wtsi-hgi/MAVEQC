@@ -29,7 +29,7 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
     # Prepare variables
     library_type <- "screen"                                   # Currently only screen example data provided
     maveqc_dir <- normalizePath(file.path(getwd(), "../.."))
-    input_dir <- file.path(maveqc_dir, "test", "screen")
+    input_dir <- file.path(maveqc_dir, "test", library_type)
 
     withr::with_tempdir({
         output_dir <- getwd()
@@ -106,24 +106,24 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
 
         for (i in seq_along(expected_line_counts$file_name)) {
             expect_true(!!(expected_line_counts$line_count[i]) %in% generated_line_counts$line_count,
-                        label = sprintf("%s (expected) != %s (generated) for %s",
+                        label = sprintf("%s (expected) == %s (generated) for %s",
                                         expected_line_counts$line_count[i],
                                         generated_line_counts$line_count[i],
                                         expected_line_counts$file_name[i]))
         }
 
         # Check file size (png, tsv; html will change depending on date & time)
-        expected_file_size_bytess <- expected_files[grepl("\\.(png|tsv)$", expected_files$file_name),
-                                                    c("file_name", "file_size_bytes")]
-        generated_file_size_bytess <- generated_files[grepl("\\.(png|tsv)$", generated_files$file_name),
-                                                      c("file_name", "file_size_bytes")]
+        expected_file_size <- expected_files[grepl("\\.(png|tsv)$", expected_files$file_name),
+                                             c("file_name", "file_size_bytes")]
+        generated_file_size <- generated_files[grepl("\\.(png|tsv)$", generated_files$file_name),
+                                               c("file_name", "file_size_bytes")]
 
-        for (i in seq_along(expected_file_size_bytess$file_name)) {
-            expect_true(!!(expected_file_size_bytess$file_size_bytes[i]) %in% generated_file_size_bytess$file_size_bytes,
-                        label = sprintf("%s (expected) != %s (generated) for %s",
-                                        expected_file_size_bytess$file_size_bytes[i],
-                                        generated_file_size_bytess$file_size_bytes[i],
-                                        expected_file_size_bytess$file_name[i]))
+        for (i in seq_along(expected_file_size$file_name)) {
+            expect_true(!!(expected_file_size$file_size_bytes[i]) %in% generated_file_size$file_size_bytes,
+                        label = sprintf("%s (expected) == %s (generated) for %s",
+                                        expected_file_size$file_size_bytes[i],
+                                        generated_file_size$file_size_bytes[i],
+                                        expected_file_size$file_name[i]))
         }
     })
 })
