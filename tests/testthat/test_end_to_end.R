@@ -27,7 +27,8 @@ generate_outputs <- function(library_type, input_dir, output_dir) {
 test_that("End to end testing (Screen QC): correct output files are generated", {
 
     # Prepare variables
-    library_type <- "screen"                                   # Currently only screen example data provided
+    # Currently only screen test data provided
+    library_type <- "screen"
     maveqc_dir <- normalizePath(file.path(test_path(), "../.."))
     input_dir <- file.path(maveqc_dir, "test", library_type)
 
@@ -35,7 +36,8 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
         output_dir <- getwd()
 
         # Generate Screen QC outputs
-        generate_outputs(library_type, input_dir, output_dir)  # Currently only screen example data provided
+        # Currently only screen test data provided
+        generate_outputs(library_type, input_dir, output_dir)
 
         # Expected output files
         expected_files <- as.data.frame(
