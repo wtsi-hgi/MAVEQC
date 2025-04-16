@@ -106,12 +106,12 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 ### sample sheet -- tsv
 | sample_name | replicate | condition | ref_time_point | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | per_r1_adaptor | per_r2_adaptor | library_name | library_type|
 | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
-| sample1 | R1 | D4 | D4 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
-| sample2 | R2 | D4 | D4 |s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
-| sample3 | R3 | D4 | D4 |s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
-| sample4 | R1 | D7 | D4 | s4.allcounts.tsv.gz | s4.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
-| sample5 | R2 | D7 | D4 |s5.allcounts.tsv.gz | s5.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
-| sample6 | R3 | D7 | D4 |s6.allcounts.tsv.gz | s6.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
+| sample1 | R1 | Day4 | Day4 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
+| sample2 | R2 | Day4 | Day4 |s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
+| sample3 | R3 | Day4 | Day4 |s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
+| sample4 | R1 | Day7 | Day4 | s4.allcounts.tsv.gz | s4.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
+| sample5 | R2 | Day7 | Day4 |s5.allcounts.tsv.gz | s5.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
+| sample6 | R3 | Day7 | Day4 |s6.allcounts.tsv.gz | s6.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
 
 * *please use the same headers in the example*
 * *replicate, condition and ref_time_point are optional, but required for screen qc*
