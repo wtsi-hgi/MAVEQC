@@ -33,8 +33,7 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
     input_dir <- file.path(maveqc_dir, "test", library_type)
 
     # Get the expected file info (includes headers)
-    file_info <- fromJSON(test_path("testdata", "output_file_info.json"))
-    file_info_df <- as.data.frame(file_info)
+    file_info_df <- fromJSON(test_path("testdata", "output_file_info.json"))
 
     withr::with_tempdir({
         output_dir <- getwd()
@@ -133,14 +132,14 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
         }
 
         # Check the headers for tsv files
-        for (row in 1:nrow(file_info_df)) {
+        for (row in seq_len(nrow(file_info_df))) {
             filename <- file_info_df[row, "filename"]
             expected_headers <- unlist(file_info_df[row, "headers"])
-            file_to_check=file.path(output_dir, filename)
-            if (file.exists(file=file_to_check)) {
-                actual_headers <- colnames(read.delim(file_to_check, nrows = 0, check.names=FALSE))
+            file_to_check <- file.path(output_dir, filename)
+            if (file.exists(file = file_to_check)) {
+                actual_headers <- colnames(read.delim(file_to_check, nrows = 1, check.names = FALSE))
                 expect_identical(actual_headers, expected_headers,
-                                 label=paste(filename, "`actual_headers`"))
+                                 label = paste(filename, "`actual_headers`"))
             }
         }
 
