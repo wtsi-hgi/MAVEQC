@@ -33,7 +33,7 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
     input_dir <- file.path(maveqc_dir, "test", library_type)
 
     # Get the expected file info (includes headers)
-    file_info_df <- fromJSON(test_path("testdata", "output_file_info.json"))
+    file_info_df <- read.config(test_path("testdata", "output_file_info.json"))
 
     withr::with_tempdir({
         output_dir <- getwd()
