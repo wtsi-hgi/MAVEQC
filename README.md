@@ -216,15 +216,15 @@ MAVEQC automatically creates the coldata (```maveqc_deseq_coldata```) from sampl
 #### coldata example:
 | sample_name | replicate | condition |
 | - | - | - |
-| hgsm3_d4_r1 | R1 | D4 |
-| hgsm3_d7_r1 | R1 | D7 |
-| hgsm3_d15_r1 | R1 | D15 |
-| hgsm3_d4_r2 | R2 | D4 |
-| hgsm3_d7_r2 | R2 | D7 |
-| hgsm3_d15_r2 | R2 | D15 |
-| hgsm3_d4_r3 | R3 | D4 |
-| hgsm3_d7_r3 | R3 | D7 |
-| hgsm3_d15_r3 | R3 | D15 |
+| hgsm3_d4_r1 | R1 | Day4 |
+| hgsm3_d7_r1 | R1 | Day7 |
+| hgsm3_d15_r1 | R1 | Day15 |
+| hgsm3_d4_r2 | R2 | Day4 |
+| hgsm3_d7_r2 | R2 | Day7 |
+| hgsm3_d15_r2 | R2 | Day15 |
+| hgsm3_d4_r3 | R3 | Day4 |
+| hgsm3_d7_r3 | R3 | Day7 |
+| hgsm3_d15_r3 | R3 | Day15 |
 
 
 ```R
