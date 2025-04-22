@@ -16,7 +16,7 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-GITLAB_WIKI_URL="https://gitlab.internal.sanger.ac.uk/sci/MAVEQC.wiki.git"
+GITLAB_WIKI_URL="git@gitlab.internal.sanger.ac.uk:sci/MAVEQC.wiki.git"
 GITHUB_WIKI_URL="git@github.com:htgt/MAVEQC.wiki.git"
 GITLAB_WIKI_DIR="/tmp/gitlab_wiki/"
 GITHUB_WIKI_DIR="/tmp/github_wiki/"
