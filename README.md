@@ -332,3 +332,19 @@ To stop the running container, use:
 ```
 docker compose down
 ```
+
+### Update GitLab to GitHub Wiki
+
+To update changes made in MAVEQC GitLab Wiki into GitHub Wiki, we can use the following script to automatically sync with both the Wiki's:
+
+First make bash scrip executable:
+```
+chmod +x sync_gitlab_github_wiki.sh
+```
+
+Then after you make changes in the MAVEQC GitLab wiki, run the following command:
+```
+./sync_gitlab_github_wiki.sh "Your commit message"
+```
+
+> **Note**: You can use `./sync_gitlab_github_wiki.sh --help` for usage of this bash script.
