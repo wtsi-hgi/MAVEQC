@@ -335,7 +335,7 @@ docker compose down
 
 ### Update GitLab to GitHub Wiki
 
-To update changes made in MAVEQC GitLab Wiki into GitHub Wiki, we can use the following script to automatically sync with both the Wiki's:
+To update changes made in the MAVEQC GitLab Wiki into GitHub Wiki, we can use the following script to automatically sync with both the Wiki's:
 
 First make bash scrip executable:
 ```
