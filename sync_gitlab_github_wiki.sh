@@ -22,6 +22,35 @@ GITLAB_WIKI_DIR="/tmp/gitlab_wiki/"
 GITHUB_WIKI_DIR="/tmp/github_wiki/"
 DEFAULT_COMMIT_MESSAGE="Automated update from GitLab wiki"
 
+  
+function usage() {
+    echo "Usage: $0 [commit_message]"
+    echo
+    echo "Synchronizes the wiki content between a GitLab and a GitHub repository."
+    echo "If no commit message is provided, a default message will be used."
+    echo
+    echo "Arguments:"
+    echo "  commit_message  The commit message to use for the GitHub wiki commit."
+    echo
+    echo "Example:"
+    echo "  $0 \"Updated wiki content\""
+}
+
+if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+    usage
+    exit 0
+fi
+
+if [ "$EUID" -eq 0 ]; then
+    echo "Please do not run this script as root."
+    exit 1
+fi  
+
+if ! command -v rsync &> /dev/null; then
+    echo "rsync could not be found. Please install rsync and try again."
+    exit 1
+fi
+
 
 COMMIT_MESSAGE="$1"
 if [ -z "$COMMIT_MESSAGE" ]; then
