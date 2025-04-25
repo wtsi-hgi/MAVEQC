@@ -1,0 +1,63 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "develop")
+      when: always
+      allow_failure: false
+
+stages:
+  - build
+  - test
+
+variables:
+  DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/maveqc-dev:$CI_COMMIT_SHA
+  DOCKER_IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+
+build-docker:
+  stage: build
+  image: docker:24.0.5
+  tags:
+    - autoscale
+  services:
+    - name: docker:24.0.5-dind
+      alias: dockerhost
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://dockerhost:2375/
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - apk update && apk add --no-cache git
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker pull $DOCKER_IMAGE_LATEST || true
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_LATEST .
+    - docker push $DOCKER_IMAGE_NAME
+    - docker push $DOCKER_IMAGE_LATEST
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'push'"
+      exists:
+        - Dockerfile
+      changes:
+        - Dockerfile
+        - DESCRIPTION
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
+      exists:
+        - Dockerfile
+      changes:
+        - Dockerfile
+        - DESCRIPTION
+
+tests:
+  stage: test
+  tags:
+    - autoscale
+  image: $DOCKER_IMAGE_LATEST
+  script:
+    - echo "Running unit tests..."
+    - Rscript -e 'devtools::test(stop_on_failure = TRUE)'
+    - echo "Unit tests completed."
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'push' || $CI_PIPELINE_SOURCE == 'merge_request_event'"
