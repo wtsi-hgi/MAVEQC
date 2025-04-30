@@ -35,7 +35,6 @@ build-docker:
     - docker pull $DOCKER_IMAGE_LATEST || true
     - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_LATEST .
     - docker push $DOCKER_IMAGE_NAME
-    - docker push $DOCKER_IMAGE_LATEST
   rules:
     - if: "$CI_PIPELINE_SOURCE == 'push'"
       exists:
@@ -49,6 +48,13 @@ build-docker:
       changes:
         - Dockerfile
         - DESCRIPTION
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - Dockerfile
+        - DESCRIPTION
+      script:
+        - docker tag $DOCKER_IMAGE_NAME $DOCKER_IMAGE_LATEST
+        - docker push $DOCKER_IMAGE_LATEST
 
 tests:
   stage: test
