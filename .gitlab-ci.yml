@@ -35,6 +35,14 @@ build-docker:
     - docker pull $DOCKER_IMAGE_LATEST || true
     - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_LATEST .
     - docker push $DOCKER_IMAGE_NAME
+    - echo $CI_COMMIT_BRANCH
+    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - echo $CI_DEFAULT_BRANCH
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
+        docker tag $DOCKER_IMAGE_NAME $DOCKER_IMAGE_LATEST
+        docker push $DOCKER_IMAGE_LATEST
+      fi
   rules:
     - if: "$CI_PIPELINE_SOURCE == 'push'"
       exists:
@@ -49,12 +57,8 @@ build-docker:
         - Dockerfile
         - DESCRIPTION
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - Dockerfile
-        - DESCRIPTION
-      script:
-        - docker tag $DOCKER_IMAGE_NAME $DOCKER_IMAGE_LATEST
-        - docker push $DOCKER_IMAGE_LATEST
+      when: on_success
+      allow_failure: false
 
 tests:
   stage: test
