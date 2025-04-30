@@ -35,9 +35,6 @@ build-docker:
     - docker pull $DOCKER_IMAGE_LATEST || true
     - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_LATEST .
     - docker push $DOCKER_IMAGE_NAME
-    - echo $CI_COMMIT_BRANCH
-    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-    - echo $CI_DEFAULT_BRANCH
     - |
       if [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
         docker tag $DOCKER_IMAGE_NAME $DOCKER_IMAGE_LATEST
@@ -64,7 +61,7 @@ tests:
   stage: test
   tags:
     - autoscale
-  image: $DOCKER_IMAGE_LATEST
+  image: $DOCKER_IMAGE_NAME
   script:
     - echo "Running unit tests..."
     - Rscript -e 'devtools::test(stop_on_failure = TRUE)'
