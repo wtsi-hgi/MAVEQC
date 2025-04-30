@@ -41,7 +41,7 @@ build-docker:
         docker push $DOCKER_IMAGE_LATEST
       fi
   rules:
-    - if: "$CI_PIPELINE_SOURCE == 'push'"
+    - if: "$CI_PIPELINE_SOURCE == 'push' || $CI_PIPELINE_SOURCE == 'web'" 
       exists:
         - Dockerfile
       changes:
