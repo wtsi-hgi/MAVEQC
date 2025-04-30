@@ -270,7 +270,7 @@ setMethod(
         p1 <- ggplot(df_transformed,  aes(x = samples, y = counts, fill = types)) +
             geom_bar(stat = "identity") +
             facet_wrap(~ facet_group, ncol = 1, scales = "free_x") +
-            scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +                                    ######################
+            scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
             scale_x_discrete(guide = guide_axis(angle = 90), labels = dummy_names) +
             scale_fill_manual(values = fill_colors) +
             labs(x = "Samples", y = "Counts", title = "Sample QC Stats") +
