@@ -279,12 +279,12 @@ setMethod(
                 legend.key.spacing.y = unit(5, "pt"),
                 legend.text = element_text(size = 16),
                 legend.title = element_blank(),
-                panel.background = element_rect(fill = "ivory", colour = "white"), # Arial
+                panel.background = element_rect(fill = "ivory", colour = "white"),
                 panel.spacing = unit(5, "lines"),
-                plot.title = element_text(size = 24, face = "bold.italic", family = "sans",
+                plot.title = element_text(size = 24, face = "bold.italic", family = "Arial",
                                           vjust = 1.5, margin = margin(b = 20)),
                 axis.text = element_text(size = 14, face = "bold"),
-                axis.title = element_text(size = 18, face = "bold", family = "sans"), # Arial
+                axis.title = element_text(size = 18, face = "bold", family = "Arial"),
                 axis.title.x = element_text(margin = margin(t = 20)),
                 axis.title.y = element_text(margin = margin(r = 20)),
                 axis.ticks.x = element_blank(),
