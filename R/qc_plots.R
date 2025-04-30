@@ -222,36 +222,82 @@ setMethod(
     signature = "sampleQC",
     definition = function(object,
                           plot_dir = NULL) {
+        # Extract accepted/excluded reads
         df_total <- object@stats[, c("excluded_reads", "accepted_reads")]
         df_total$samples <- rownames(df_total)
-        dt_total <- reshape2::melt(as.data.table(df_total), id.vars = "samples", variable.name = "types", value.name = "counts")
 
-        dt_total$samples <- factor(dt_total$samples, levels = mixedsort(levels(factor(dt_total$samples))))
+        # How many samples per facet row
+        FACET_ROW_SIZE <- 20
+        facet_rows <- ceiling(nrow(df_total) / FACET_ROW_SIZE)
+        n_missing <- FACET_ROW_SIZE * facet_rows - nrow(df_total)
 
+        # Ensure grid layout is complete (so that all barplots have equal width)
+        if (n_missing > 0) {
+            dummy_samples <- data.frame(
+                "excluded_reads" = rep(NA, n_missing),
+                "accepted_reads" = rep(NA, n_missing),
+                "samples" = paste("dummy", 1:n_missing, sep = "")
+            )
+
+            df_total <- rbind(df_total, dummy_samples)
+            rownames(df_total) <- NULL
+
+            # Blank x-label names for dummy samples
+            dummy_names <- dummy_samples$samples
+            dummy_names <- setNames(rep("", length(dummy_names)), dummy_names)
+        }
+
+        # Assign samples to facet groups (rows)
+        df_total$facet_group <- rep(1:facet_rows, each = FACET_ROW_SIZE)[1:nrow(df_total)]
+
+        # Reshape for plotting
+        df_transformed <- melt(as.data.table(df_total),
+                               id.vars = c("samples", "facet_group"),
+                               variable.name = "types",
+                               value.name = "counts")
+
+        # Sort factors (mixedsort with dummy samples at the end)
+        real_samples <- unique(df_transformed$samples)
+        real_samples <- real_samples[!(real_samples %in% names(dummy_names))]
+        df_transformed$samples <- factor(df_transformed$samples,
+                                         levels = c(mixedsort(real_samples), names(dummy_names)))
+
+        # Colours
         select_colors <- select_colorblind("col8")[1:2]
         fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
 
-        p1 <- ggplot(dt_total,  aes(x = samples, y = counts, fill = types)) +
-                geom_bar(stat = "identity") +
-                scale_fill_manual(values = fill_colors) +
-                scale_color_manual(values = select_colors) +
-                labs(x = "samples", y = "counts", title = "Sample QC Stats") +
-                scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
-                theme(legend.position = "right", legend.title = element_blank()) +
-                theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 8, face = "bold")) +
-                theme(axis.text.x = element_text(angle = 90))
-
-        pwidth <- 150 * nrow(df_total)
+        # Plot
+        p1 <- ggplot(df_transformed,  aes(x = samples, y = counts, fill = types)) +
+            geom_bar(stat = "identity") +
+            facet_wrap(~ facet_group, ncol = 1, scales = "free_x") +
+            scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +                                    ######################
+            scale_x_discrete(guide = guide_axis(angle = 90), labels = dummy_names) +
+            scale_fill_manual(values = fill_colors) +
+            labs(x = "Samples", y = "Counts", title = "Sample QC Stats") +
+            theme(legend.position = "right",
+                legend.margin = margin(0, 0, 0, 25),
+                legend.key.spacing.y = unit(5, "pt"),
+                legend.text = element_text(size = 16),
+                legend.title = element_blank(),
+                panel.background = element_rect(fill = "ivory", colour = "white"), # Arial
+                panel.spacing = unit(5, "lines"),
+                plot.title = element_text(size = 24, face = "bold.italic", family = "sans",
+                                          vjust = 1.5, margin = margin(b = 20)),
+                axis.text = element_text(size = 14, face = "bold"),
+                axis.title = element_text(size = 18, face = "bold", family = "sans"), # Arial
+                axis.title.x = element_text(margin = margin(t = 20)),
+                axis.title.y = element_text(margin = margin(r = 20)),
+                axis.ticks.x = element_blank(),
+                strip.text.x = element_blank())
 
         if (is.null(plot_dir)) {
-            ggplotly(p1)
+          ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
-            print(p1)
-            dev.off()
+          pheight <- 2000 * facet_rows
+
+          png(file.path(plot_dir, "sample_qc_stats_total.png"), width = 3000, height = pheight, res = 200)
+          print(p1)
+          dev.off()
         }
     }
 )
@@ -281,7 +327,7 @@ setMethod(
         rownames(df_percent) <- NULL
 
         # How many samples per facet row
-        FACET_ROW_SIZE <- 10
+        FACET_ROW_SIZE <- 20
         facet_rows <- ceiling(nrow(df_percent) / FACET_ROW_SIZE)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
@@ -295,7 +341,9 @@ setMethod(
                 "library_reads" = rep(NA, n_missing),
                 "samples" = paste0("dummy", 1:n_missing)
             )
+
             df_percent <- rbind(df_percent, dummy_samples)
+            rownames(df_percent) <- NULL
 
             # Blank x-label names for dummy samples
             dummy_names <- dummy_samples$samples
@@ -410,7 +458,8 @@ setMethod(
                 layout(yaxis2 = ay)
         } else {
             pheight <- 2000 * facet_rows
-            png(paste0(plot_dir, "/", "sample_qc_stats_accepted.png"), width = 3000, height = pheight, res = 200)
+
+            png(file.path(plot_dir, "sample_qc_stats_accepted.png"), width = 3000, height = pheight, res = 200)
             print(p1)
             dev.off()
         }
