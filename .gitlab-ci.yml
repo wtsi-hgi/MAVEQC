@@ -61,7 +61,7 @@ tests:
   stage: test
   tags:
     - autoscale
-  image: $DOCKER_IMAGE_NAME
+  image: $DOCKER_IMAGE_LATEST
   script:
     - echo "Running unit tests..."
     - Rscript -e 'devtools::test(stop_on_failure = TRUE)'
