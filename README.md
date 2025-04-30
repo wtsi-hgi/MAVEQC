@@ -332,3 +332,33 @@ To stop the running container, use:
 ```
 docker compose down
 ```
+
+#### Pull docker image from GitLab Container Registry
+You can pull latest image from `gitlab-registry.internal.sanger.ac.uk` using the following steps:
+
+1. Login into GitLab container registry using username and password:
+
+```
+docker login gitlab-registry.internal.sanger.ac.uk
+```
+
+2. Then, pull docker image from container registry using the following command:
+
+```
+docker pull gitlab-registry.internal.sanger.ac.uk/sci/maveqc
+```
+
+3. Once you pull the docker images make sure you replace exisiting `image` name in `docker-compose.yml` to `gitlab-registry.internal.sanger.ac.uk/sci/maveqc:latest`, you can see the following example:
+
+```
+services:
+  maveqc-dev:
+    image: gitlab-registry.internal.sanger.ac.uk/sci/maveqc:latest
+...
+```
+
+4. Finally, you run docker container using docker compose command using the following command:
+
+```
+docker compose up -d
+``` 
