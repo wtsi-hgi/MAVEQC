@@ -242,7 +242,6 @@ setMethod(
             print("here")
             df_total <- rbind(df_total, dummy_samples)
             rownames(df_total) <- NULL
-            browser()
             # Blank x-label names for dummy samples
             dummy_names <- dummy_samples$samples
             dummy_names <- setNames(rep("", length(dummy_names)), dummy_names)
