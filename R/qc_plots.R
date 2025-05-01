@@ -356,6 +356,8 @@ setMethod(
             # Blank x-label names for dummy samples
             dummy_names <- dummy_samples$samples
             dummy_names <- setNames(rep("", length(dummy_names)), dummy_names)
+        } else {
+            dummy_names <- setNames(character(0), character(0))
         }
 
         # Assign samples to facet groups (rows)
