@@ -221,13 +221,14 @@ setMethod(
     "qcplot_samqc_total",
     signature = "sampleQC",
     definition = function(object,
-                          plot_dir = NULL) {
+                          plot_dir = NULL,
+                          return_plot = FALSE) {
         # Extract accepted/excluded reads
         df_total <- object@stats[, c("excluded_reads", "accepted_reads")]
         df_total$samples <- rownames(df_total)
 
         # How many samples per facet row
-        FACET_ROW_SIZE <- 20
+        FACET_ROW_SIZE <- 5
         facet_rows <- ceiling(nrow(df_total) / FACET_ROW_SIZE)
         n_missing <- FACET_ROW_SIZE * facet_rows - nrow(df_total)
 
@@ -238,13 +239,15 @@ setMethod(
                 "accepted_reads" = rep(NA, n_missing),
                 "samples" = paste("dummy", 1:n_missing, sep = "")
             )
-
+            print("here")
             df_total <- rbind(df_total, dummy_samples)
             rownames(df_total) <- NULL
-
+            browser()
             # Blank x-label names for dummy samples
             dummy_names <- dummy_samples$samples
             dummy_names <- setNames(rep("", length(dummy_names)), dummy_names)
+        } else {
+            dummy_names <- setNames(character(0), character(0))
         }
 
         # Assign samples to facet groups (rows)
@@ -275,20 +278,24 @@ setMethod(
             scale_fill_manual(values = fill_colors) +
             labs(x = "Samples", y = "Counts", title = "Sample QC Stats") +
             theme(legend.position = "right",
-                legend.margin = margin(0, 0, 0, 25),
-                legend.key.spacing.y = unit(5, "pt"),
-                legend.text = element_text(size = 16),
-                legend.title = element_blank(),
-                panel.background = element_rect(fill = "ivory", colour = "white"),
-                panel.spacing = unit(5, "lines"),
-                plot.title = element_text(size = 24, face = "bold.italic", family = "Arial",
-                                          vjust = 1.5, margin = margin(b = 20)),
-                axis.text = element_text(size = 14, face = "bold"),
-                axis.title = element_text(size = 18, face = "bold", family = "Arial"),
-                axis.title.x = element_text(margin = margin(t = 20)),
-                axis.title.y = element_text(margin = margin(r = 20)),
-                axis.ticks.x = element_blank(),
-                strip.text.x = element_blank())
+                  legend.margin = margin(0, 0, 0, 25),
+                  legend.key.spacing.y = unit(5, "pt"),
+                  legend.text = element_text(size = 16),
+                  legend.title = element_blank(),
+                  panel.background = element_rect(fill = "ivory", colour = "white"),
+                  panel.spacing = unit(5, "lines"),
+                  plot.title = element_text(size = 24, face = "bold.italic", family = "Arial",
+                                            vjust = 1.5, margin = margin(b = 20)),
+                  axis.text = element_text(size = 14, face = "bold"),
+                  axis.title = element_text(size = 18, face = "bold", family = "Arial"),
+                  axis.title.x = element_text(margin = margin(t = 20)),
+                  axis.title.y = element_text(margin = margin(r = 20)),
+                  axis.ticks.x = element_blank(),
+                  strip.text.x = element_blank())
+
+        if (return_plot) {
+            return(p1)
+        }
 
         if (is.null(plot_dir)) {
           ggplotly(p1)
@@ -317,7 +324,8 @@ setMethod(
     "qcplot_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
-                          plot_dir = NULL) {
+                          plot_dir = NULL,
+                          return_plot = FALSE) {
         # Extract read %
         df_percent <- object@stats[, c("per_unmapped_reads", "per_ref_reads",
                                       "per_pam_reads", "per_library_reads")]
@@ -327,7 +335,7 @@ setMethod(
         rownames(df_percent) <- NULL
 
         # How many samples per facet row
-        FACET_ROW_SIZE <- 20
+        FACET_ROW_SIZE <- 5
         facet_rows <- ceiling(nrow(df_percent) / FACET_ROW_SIZE)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
@@ -365,13 +373,14 @@ setMethod(
         df_transformed$samples <- factor(df_transformed$samples,
                                          levels = c(mixedsort(real_samples), names(dummy_names)))
 
-        # Repel labels that overlap (small percentages, sum < 2.5)
+        # Repel labels that overlap (small percentages)
+        REPEL_THRESHOLD <- 2.5
         df_flagged <- df_transformed %>%
             arrange(samples, types) %>%
             group_by(samples) %>%
             mutate(
                     percent_next = dplyr::lead(percent),
-                    flag_pair = dplyr::coalesce((percent + percent_next) < 2.5, FALSE)
+                    flag_pair = dplyr::coalesce((percent + percent_next) < REPEL_THRESHOLD, FALSE)
                   ) %>%
             mutate(
                    flag_repel = flag_pair | dplyr::lag(flag_pair, default = FALSE)
@@ -423,10 +432,10 @@ setMethod(
                   legend.title = element_blank(),
                   panel.background = element_rect(fill = "ivory", colour = "white"),
                   panel.spacing = unit(5, "lines"),
-                  plot.title = element_text(size = 24, face = "bold.italic", family = "Arial",
+                  plot.title = element_text(size = 24, face = "bold.italic", family = "sans",
                                             vjust = 1.5, margin = margin(b = 20)),
                   axis.text = element_text(size = 14, face = "bold"),
-                  axis.title = element_text(size = 18, face = "bold", family = "Arial"),
+                  axis.title = element_text(size = 18, face = "bold", family = "sans"),
                   axis.title.x = element_text(margin = margin(t = 20)),
                   axis.title.y = element_text(margin = margin(r = 20)),
                   axis.title.y.right = element_text(margin = margin(l = 20)),
@@ -438,9 +447,12 @@ setMethod(
                                      position = position_fill(vjust = 0.5), size = 4,
                                      direction = "y", force = 10e-4,
                                      box.padding = 0)
+        if (return_plot) {
+            return(p1)
+        }
 
         if (is.null(plot_dir)) {
-            dt_filtered$types <- factor(df_flagged$types, levels = rev(levels(df_flagged$types)))
+            df_flagged$types <- factor(df_flagged$types, levels = rev(levels(df_flagged$types)))
 
             ay <- list(overlaying = "y",
                        side = "right",
