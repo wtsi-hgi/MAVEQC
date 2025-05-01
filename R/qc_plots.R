@@ -228,7 +228,7 @@ setMethod(
         df_total$samples <- rownames(df_total)
 
         # How many samples per facet row
-        FACET_ROW_SIZE <- 5
+        FACET_ROW_SIZE <- 20
         facet_rows <- ceiling(nrow(df_total) / FACET_ROW_SIZE)
         n_missing <- FACET_ROW_SIZE * facet_rows - nrow(df_total)
 
@@ -239,7 +239,7 @@ setMethod(
                 "accepted_reads" = rep(NA, n_missing),
                 "samples" = paste("dummy", 1:n_missing, sep = "")
             )
-            print("here")
+
             df_total <- rbind(df_total, dummy_samples)
             rownames(df_total) <- NULL
             # Blank x-label names for dummy samples
@@ -334,7 +334,7 @@ setMethod(
         rownames(df_percent) <- NULL
 
         # How many samples per facet row
-        FACET_ROW_SIZE <- 5
+        FACET_ROW_SIZE <- 20
         facet_rows <- ceiling(nrow(df_percent) / FACET_ROW_SIZE)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
