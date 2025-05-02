@@ -13,55 +13,51 @@ stages:
   - test
 
 variables:
-  DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/maveqc-dev:$CI_COMMIT_SHA
-  DOCKER_IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
+  DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/maveqc:$CI_COMMIT_REF_SLUG
+  DOCKER_IMAGE_NAME_LATEST: $CI_REGISTRY_IMAGE/maveqc:latest # docker build caching latest tag
 
 build-docker:
   stage: build
-  image: docker:24.0.5
+  image: docker:26.0.1
   tags:
     - autoscale
   services:
-    - name: docker:24.0.5-dind
+    - name: docker:26.0.1-dind
       alias: dockerhost
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: tcp://dockerhost:2375/
     DOCKER_DRIVER: overlay2
   before_script:
-    - apk update && apk add --no-cache git
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
-    - docker pull $DOCKER_IMAGE_LATEST || true
-    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_LATEST .
+    - docker pull $DOCKER_IMAGE_NAME_LATEST || true
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_NAME --cache-from $DOCKER_IMAGE_NAME_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_NAME_LATEST .
     - docker push $DOCKER_IMAGE_NAME
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
-        docker tag $DOCKER_IMAGE_NAME $DOCKER_IMAGE_LATEST
-        docker push $DOCKER_IMAGE_LATEST
+    - | 
+      if [[ "$CI_PIPELINE_SOURCE" == "merge_request_event" && "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "main" ]]; then
+        echo "Merge request to main detected. Building and pushing Docker image..."
+        docker push $DOCKER_IMAGE_NAME_LATEST
+        echo "Docker image pushed: $DOCKER_IMAGE_NAME_LATEST"
+      else
+        echo "Not a merge request to main. Skipping Docker image release."
       fi
+  allow_failure: false
   rules:
-    - if: "$CI_PIPELINE_SOURCE == 'push' || $CI_PIPELINE_SOURCE == 'web'" 
+    - if: "$CI_PIPELINE_SOURCE == 'push' || $CI_PIPELINE_SOURCE == 'merge_request_event'"
       exists:
         - Dockerfile
       changes:
         - Dockerfile
         - DESCRIPTION
-    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-      exists:
-        - Dockerfile
-      changes:
-        - Dockerfile
-        - DESCRIPTION
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
-      allow_failure: false
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == 'main' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == 'develop'"
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == 'develop' && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == 'main'"
 
 tests:
   stage: test
   tags:
     - autoscale
-  image: $DOCKER_IMAGE_LATEST
+  image: $DOCKER_IMAGE_NAME
   script:
     - echo "Running unit tests..."
     - Rscript -e 'devtools::test(stop_on_failure = TRUE)'
