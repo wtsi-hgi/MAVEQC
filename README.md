@@ -357,7 +357,7 @@ services:
 ...
 ```
 
-4. Finally, you can run docker container using docker compose command using the following:
+4. Finally, you can run docker container using docker compose command as follows:
 
 ```
 docker compose up -d
