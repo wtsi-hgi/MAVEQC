@@ -33,5 +33,5 @@ RUN groupadd -g ${STAFF} customstaff && \
 # Initialise user
 USER developer
 
-# Default command
+# Default commandd
 CMD ["/bin/bash"]
