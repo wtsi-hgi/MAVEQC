@@ -1,7 +1,13 @@
 Package: MAVEQC
 Title: A R package for MAVE QC
 Version: 0.2.7
-Authors@R: 
+Authors@R:
+    person("Fei", "Sang", , "fei.sang@sanger.ac.uk", 
+            role = c("aut", "cre"),
+            comment = c(ORCID = "YOUR-ORCID-ID"))
+    person("Mark", "Thomas", , "mt4@sanger.ac.uk", 
+            role = c("aut", "cre"),
+            comment = c(ORCID = "YOUR-ORCID-ID")) 
     person("Anna", "Shtanova", , "as63@sanger.ac.uk", 
             role = c("aut", "cre"),
             comment = c(ORCID = "YOUR-ORCID-ID"))
