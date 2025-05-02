@@ -217,6 +217,7 @@ setGeneric("qcplot_samqc_total", function(object, ...) {
 #' @name qcplot_samqc_total
 #' @param object   sampleQC object
 #' @param plot_dir the output plot directory
+#' @param return_plot should plot object be returned
 setMethod(
     "qcplot_samqc_total",
     signature = "sampleQC",
@@ -319,6 +320,7 @@ setGeneric("qcplot_samqc_accepted", function(object, ...) {
 #' @name qcplot_samqc_accepted
 #' @param object   sampleQC object
 #' @param plot_dir the output plot directory
+#' @param return_plot should plot object be returned
 setMethod(
     "qcplot_samqc_accepted",
     signature = "sampleQC",
