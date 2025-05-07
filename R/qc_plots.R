@@ -405,8 +405,11 @@ setMethod(
             ungroup()
 
         # Rows that need repelling
-        df_flagged$percent_repel <- ifelse(df_flagged$flag_repel, as.character(df_flagged$percent), "")
-        df_flagged$percent_normal <- ifelse(df_flagged$flag_repel, "", as.character(df_flagged$percent))
+        browser()
+        df_flagged$percent_repel <- ifelse(df_flagged$flag_repel & df_flagged$percent != 0,
+                                           as.character(df_flagged$percent), "")
+        df_flagged$percent_normal <- ifelse(df_flagged$flag_repel | df_flagged$percent == 0,
+                                            "", as.character(df_flagged$percent))
 
         # Extract reads coverage
         df_coverage <- object@stats[, c("total_reads", "library_reads", "library_cov")]
