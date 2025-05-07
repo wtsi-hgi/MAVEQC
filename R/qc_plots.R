@@ -26,16 +26,16 @@ setMethod(
 
         if (qc_type == "plasmid") {
             qcplot_samqc_readlens(object = object, plot_dir = plot_dir)
-            qcplot_samqc_total(object = object, plot_dir = plot_dir)
-            qcplot_samqc_accepted(object = object, plot_dir = plot_dir)
+            qcplot_samqc_total(object = object, qc_type = qc_type, plot_dir = plot_dir)
+            qcplot_samqc_accepted(object = object, qc_type = qc_type, plot_dir = plot_dir)
             qcplot_samqc_pos_cov(object = object, qc_type = qc_type, plot_dir = plot_dir)
         } else {
             if (is.null(samples)) {
                 stop(paste0("====> Error: please provide samples, a vector."))
             }
             qcplot_samqc_readlens(object = object, plot_dir = plot_dir)
-            qcplot_samqc_total(object = object, plot_dir = plot_dir)
-            qcplot_samqc_accepted(object = object, plot_dir = plot_dir)
+            qcplot_samqc_total(object = object, qc_type = qc_type, plot_dir = plot_dir)
+            qcplot_samqc_accepted(object = object, qc_type = qc_type, plot_dir = plot_dir)
             qcplot_samqc_pos_cov(object = object, qc_type = qc_type, plot_dir = plot_dir)
             qcplot_samqc_pos_anno(object = object, samples = samples, plot_dir = plot_dir)
         }
@@ -215,55 +215,61 @@ setGeneric("qcplot_samqc_total", function(object, ...) {
 #'
 #' @export
 #' @name qcplot_samqc_total
-#' @param object   sampleQC object
-#' @param plot_dir the output plot directory
-#' @param return_plot should plot object be returned
+#' @param object      sampleQC object
+#' @param qc_type     qc type for plot
+#' @param plot_dir    the output plot directory
 setMethod(
     "qcplot_samqc_total",
     signature = "sampleQC",
     definition = function(object,
-                          plot_dir = NULL,
-                          return_plot = FALSE) {
+                          qc_type = c("plasmid", "screen"),
+                          plot_dir = NULL) {
+
+        qc_type <- match.arg(qc_type)
         # Extract accepted/excluded reads
         df_total <- object@stats[, c("excluded_reads", "accepted_reads")]
         df_total$samples <- rownames(df_total)
 
-        # How many samples per facet row
-        FACET_ROW_SIZE <- 20
-        facet_rows <- ceiling(nrow(df_total) / FACET_ROW_SIZE)
-        n_missing <- FACET_ROW_SIZE * facet_rows - nrow(df_total)
+        # How many bars per facet panel
+        BARS_PER_FACET <- ifelse(qc_type == "plasmid", 20, nrow(df_total))
+
+        # How many facets in plot
+        facet_groups <- ceiling(nrow(df_total) / BARS_PER_FACET)
+        n_missing <- BARS_PER_FACET * facet_groups - nrow(df_total)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
         if (n_missing > 0) {
-            dummy_samples <- data.frame(
+            filler_samples <- data.frame(
                 "excluded_reads" = rep(NA, n_missing),
                 "accepted_reads" = rep(NA, n_missing),
-                "samples" = paste("dummy", 1:n_missing, sep = "")
+                "samples" = paste("filler", 1:n_missing, sep = "")
             )
 
-            df_total <- rbind(df_total, dummy_samples)
+            df_total <- rbind(df_total, filler_samples)
             rownames(df_total) <- NULL
-            # Blank x-label names for dummy samples
-            dummy_names <- dummy_samples$samples
-            dummy_names <- setNames(rep("", length(dummy_names)), dummy_names)
+
+            # Blank x-label names for filler samples
+            filler_names <- filler_samples$samples
+            filler_names <- setNames(rep("", length(filler_names)), filler_names)
         } else {
-            dummy_names <- setNames(character(0), character(0))
+            filler_names <- setNames(character(0), character(0))
         }
 
         # Assign samples to facet groups (rows)
-        df_total$facet_group <- rep(1:facet_rows, each = FACET_ROW_SIZE)[1:nrow(df_total)]
+        df_total$facet_group <- rep(1:facet_groups, each = BARS_PER_FACET)[1:nrow(df_total)]
 
         # Reshape for plotting
         df_transformed <- melt(as.data.table(df_total),
                                id.vars = c("samples", "facet_group"),
                                variable.name = "types",
-                               value.name = "counts")
+                               value.name = "counts") %>%
+                            rename(plot_samples = samples)
 
-        # Sort factors (mixedsort with dummy samples at the end)
-        real_samples <- unique(df_transformed$samples)
-        real_samples <- real_samples[!(real_samples %in% names(dummy_names))]
+        # Sort factors (mixedsort with filler samples at the end)
+        sample_names <- unique(df_transformed$samples)
+        sample_names <- sample_names[!(sample_names %in% names(filler_names))]
         df_transformed$samples <- factor(df_transformed$samples,
-                                         levels = c(mixedsort(real_samples), names(dummy_names)))
+                                         levels = c(mixedsort(sample_names), names(filler_names)))
 
         # Colours
         select_colors <- select_colorblind("col8")[1:2]
@@ -274,7 +280,7 @@ setMethod(
             geom_bar(stat = "identity") +
             facet_wrap(~ facet_group, ncol = 1, scales = "free_x") +
             scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
-            scale_x_discrete(guide = guide_axis(angle = 90), labels = dummy_names) +
+            scale_x_discrete(guide = guide_axis(angle = 90), labels = filler_names) +
             scale_fill_manual(values = fill_colors) +
             labs(x = "Samples", y = "Counts", title = "Sample QC Stats") +
             theme(legend.position = "right",
@@ -293,19 +299,17 @@ setMethod(
                   axis.ticks.x = element_blank(),
                   strip.text.x = element_blank())
 
-        if (return_plot) {
-            return(p1)
-        }
-
         if (is.null(plot_dir)) {
           ggplotly(p1)
         } else {
-          pheight <- 2000 * facet_rows
+          pheight <- 2000 * facet_groups
 
           png(file.path(plot_dir, "sample_qc_stats_total.png"), width = 3000, height = pheight, res = 200)
           print(p1)
           dev.off()
         }
+
+        return(p1)
     }
 )
 
@@ -318,15 +322,18 @@ setGeneric("qcplot_samqc_accepted", function(object, ...) {
 #'
 #' @export
 #' @name qcplot_samqc_accepted
-#' @param object   sampleQC object
-#' @param plot_dir the output plot directory
-#' @param return_plot should plot object be returned
+#' @param object      sampleQC object
+#' @param qc_type     qc type for plot
+#' @param plot_dir    the output plot directory
 setMethod(
     "qcplot_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
-                          plot_dir = NULL,
-                          return_plot = FALSE) {
+                          qc_type = c("plasmid", "screen"),
+                          plot_dir = NULL) {
+
+        qc_type <- match.arg(qc_type)
+
         # Extract read %
         df_percent <- object@stats[, c("per_unmapped_reads", "per_ref_reads",
                                       "per_pam_reads", "per_library_reads")]
@@ -335,46 +342,50 @@ setMethod(
         df_percent$samples <- rownames(df_percent)
         rownames(df_percent) <- NULL
 
-        # How many samples per facet row
-        FACET_ROW_SIZE <- 20
-        facet_rows <- ceiling(nrow(df_percent) / FACET_ROW_SIZE)
+        # How many bars per facet panels
+        BARS_PER_FACET <- ifelse(qc_type == "plasmid", 20, nrow(df_percent))
+
+        # How many facets in plot
+        facet_groups <- ceiling(nrow(df_percent) / BARS_PER_FACET)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
-        n_missing <- FACET_ROW_SIZE * facet_rows - nrow(df_percent)
+        n_missing <- BARS_PER_FACET * facet_rows - nrow(df_percent)
 
+        # Invisible samples for consistent bar widths across facet panels
         if (n_missing > 0) {
-            dummy_samples <- data.frame(
+            filler_samples <- data.frame(
                 "unmapped_reads" = rep(NA, n_missing),
                 "ref_reads" = rep(NA, n_missing),
                 "pam_reads" = rep(NA, n_missing),
                 "library_reads" = rep(NA, n_missing),
-                "samples" = paste0("dummy", 1:n_missing)
+                "samples" = paste0("filler", 1:n_missing)
             )
 
-            df_percent <- rbind(df_percent, dummy_samples)
+            df_percent <- rbind(df_percent, filler_samples)
             rownames(df_percent) <- NULL
 
-            # Blank x-label names for dummy samples
-            dummy_names <- dummy_samples$samples
-            dummy_names <- setNames(rep("", length(dummy_names)), dummy_names)
+            # Blank x-label names for filler samples
+            filler_samples <- filler_samples$samples
+            filler_samples <- setNames(rep("", length(filler_names)), filler_names)
         } else {
-            dummy_names <- setNames(character(0), character(0))
+            filler_names <- setNames(character(0), character(0))
         }
 
         # Assign samples to facet groups (rows)
-        df_percent$facet_group <- rep(1:facet_rows, each = FACET_ROW_SIZE)[1:nrow(df_percent)]
+        df_percent$facet_group <- rep(1:facet_rows, each = BARS_PER_FACET)[1:nrow(df_percent)]
 
         # Reshape for plotting
         df_transformed <- melt(as.data.table(df_percent),
-                                           id.vars = c("samples", "facet_group"),
+                               id.vars = c("samples", "facet_group"),
                                            variable.name = "types",
-                                           value.name = "percent")
+                                           value.name = "percent") %>%
+                        rename(plot_samples = samples)
 
-        # Sort factors (mixedsort with dummy samples at the end)
-        real_samples <- unique(df_transformed$samples)
-        real_samples <- real_samples[!(real_samples %in% names(dummy_names))]
+        # Sort factors (mixedsort with filler samples at the end)
+        sample_names <- unique(df_transformed$samples)
+        sample_names <- samples[!(sample_names %in% names(filler_names))]
         df_transformed$samples <- factor(df_transformed$samples,
-                                         levels = c(mixedsort(real_samples), names(dummy_names)))
+                                         levels = c(mixedsort(sample_names), names(filler_names)))
 
         # Repel labels that overlap (small percentages)
         REPEL_THRESHOLD <- 2.5
@@ -424,7 +435,7 @@ setMethod(
             scale_y_continuous(labels = scales::percent,
                                sec.axis = sec_axis(~. * y_scale, name = "Library Coverage"),
                                expand = c(0, 0)) +
-            scale_x_discrete(guide = guide_axis(angle = 90), labels = dummy_names) +
+            scale_x_discrete(guide = guide_axis(angle = 90), labels = filler_names) +
             scale_fill_manual(values = fill_colors) +
             scale_color_manual(values = "red") +
             labs(x = "Samples", y = "Percentage", title = "Sample QC Stats") +
@@ -450,9 +461,6 @@ setMethod(
                                      position = position_fill(vjust = 0.5), size = 4,
                                      direction = "y", force = 10e-4,
                                      box.padding = 0)
-        if (return_plot) {
-            return(p1)
-        }
 
         if (is.null(plot_dir)) {
             df_flagged$types <- factor(df_flagged$types, levels = rev(levels(df_flagged$types)))
@@ -498,6 +506,8 @@ setMethod(
         # png(paste0(plot_dir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
         # print(p2)
         # dev.off()
+
+        return(p1)
     }
 )
 
