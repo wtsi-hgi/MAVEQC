@@ -29,8 +29,8 @@ test_that("qcplot_samqc_total barplot is created with facets (Plasmid QC)", {
     expect_equal(facet_n, 2)
 
     # Check 20 samples per facet
-    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))
-    expect_true(all(bars_per_panel$x == c(20, 4)))
+    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
+    expect_equal(bars_per_panel, c(20, 4))
   })
 
 
@@ -65,8 +65,8 @@ test_that("qcplot_samqc_total barplot is created with facets (Screen QC)", {
     expect_equal(facet_n, 1)
 
     # Check 9 samples per facet
-    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))
-    expect_true(all(bars_per_panel$x == 9))
+    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
+    expect_equal(bars_per_panel, 9)
   })
 
 
@@ -106,8 +106,8 @@ test_that("qcplot_samqc_accepted barplot is created with facets (Plasmid QC)", {
     expect_equal(facet_n, 2)
 
     # Check 20 samples per facet
-    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))
-    expect_true(all(bars_per_panel$x == c(20, 4)))
+    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
+    expect_equal(bars_per_panel, c(20, 4))
 })
 
 
@@ -116,9 +116,9 @@ test_that("qcplot_samqc_accepted barplot is created with facets (Screen QC)", {
     # Mock object
     test_stats <- data.frame(
         per_unmapped_reads = rep(c(.50, .25, .15), 3),
-        per_ref_reads = rep(c(.25, .50, .10), 3),
-        per_pam_reads = rep(c(.15, .10, .50), 3),
-        per_library_reads = rep(c(.10, .15, .25), 3),
+        per_ref_reads = rep(c(.49, .50, .10), 3),
+        per_pam_reads = rep(c(.01, .10, .50), 3),
+        per_library_reads = rep(c(.00, .15, .25), 3),
         total_reads = rep(100, 9),
         library_reads = 1:9,
         library_cov = 1:9,
@@ -127,7 +127,7 @@ test_that("qcplot_samqc_accepted barplot is created with facets (Screen QC)", {
     mock_sample_qc <- new("sampleQC", stats = test_stats)
 
     # Generate and build the plot, and extract data
-    generated_plot <- qcplot_samqc_accepted(mock_sample_qc, qc_type = "screen")
+    generated_plot <- qcplot_samqc_accepted(mock_sample_qc, qc_type = "screen", plot_dir = ".")
     pbuilt <- ggplot2::ggplot_build(generated_plot)
     plot_data <- pbuilt$data[[1]]
 
@@ -147,6 +147,6 @@ test_that("qcplot_samqc_accepted barplot is created with facets (Screen QC)", {
     expect_equal(facet_n, 1)
 
     # Check 20 samples per facet
-    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))
-    expect_true(all(bars_per_panel$x == 9))
+    bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
+    expect_equal(bars_per_panel, 9)
 })
