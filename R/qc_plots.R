@@ -215,9 +215,10 @@ setGeneric("qcplot_samqc_total", function(object, ...) {
 #'
 #' @export
 #' @name qcplot_samqc_total
-#' @param object      sampleQC object
-#' @param qc_type     qc type for plot
-#' @param plot_dir    the output plot directory
+#' @param object sampleQC object
+#' @param qc_type qc type for plot
+#' @param plot_dir the output plot directory
+#' @return a ggplot object
 setMethod(
     "qcplot_samqc_total",
     signature = "sampleQC",
@@ -322,9 +323,10 @@ setGeneric("qcplot_samqc_accepted", function(object, ...) {
 #'
 #' @export
 #' @name qcplot_samqc_accepted
-#' @param object      sampleQC object
-#' @param qc_type     qc type for plot
-#' @param plot_dir    the output plot directory
+#' @param object sampleQC object
+#' @param qc_type qc type for plot
+#' @param plot_dir the output plot directory
+#' @return a ggplot object
 setMethod(
     "qcplot_samqc_accepted",
     signature = "sampleQC",
