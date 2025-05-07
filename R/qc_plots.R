@@ -405,7 +405,6 @@ setMethod(
             ungroup()
 
         # Rows that need repelling
-        browser()
         df_flagged$percent_repel <- ifelse(df_flagged$flag_repel & df_flagged$percent != 0,
                                            as.character(df_flagged$percent), "")
         df_flagged$percent_normal <- ifelse(df_flagged$flag_repel | df_flagged$percent == 0,
