@@ -266,9 +266,9 @@ setMethod(
                             rename(plot_samples = samples)
 
         # Sort factors (mixedsort with filler samples at the end)
-        sample_names <- unique(df_transformed$samples)
+        sample_names <- unique(df_transformed$plot_samples)
         sample_names <- sample_names[!(sample_names %in% names(filler_names))]
-        df_transformed$samples <- factor(df_transformed$samples,
+        df_transformed$plot_samples <- factor(df_transformed$plot_samples,
                                          levels = c(mixedsort(sample_names), names(filler_names)))
 
         # Colours
@@ -276,7 +276,7 @@ setMethod(
         fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
 
         # Plot
-        p1 <- ggplot(df_transformed,  aes(x = samples, y = counts, fill = types)) +
+        p1 <- ggplot(df_transformed, aes(x = plot_samples, y = counts, fill = types)) +
             geom_bar(stat = "identity") +
             facet_wrap(~ facet_group, ncol = 1, scales = "free_x") +
             scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
@@ -349,7 +349,7 @@ setMethod(
         facet_groups <- ceiling(nrow(df_percent) / BARS_PER_FACET)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
-        n_missing <- BARS_PER_FACET * facet_rows - nrow(df_percent)
+        n_missing <- BARS_PER_FACET * facet_groups - nrow(df_percent)
 
         # Invisible samples for consistent bar widths across facet panels
         if (n_missing > 0) {
@@ -365,14 +365,14 @@ setMethod(
             rownames(df_percent) <- NULL
 
             # Blank x-label names for filler samples
-            filler_samples <- filler_samples$samples
-            filler_samples <- setNames(rep("", length(filler_names)), filler_names)
+            filler_names <- filler_samples$samples
+            filler_names <- setNames(rep("", length(filler_names)), filler_names)
         } else {
             filler_names <- setNames(character(0), character(0))
         }
 
         # Assign samples to facet groups (rows)
-        df_percent$facet_group <- rep(1:facet_rows, each = BARS_PER_FACET)[1:nrow(df_percent)]
+        df_percent$facet_group <- rep(1:facet_groups, each = BARS_PER_FACET)[1:nrow(df_percent)]
 
         # Reshape for plotting
         df_transformed <- melt(as.data.table(df_percent),
@@ -382,16 +382,16 @@ setMethod(
                         rename(plot_samples = samples)
 
         # Sort factors (mixedsort with filler samples at the end)
-        sample_names <- unique(df_transformed$samples)
-        sample_names <- samples[!(sample_names %in% names(filler_names))]
-        df_transformed$samples <- factor(df_transformed$samples,
+        sample_names <- unique(df_transformed$plot_samples)
+        sample_names <- sample_names[!(sample_names %in% names(filler_names))]
+        df_transformed$plot_samples <- factor(df_transformed$plot_samples,
                                          levels = c(mixedsort(sample_names), names(filler_names)))
 
         # Repel labels that overlap (small percentages)
         REPEL_THRESHOLD <- 2.5
         df_flagged <- df_transformed %>%
-            arrange(samples, types) %>%
-            group_by(samples) %>%
+            arrange(plot_samples, types) %>%
+            group_by(plot_samples) %>%
             mutate(
                     percent_next = dplyr::lead(percent),
                     flag_pair = dplyr::coalesce((percent + percent_next) < REPEL_THRESHOLD, FALSE)
@@ -413,8 +413,8 @@ setMethod(
         df_coverage$type <- "coverage"
 
         # Assign facet group to df_coverage
-        facet_map <- unique(df_flagged[, c("samples", "facet_group")])
-        df_coverage$facet_group <- facet_map$facet_group[match(df_coverage$samples, facet_map$samples)]
+        facet_map <- unique(df_flagged[, c("plot_samples", "facet_group")])
+        df_coverage$facet_group <- facet_map$facet_group[match(df_coverage$samples, facet_map$plot_samples)]
 
         # Colours
         select_colors <- select_colorblind("col8")[1:4]
@@ -424,7 +424,7 @@ setMethod(
         y_scale <- max(df_coverage$library_cov) * 2
 
         # Plot
-        p1 <- ggplot(df_flagged, aes(x = samples, y = percent, fill = types)) +
+        p1 <- ggplot(df_flagged, aes(x = plot_samples, y = percent, fill = types)) +
             geom_bar(stat = "identity", position = "fill") +
             geom_line(data = df_coverage,
                       aes(x = samples, y = library_cov / y_scale, group = 1),
@@ -473,14 +473,14 @@ setMethod(
                        symbol = "diamond",
                        color = "red")
 
-            plot_ly(data = df_flagged, x = ~samples, y = ~percent,
+            plot_ly(data = df_flagged, x = ~plot_samples, y = ~percent,
                     color = ~types, type = "bar", colors = rev(fill_colors)) %>%
                 layout(barmode = "stack") %>%
                 add_markers(data = df_coverage, x = ~samples, y = ~library_cov,
                             inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
                 layout(yaxis2 = ay)
         } else {
-            pheight <- 2000 * facet_rows
+            pheight <- 2000 * facet_groups
 
             png(file.path(plot_dir, "sample_qc_stats_accepted.png"), width = 3000, height = pheight, res = 200)
             print(p1)
