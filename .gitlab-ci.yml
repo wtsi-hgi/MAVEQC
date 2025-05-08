@@ -43,6 +43,7 @@ build-docker:
   allow_failure: false
   rules:
     - if: "$CI_PIPELINE_SOURCE == 'push' || $CI_PIPELINE_SOURCE == 'merge_request_event'"
+      when: on_success
       exists:
         - Dockerfile
       changes:
