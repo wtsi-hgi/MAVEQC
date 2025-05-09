@@ -107,15 +107,15 @@ add_filler_samples <- function(df, bars_per_facet) {
       df <- rbind(df, filler_samples)
       rownames(df) <- NULL
 
-      # Assign samples to facet groups (rows)
-      df$facet_group <- rep(1:facet_groups, each = bars_per_facet)[1:nrow(df)]
-
       # Blank x-label names for filler samples
       filler_names <- filler_samples$samples
       filler_names <- setNames(rep("", length(filler_names)), filler_names)
     } else {
       filler_names <- setNames(character(0), character(0))
     }
+
+    # Assign samples to facet groups (rows)
+    df$facet_group <- rep(1:facet_groups, each = bars_per_facet)[1:nrow(df)]
 
     # Return list
     list(df = df, filler_names = filler_names)
