@@ -1,0 +1,67 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "develop")
+      when: always
+
+
+stages:
+  - build
+  - test
+
+variables:
+  DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/maveqc:$CI_COMMIT_REF_SLUG
+  DOCKER_IMAGE_NAME_LATEST: $CI_REGISTRY_IMAGE/maveqc:latest # docker build caching latest tag
+
+build-docker:
+  stage: build
+  image: docker:26.0.1
+  tags:
+    - autoscale
+  services:
+    - name: docker:26.0.1-dind
+      alias: dockerhost
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://dockerhost:2375/
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker pull $DOCKER_IMAGE_NAME_LATEST || true
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_NAME --cache-from $DOCKER_IMAGE_NAME_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_NAME_LATEST .
+    - docker push $DOCKER_IMAGE_NAME
+    - | 
+      if [[ "$CI_PIPELINE_SOURCE" == "merge_request_event" && "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "main" ]]; then
+        echo "Merge request to main detected. Building and pushing Docker image..."
+        docker push $DOCKER_IMAGE_NAME_LATEST
+        echo "Docker image pushed: $DOCKER_IMAGE_NAME_LATEST"
+      else
+        echo "Not a merge request to main. Skipping Docker image release."
+      fi
+  allow_failure: false
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'push' || $CI_PIPELINE_SOURCE == 'merge_request_event'"
+      exists:
+        - Dockerfile
+      changes:
+        - Dockerfile
+        - DESCRIPTION
+
+
+tests:
+  stage: test
+  tags:
+    - autoscale
+  image: $DOCKER_IMAGE_NAME
+  script:
+    - echo "Running unit tests..."
+    - Rscript -e 'devtools::test(stop_on_failure = TRUE)'
+    - echo "Unit tests completed."
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'push' || $CI_PIPELINE_SOURCE == 'merge_request_event'"
+      when: on_success
+  needs:
+  - job: build-docker
+    optional: true
