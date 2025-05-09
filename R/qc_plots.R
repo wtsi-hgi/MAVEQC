@@ -232,11 +232,11 @@ setMethod(
         df_total$samples <- rownames(df_total)
 
         # How many bars per facet panel
-        BARS_PER_FACET <- ifelse(qc_type == "plasmid", 20, nrow(df_total))
+        bars_per_facet <- ifelse(qc_type == "plasmid", 20, nrow(df_total))
 
         # How many facets in plot
-        facet_groups <- ceiling(nrow(df_total) / BARS_PER_FACET)
-        n_missing <- BARS_PER_FACET * facet_groups - nrow(df_total)
+        facet_groups <- ceiling(nrow(df_total) / bars_per_facet)
+        n_missing <- bars_per_facet * facet_groups - nrow(df_total)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
         if (n_missing > 0) {
@@ -257,7 +257,7 @@ setMethod(
         }
 
         # Assign samples to facet groups (rows)
-        df_total$facet_group <- rep(1:facet_groups, each = BARS_PER_FACET)[1:nrow(df_total)]
+        df_total$facet_group <- rep(1:facet_groups, each = bars_per_facet)[1:nrow(df_total)]
 
         # Reshape for plotting
         df_transformed <- melt(as.data.table(df_total),
@@ -345,13 +345,13 @@ setMethod(
         rownames(df_percent) <- NULL
 
         # How many bars per facet panels
-        BARS_PER_FACET <- ifelse(qc_type == "plasmid", 20, nrow(df_percent))
+        bars_per_facet <- ifelse(qc_type == "plasmid", 20, nrow(df_percent))
 
         # How many facets in plot
-        facet_groups <- ceiling(nrow(df_percent) / BARS_PER_FACET)
+        facet_groups <- ceiling(nrow(df_percent) / bars_per_facet)
 
         # Ensure grid layout is complete (so that all barplots have equal width)
-        n_missing <- BARS_PER_FACET * facet_groups - nrow(df_percent)
+        n_missing <- bars_per_facet * facet_groups - nrow(df_percent)
 
         # Invisible samples for consistent bar widths across facet panels
         if (n_missing > 0) {
@@ -374,7 +374,7 @@ setMethod(
         }
 
         # Assign samples to facet groups (rows)
-        df_percent$facet_group <- rep(1:facet_groups, each = BARS_PER_FACET)[1:nrow(df_percent)]
+        df_percent$facet_group <- rep(1:facet_groups, each = bars_per_facet)[1:nrow(df_percent)]
 
         # Reshape for plotting
         df_transformed <- melt(as.data.table(df_percent),

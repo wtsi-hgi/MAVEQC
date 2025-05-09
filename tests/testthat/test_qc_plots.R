@@ -28,13 +28,13 @@ test_that("qcplot_samqc_total barplot is created with facets (Plasmid QC)", {
     facet_n <- length(unique(pbuilt$layout$layout$PANEL))
     expect_equal(facet_n, 2)
 
-    # Check 20 samples per facet
+    # Check 20 bars per facet
     bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
     expect_equal(bars_per_panel, c(20, 4))
   })
 
 
-test_that("qcplot_samqc_total barplot is created with facets (Screen QC)", {
+test_that("qcplot_samqc_total barplot is created with one facet (Screen QC)", {
 
     # Mock object
     test_stats <- data.frame(
@@ -64,7 +64,7 @@ test_that("qcplot_samqc_total barplot is created with facets (Screen QC)", {
     facet_n <- length(unique(pbuilt$layout$layout$PANEL))
     expect_equal(facet_n, 1)
 
-    # Check 9 samples per facet
+    # Check 9 bars (= total no. of screen samples) per facet
     bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
     expect_equal(bars_per_panel, 9)
   })
@@ -105,13 +105,13 @@ test_that("qcplot_samqc_accepted barplot is created with facets (Plasmid QC)", {
     facet_n <- length(unique(pbuilt$layout$layout$PANEL))
     expect_equal(facet_n, 2)
 
-    # Check 20 samples per facet
+    # Check 20 bars per facet
     bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
     expect_equal(bars_per_panel, c(20, 4))
 })
 
 
-test_that("qcplot_samqc_accepted barplot is created with facets (Screen QC)", {
+test_that("qcplot_samqc_accepted barplot is created with one facet (Screen QC)", {
 
     # Mock object
     test_stats <- data.frame(
@@ -127,7 +127,7 @@ test_that("qcplot_samqc_accepted barplot is created with facets (Screen QC)", {
     mock_sample_qc <- new("sampleQC", stats = test_stats)
 
     # Generate and build the plot, and extract data
-    generated_plot <- qcplot_samqc_accepted(mock_sample_qc, qc_type = "screen", plot_dir = ".")
+    generated_plot <- qcplot_samqc_accepted(mock_sample_qc, qc_type = "screen")
     pbuilt <- ggplot2::ggplot_build(generated_plot)
     plot_data <- pbuilt$data[[1]]
 
@@ -142,11 +142,11 @@ test_that("qcplot_samqc_accepted barplot is created with facets (Screen QC)", {
     plot_sample_labels <- levels(generated_plot$data$plot_samples)
     expect_equal(plot_sample_labels, paste0("sample", 1:9))
 
-    # Check number of facet
+    # Check number of facets
     facet_n <- length(unique(pbuilt$layout$layout$PANEL))
     expect_equal(facet_n, 1)
 
-    # Check 20 samples per facet
+    # Check 9 bars (= total no. of screen samples) per facet
     bars_per_panel <- aggregate(x ~ PANEL, data = plot_data, FUN = function(x) length(unique(x)))$x
     expect_equal(bars_per_panel, 9)
 })
