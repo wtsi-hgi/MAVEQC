@@ -48,6 +48,7 @@ build-docker:
       changes:
         - Dockerfile
         - DESCRIPTION
+    - if: "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /develop|main/"
 
 
 tests:
