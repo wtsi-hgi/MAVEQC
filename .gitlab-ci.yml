@@ -34,11 +34,11 @@ build-docker:
     - docker push $DOCKER_IMAGE_NAME
     - | 
       if [[ "$CI_PIPELINE_SOURCE" == "push" && "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /develop|main/" ]]; then
-        echo "Merge request to ${$CI_MERGE_REQUEST_TARGET_BRANCH_NAME} detected. Building and pushing Docker image..."
+        echo "Merge request to $CI_COMMIT_BRANCH detected. Building and pushing Docker image..."
         docker push $DOCKER_IMAGE_NAME_LATEST
         echo "Docker image pushed: $DOCKER_IMAGE_NAME_LATEST"
       else
-        echo "Not a merge request to main. Skipping Docker image push."
+        echo "Not a merge request to main or develop. Skipping Docker image release."
       fi
   allow_failure: false
   rules:
