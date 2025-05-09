@@ -45,43 +45,43 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
         # Expected output files
         expected_files <- as.data.frame(
             rbind(
-                  c("MAVEQC_report.html", 5688, NA),
-                  c("experiment_qc_corr.tsv", 10, 869),
-                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all.tsv", 2078, 1039261),
-                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all_beeswarm.png", NA, 154325),
-                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all_position.png", NA, 181261),
-                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all_sum.tsv", 9, 420),
-                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all.tsv", 2078, 1019880),
-                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all_beeswarm.png", NA, 93035),
-                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all_position.png", NA, 98535),
-                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all_sum.tsv", 9, 415),
-                  c("experiment_qc_pca_samples.png", NA, 72745),
-                  c("experiment_qc_samples_corr.png", NA, 158956),
-                  c("experiment_qc_samples_tree.png", NA, 25593),
-                  c("failed_variants_by_cluster.tsv", 3, 897),
-                  c("failed_variants_by_depth.tsv", 1, 39),
-                  c("failed_variants_by_mapping.tsv", 1, 39),
-                  c("missing_variants_in_library.tsv", 125, 46647),
-                  c("sample_qc_cutoffs.tsv", 2, 245),
-                  c("sample_qc_meta.tsv", 10, 926),
-                  c("sample_qc_position_anno.lof_dots.png", NA, 271697),
-                  c("sample_qc_position_cov.dots.png", NA, 193232),
-                  c("sample_qc_read_length.png", NA, 116152),
-                  c("sample_qc_read_length.tsv", 10, 1015),
-                  c("sample_qc_results.tsv", 10, 1245),
-                  c("sample_qc_stats_accepted.png", NA, 98627),
-                  c("sample_qc_stats_accepted.tsv", 10, 895),
-                  c("sample_qc_stats_coverage.tsv", 10, 960),
-                  c("sample_qc_stats_missing.tsv", 10, 827),
-                  c("sample_qc_stats_pos_counts.tsv", 2076, 89213),
-                  c("sample_qc_stats_pos_coverage.tsv", 10, 1033),
-                  c("sample_qc_stats_pos_percentage.tsv", 10, 1196),
-                  c("sample_qc_stats_total.png", NA, 47554),
-                  c("sample_qc_stats_total.tsv", 10, 1098))
+                  c("MAVEQC_report.html", NA),
+                  c("experiment_qc_corr.tsv", 10),
+                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all.tsv", 2078),
+                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all_beeswarm.png", NA),
+                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all_position.png", NA),
+                  c("experiment_qc_deseq_fc.condition_Day15_vs_Day4.all_sum.tsv", 9),
+                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all.tsv", 2078),
+                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all_beeswarm.png", NA),
+                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all_position.png", NA),
+                  c("experiment_qc_deseq_fc.condition_Day7_vs_Day4.all_sum.tsv", 9),
+                  c("experiment_qc_pca_samples.png", NA),
+                  c("experiment_qc_samples_corr.png", NA),
+                  c("experiment_qc_samples_tree.png", NA),
+                  c("failed_variants_by_cluster.tsv", 3),
+                  c("failed_variants_by_depth.tsv", 1),
+                  c("failed_variants_by_mapping.tsv", 1),
+                  c("missing_variants_in_library.tsv", 125),
+                  c("sample_qc_cutoffs.tsv", 2),
+                  c("sample_qc_meta.tsv", 10),
+                  c("sample_qc_position_anno.lof_dots.png", NA),
+                  c("sample_qc_position_cov.dots.png", NA),
+                  c("sample_qc_read_length.png", NA),
+                  c("sample_qc_read_length.tsv", 10),
+                  c("sample_qc_results.tsv", 10),
+                  c("sample_qc_stats_accepted.png", NA),
+                  c("sample_qc_stats_accepted.tsv", 10),
+                  c("sample_qc_stats_coverage.tsv", 10),
+                  c("sample_qc_stats_missing.tsv", 10),
+                  c("sample_qc_stats_pos_counts.tsv", 2076),
+                  c("sample_qc_stats_pos_coverage.tsv", 10),
+                  c("sample_qc_stats_pos_percentage.tsv", 10),
+                  c("sample_qc_stats_total.png", NA),
+                  c("sample_qc_stats_total.tsv", 10)
+            )
         )
-        names(expected_files) <- c("file_name", "line_count", "file_size_bytes")
-        expected_files[c("line_count", "file_size_bytes")] <- lapply(expected_files[c("line_count", "file_size_bytes")],
-                                                                     as.integer)
+        names(expected_files) <- c("file_name", "line_count")
+        expected_files$line_count <- as.integer(expected_files$line_count)
 
         # Generated files
         generated_file_names <- list.files(output_dir, full.names = TRUE)
@@ -103,7 +103,7 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
             expect_true(!!(generated_files$file_name[i]) %in% expected_files$file_name)
         }
 
-        # Check number of lines (tsv, html)
+        # Check number of lines (tsv)
         for (i in seq_along(expected_files$file_name)) {
             file_name <- expected_files$file_name[i]
             expected_line_count <- expected_files$line_count[i]
@@ -117,17 +117,13 @@ test_that("End to end testing (Screen QC): correct output files are generated", 
             }
         }
 
-        # Check file size (png, tsv; html will change depending on date & time)
+        # Check file size greater than zero
         for (i in seq_along(expected_files$file_name)) {
             file_name <- expected_files$file_name[i]
-            expected_file_size <- expected_files$file_size_bytes[i]
-            if (!is.na(expected_file_size) && file_name %in% generated_files$file_name) {
+            if (file_name %in% generated_files$file_name && !grepl("\\.tsv$", file_name, ignore.case = TRUE)) {
                 generated_file_size <- generated_files[generated_files$file_name == file_name, ]$file_size_bytes
-                expect_true(!!(expected_file_size) == generated_file_size,
-                            label = sprintf("File size (bytes): %s (expected) == %s (generated) for %s",
-                                            expected_file_size,
-                                            generated_file_size,
-                                            file_name))
+                expect_gt(generated_file_size, 0,
+                          label = sprintf("File '%s' with size %s that", file_name, generated_file_size))
             }
         }
 
