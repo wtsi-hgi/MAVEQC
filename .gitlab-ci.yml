@@ -33,12 +33,12 @@ build-docker:
     - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $DOCKER_IMAGE_NAME --cache-from $DOCKER_IMAGE_NAME_LATEST --tag $DOCKER_IMAGE_NAME --tag $DOCKER_IMAGE_NAME_LATEST .
     - docker push $DOCKER_IMAGE_NAME
     - | 
-      if [[ "$CI_PIPELINE_SOURCE" == "merge_request_event" && "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "main" ]]; then
-        echo "Merge request to main detected. Building and pushing Docker image..."
+      if [[ "$CI_PIPELINE_SOURCE" == "push" && "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /develop|main/" ]]; then
+        echo "Merge request to ${$CI_MERGE_REQUEST_TARGET_BRANCH_NAME} detected. Building and pushing Docker image..."
         docker push $DOCKER_IMAGE_NAME_LATEST
         echo "Docker image pushed: $DOCKER_IMAGE_NAME_LATEST"
       else
-        echo "Not a merge request to main. Skipping Docker image release."
+        echo "Not a merge request to main. Skipping Docker image push."
       fi
   allow_failure: false
   rules:
@@ -48,7 +48,8 @@ build-docker:
       changes:
         - Dockerfile
         - DESCRIPTION
-    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(main:develop|develop:main)$/)"
+    - if: "$CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_BRANCH =~ /^(main|develop)$/"
+      when: always
 
 
 tests:
