@@ -227,6 +227,7 @@ setMethod(
                           plot_dir = NULL) {
 
         qc_type <- match.arg(qc_type)
+
         # Extract accepted/excluded reads
         df_total <- object@stats[, c("excluded_reads", "accepted_reads")]
         df_total$samples <- rownames(df_total)
@@ -234,33 +235,13 @@ setMethod(
         # How many bars per facet panel
         bars_per_facet <- ifelse(qc_type == "plasmid", 20, nrow(df_total))
 
-        # How many facets in plot
-        facet_groups <- ceiling(nrow(df_total) / bars_per_facet)
-        n_missing <- bars_per_facet * facet_groups - nrow(df_total)
-
-        # Ensure grid layout is complete (so that all barplots have equal width)
-        if (n_missing > 0) {
-            filler_samples <- data.frame(
-                "excluded_reads" = rep(NA, n_missing),
-                "accepted_reads" = rep(NA, n_missing),
-                "samples" = paste("filler", 1:n_missing, sep = "")
-            )
-
-            df_total <- rbind(df_total, filler_samples)
-            rownames(df_total) <- NULL
-
-            # Blank x-label names for filler samples
-            filler_names <- filler_samples$samples
-            filler_names <- setNames(rep("", length(filler_names)), filler_names)
-        } else {
-            filler_names <- setNames(character(0), character(0))
-        }
-
-        # Assign samples to facet groups (rows)
-        df_total$facet_group <- rep(1:facet_groups, each = bars_per_facet)[1:nrow(df_total)]
+        # Generate filler samples for barplot (so that that all bars have equal width)
+        filler_list <- add_filler_samples(df_total, bars_per_facet)
+        df_total_with_filler <- filler_list[[1]]
+        filler_names <- filler_list[[2]]
 
         # Reshape for plotting
-        df_transformed <- melt(as.data.table(df_total),
+        df_transformed <- melt(as.data.table(df_total_with_filler),
                                id.vars = c("samples", "facet_group"),
                                variable.name = "types",
                                value.name = "counts") %>%
@@ -303,7 +284,7 @@ setMethod(
         if (is.null(plot_dir)) {
           ggplotly(p1)
         } else {
-          pheight <- 2000 * facet_groups
+          pheight <- 2000 * max(df_transformed$facet_group)
 
           png(file.path(plot_dir, "sample_qc_stats_total.png"), width = 3000, height = pheight, res = 200)
           print(p1)
@@ -347,37 +328,13 @@ setMethod(
         # How many bars per facet panels
         bars_per_facet <- ifelse(qc_type == "plasmid", 20, nrow(df_percent))
 
-        # How many facets in plot
-        facet_groups <- ceiling(nrow(df_percent) / bars_per_facet)
-
-        # Ensure grid layout is complete (so that all barplots have equal width)
-        n_missing <- bars_per_facet * facet_groups - nrow(df_percent)
-
-        # Invisible samples for consistent bar widths across facet panels
-        if (n_missing > 0) {
-            filler_samples <- data.frame(
-                "unmapped_reads" = rep(NA, n_missing),
-                "ref_reads" = rep(NA, n_missing),
-                "pam_reads" = rep(NA, n_missing),
-                "library_reads" = rep(NA, n_missing),
-                "samples" = paste0("filler", 1:n_missing)
-            )
-
-            df_percent <- rbind(df_percent, filler_samples)
-            rownames(df_percent) <- NULL
-
-            # Blank x-label names for filler samples
-            filler_names <- filler_samples$samples
-            filler_names <- setNames(rep("", length(filler_names)), filler_names)
-        } else {
-            filler_names <- setNames(character(0), character(0))
-        }
-
-        # Assign samples to facet groups (rows)
-        df_percent$facet_group <- rep(1:facet_groups, each = bars_per_facet)[1:nrow(df_percent)]
+        # Generate filler samples for barplot (so that that all bars have equal width)
+        filler_list <- add_filler_samples(df_percent, bars_per_facet)
+        df_percent_with_filler <- filler_list[[1]]
+        filler_names <- filler_list[[2]]
 
         # Reshape for plotting
-        df_transformed <- melt(as.data.table(df_percent),
+        df_transformed <- melt(as.data.table(df_percent_with_filler),
                                id.vars = c("samples", "facet_group"),
                                            variable.name = "types",
                                            value.name = "percent") %>%
@@ -484,7 +441,7 @@ setMethod(
                             inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
                 layout(yaxis2 = ay)
         } else {
-            pheight <- 2000 * facet_groups
+            pheight <- 2000 * max(df_flagged$facet_group)
 
             png(file.path(plot_dir, "sample_qc_stats_accepted.png"), width = 3000, height = pheight, res = 200)
             print(p1)
