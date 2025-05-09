@@ -48,7 +48,7 @@ build-docker:
       changes:
         - Dockerfile
         - DESCRIPTION
-    - if: "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /develop|main/"
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^(main:develop|develop:main)$/)"
 
 
 tests:
