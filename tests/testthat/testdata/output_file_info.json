@@ -1,0 +1,322 @@
+[
+  {
+    "filename": "experiment_qc_corr.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Sample",
+      "Cluster",
+      "Replicate",
+      "Condition",
+      "7135STDY14473710",
+      "7135STDY14473711",
+      "7135STDY14473712",
+      "7135STDY14473713",
+      "7135STDY14473714",
+      "7135STDY14473715",
+      "7135STDY14473716",
+      "7135STDY14473717",
+      "7135STDY14473718",
+      "Pass"
+    ]
+  },
+  {
+    "filename": "experiment_qc_deseq_fc.condition_Day15_vs_Day4.all.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "oligo_name",
+      "consequence",
+      "position",
+      "log2FoldChange",
+      "lfcSE",
+      "padj",
+      "stat",
+      "sequence",
+      "adj_log2FoldChange",
+      "adj_score",
+      "adj_pval",
+      "adj_fdr"
+    ]
+  },
+  {
+    "filename": "experiment_qc_deseq_fc.condition_Day15_vs_Day4.all_sum.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "consequence",
+      "number of depleted",
+      "number of no impact",
+      "number of enriched",
+      "lfc range",
+      "total number",
+      "total number of outside range"
+    ]
+  },
+  {
+    "filename": "experiment_qc_deseq_fc.condition_Day7_vs_Day4.all.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "oligo_name",
+      "consequence",
+      "position",
+      "log2FoldChange",
+      "lfcSE",
+      "padj",
+      "stat",
+      "sequence",
+      "adj_log2FoldChange",
+      "adj_score",
+      "adj_pval",
+      "adj_fdr"
+    ]
+  },
+  {
+    "filename": "experiment_qc_deseq_fc.condition_Day7_vs_Day4.all_sum.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "consequence",
+      "number of depleted",
+      "number of no impact",
+      "number of enriched",
+      "lfc range",
+      "total number",
+      "total number of outside range"
+    ]
+  },
+  {
+    "filename": "failed_variants_by_cluster.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "unique_oligo_name",
+      "seq",
+      "7135STDY14473711",
+      "7135STDY14473712",
+      "7135STDY14473713",
+      "7135STDY14473714",
+      "7135STDY14473715",
+      "7135STDY14473716",
+      "7135STDY14473717",
+      "7135STDY14473718"
+    ]
+  },
+  {
+    "filename": "failed_variants_by_depth.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "unique_oligo_name",
+      "seq",
+      "7135STDY14473718"
+    ]
+  },
+  {
+    "filename": "failed_variants_by_mapping.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "unique_oligo_name",
+      "seq",
+      "7135STDY14473718"
+    ]
+  },
+  {
+    "filename": "missing_variants_in_library.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "id",
+      "name",
+      "sequence",
+      "length",
+      "count",
+      "unique",
+      "sample",
+      "is_ref",
+      "is_pam"
+    ]
+  },
+  {
+    "filename": "sample_qc_cutoffs.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "num_total_reads",
+      "per_missing_variants",
+      "seq_low_count",
+      "seq_low_sample_per",
+      "num_accepted_reads",
+      "per_mapping_reads",
+      "per_ref_reads",
+      "per_library_reads",
+      "library_cov",
+      "low_abundance_per",
+      "low_abundance_lib_per"
+    ]
+  },
+  {
+    "filename": "sample_qc_meta.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "sample_name",
+      "sample_info",
+      "gene_id",
+      "gene_name",
+      "transcript_id",
+      "exon_num",
+      "targeton_id",
+      "sgrna_id"
+    ]
+  },
+  {
+    "filename": "sample_qc_read_length.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "Total Reads",
+      "% 0 ~ 50",
+      "% 50 ~ 100",
+      "% 100 ~ 150",
+      "% 150 ~ 200",
+      "% 200 ~ 250",
+      "% 250 ~ 300",
+      "Pass Threshold (%)",
+      "Pass"
+    ]
+  },
+  {
+    "filename": "sample_qc_results.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "Gini Coefficient",
+      "Total Reads",
+      "% Missing Variants",
+      "Accepted Reads",
+      "% Mapping Reads",
+      "% Reference Reads",
+      "% Library Reads",
+      "Library Coverage",
+      "% R1 Adaptor",
+      "% R2 Adaptor",
+      "QCPass_Library_Per"
+    ]
+  },
+  {
+    "filename": "sample_qc_stats_accepted.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "% Library Reads",
+      "% Reference Reads",
+      "% PAM Reads",
+      "% Unmapped Reads",
+      "Pass Threshold (%)",
+      "Pass"
+    ]
+  },
+  {
+    "filename": "sample_qc_stats_coverage.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "Total Library Reads",
+      "Total Library Sequences",
+      "Library Coverage",
+      "Median Coverage",
+      "Pass Threshold",
+      "Pass"
+    ]
+  },
+  {
+    "filename": "sample_qc_stats_missing.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "Library Sequences",
+      "Missing Library Sequences",
+      "% Missing Library Sequences",
+      "Pass Threshold (%)",
+      "Pass"
+    ]
+  },
+  {
+    "filename": "sample_qc_stats_pos_counts.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "7135STDY14473710",
+      "7135STDY14473711",
+      "7135STDY14473712",
+      "7135STDY14473713",
+      "7135STDY14473714",
+      "7135STDY14473715",
+      "7135STDY14473716",
+      "7135STDY14473717",
+      "7135STDY14473718"
+    ]
+  },
+  {
+    "filename": "sample_qc_stats_pos_coverage.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "Chromosome",
+      "Strand",
+      "Genomic Start",
+      "Genomic End",
+      "% Low Abundance",
+      "Low Abundance cutoff",
+      "Pass Threshold (%)",
+      "Pass"
+    ]
+  },
+  {
+    "filename": "sample_qc_stats_pos_percentage.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "Chromosome",
+      "Strand",
+      "Genomic Start",
+      "Genomic End",
+      "% Low Abundance (LOF)",
+      "% Low Abundance (Others)",
+      "% Low Abundance (ALL)",
+      "% Low Abundance cutoff",
+      "Pass Threshold",
+      "Pass"
+    ]
+  },
+  {
+    "filename": "sample_qc_stats_total.tsv",
+    "file_type": "tsv",
+    "headers": [
+      "Group",
+      "Sample",
+      "Sample Info",
+      "Sample Exon",
+      "Accepted Reads",
+      "% Accepted Reads",
+      "Excluded Reads",
+      "% Excluded Reads",
+      "Total Reads",
+      "Pass Threshold",
+      "Pass"
+    ]
+  }
+]
+

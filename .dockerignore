@@ -1,0 +1,3 @@
+# Ignore renv directory and lock file to prevent unnecessary package installations
+renv/
+renv.lock

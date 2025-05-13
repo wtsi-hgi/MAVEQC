@@ -22,6 +22,7 @@
     - [Pandoc](#pandoc)
     - [Test datasets](#test)
     - [Conda](#conda)
+8. [For Developers](#for-developers) 
 
 </details>
 
@@ -105,12 +106,12 @@ install.packages("/path/of/MAVEQC.tar.gz", type = "source")
 ### sample sheet -- tsv
 | sample_name | replicate | condition | ref_time_point | library_independent_count | library_dependent_count | valiant_meta | vep_anno | adapt5 | adapt3 | per_r1_adaptor | per_r2_adaptor | library_name | library_type|
 | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
-| sample1 | R1 | D4 | D4 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
-| sample2 | R2 | D4 | D4 |s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
-| sample3 | R3 | D4 | D4 |s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
-| sample4 | R1 | D7 | D4 | s4.allcounts.tsv.gz | s4.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
-| sample5 | R2 | D7 | D4 |s5.allcounts.tsv.gz | s5.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
-| sample6 | R3 | D7 | D4 |s6.allcounts.tsv.gz | s6.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
+| sample1 | R1 | Day4 | Day4 | s1.allcounts.tsv.gz | s1.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
+| sample2 | R2 | Day4 | Day4 |s2.allcounts.tsv.gz | s2.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
+| sample3 | R3 | Day4 | Day4 |s3.allcounts.tsv.gz | s3.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
+| sample4 | R1 | Day7 | Day4 | s4.allcounts.tsv.gz | s4.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.21 | 0.10 | libA | screen |
+| sample5 | R2 | Day7 | Day4 |s5.allcounts.tsv.gz | s5.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.11 | 0.02 | libA | screen |
+| sample6 | R3 | Day7 | Day4 |s6.allcounts.tsv.gz | s6.libcounts.tsv.gz | meta.csv.gz | meta_consequences.tsv.gz | CTGACTGGCACCTCTTCCCCCAGGA | CCCCGACCCCTCCCCAGCGTGAATG | 0.01 | 0.18 | libA | screen |
 
 * *please use the same headers in the example*
 * *replicate, condition and ref_time_point are optional, but required for screen qc*
@@ -215,15 +216,15 @@ MAVEQC automatically creates the coldata (```maveqc_deseq_coldata```) from sampl
 #### coldata example:
 | sample_name | replicate | condition |
 | - | - | - |
-| hgsm3_d4_r1 | R1 | D4 |
-| hgsm3_d7_r1 | R1 | D7 |
-| hgsm3_d15_r1 | R1 | D15 |
-| hgsm3_d4_r2 | R2 | D4 |
-| hgsm3_d7_r2 | R2 | D7 |
-| hgsm3_d15_r2 | R2 | D15 |
-| hgsm3_d4_r3 | R3 | D4 |
-| hgsm3_d7_r3 | R3 | D7 |
-| hgsm3_d15_r3 | R3 | D15 |
+| hgsm3_d4_r1 | R1 | Day4 |
+| hgsm3_d7_r1 | R1 | Day7 |
+| hgsm3_d15_r1 | R1 | Day15 |
+| hgsm3_d4_r2 | R2 | Day4 |
+| hgsm3_d7_r2 | R2 | Day7 |
+| hgsm3_d15_r2 | R2 | Day15 |
+| hgsm3_d4_r3 | R3 | Day4 |
+| hgsm3_d7_r3 | R3 | Day7 |
+| hgsm3_d15_r3 | R3 | Day15 |
 
 
 ```R
@@ -272,3 +273,108 @@ export PKG_CPPFLAGS="-DHAVE_WORKING_LOG1P"
 ```
 
 <p align="right">(<a href="#top">TOP</a>)</p>
+
+
+## For Developers
+
+### Development Environment Setup
+
+To quickly set up a development environment for this project, you can use Docker Compose. 
+This will create all the necessary containers and configurations for a smooth development experience.
+
+#### Requirements
+
+Before running `docker compose up`, make sure you have the following installed: Docker and Docker Compose.
+
+#### Running the Development Environment
+
+Once you have Docker and Docker Compose installed, follow these steps:
+
+1. **Clone the repository**:
+```
+git clone https://gitlab.internal.sanger.ac.uk/sci/MAVEQC.git
+cd MAVEQC
+```
+
+2. **Build and start the development containers:**
+
+```
+docker compose up
+```
+This command will build the Docker image and start the MAVEQC development container (maveqc-dev-container) defined in 
+docker-compose.yml. This will also mount the MAVEQC folder onto the container.
+
+If you want to run the container in detached mode, use the -d flag:
+```
+docker compose up -d
+```
+This starts the container in the background, freeing the terminal for other commands.
+
+3. **Access the maveqc-dev-container**
+```
+docker exec -it maveqc-dev-container bash
+```
+4. **Run MAVEQC**
+
+Once inside the maveqc-dev-container, start R and load all the package components:
+```
+R
+```
+Then, load all the package components:
+```
+devtools::load_all()
+```
+After running devtools::load_all(), refer to the documentation above for instructions on using the MAVEQC reporter.
+> **Note**: Use paths relative to `/usr/src/MAVEQC-R`, the container’s working directory.
+
+To stop the running container, use:
+
+```
+docker compose down
+```
+
+#### Pull docker image from GitLab Container Registry
+You can pull latest image from `gitlab-registry.internal.sanger.ac.uk` using the following steps:
+
+1. Login into GitLab container registry using username and password:
+
+```
+docker login gitlab-registry.internal.sanger.ac.uk
+```
+
+2. Then, pull docker image from container registry using the following command:
+
+```
+docker pull gitlab-registry.internal.sanger.ac.uk/sci/maveqc
+```
+
+3. Once you pull the docker images make sure you replace exisiting `image` name in `docker-compose.yml` to `gitlab-registry.internal.sanger.ac.uk/sci/maveqc:latest`. You can see the following example:
+
+```
+services:
+  maveqc-dev:
+    image: gitlab-registry.internal.sanger.ac.uk/sci/maveqc:latest
+...
+```
+
+4. Finally, you can run docker container using docker compose command as follows:
+
+```
+docker compose up -d
+``` 
+
+### Update GitLab to GitHub Wiki
+
+To update changes made in the MAVEQC GitLab Wiki to the GitHub Wiki, the following script can be used to automatically sync both Wikis:
+
+First, make the Bash script executable.
+```
+chmod +x sync_gitlab_github_wiki.sh
+```
+
+Then, after making changes to the MAVEQC GitLab wiki, run the following command:
+```
+./sync_gitlab_github_wiki.sh "Your commit message"
+```
+
+> **Note**: You can use `./sync_gitlab_github_wiki.sh --help` for usage of this bash script.
