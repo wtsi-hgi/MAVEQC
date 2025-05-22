@@ -26,16 +26,16 @@ setMethod(
 
         if (qc_type == "plasmid") {
             qcplot_samqc_readlens(object = object, plot_dir = plot_dir)
-            qcplot_samqc_total(object = object, plot_dir = plot_dir)
-            qcplot_samqc_accepted(object = object, plot_dir = plot_dir)
+            qcplot_samqc_total(object = object, qc_type = qc_type, plot_dir = plot_dir)
+            qcplot_samqc_accepted(object = object, qc_type = qc_type, plot_dir = plot_dir)
             qcplot_samqc_pos_cov(object = object, qc_type = qc_type, plot_dir = plot_dir)
         } else {
             if (is.null(samples)) {
                 stop(paste0("====> Error: please provide samples, a vector."))
             }
             qcplot_samqc_readlens(object = object, plot_dir = plot_dir)
-            qcplot_samqc_total(object = object, plot_dir = plot_dir)
-            qcplot_samqc_accepted(object = object, plot_dir = plot_dir)
+            qcplot_samqc_total(object = object, qc_type = qc_type, plot_dir = plot_dir)
+            qcplot_samqc_accepted(object = object, qc_type = qc_type, plot_dir = plot_dir)
             qcplot_samqc_pos_cov(object = object, qc_type = qc_type, plot_dir = plot_dir)
             qcplot_samqc_pos_anno(object = object, samples = samples, plot_dir = plot_dir)
         }
@@ -215,44 +215,83 @@ setGeneric("qcplot_samqc_total", function(object, ...) {
 #'
 #' @export
 #' @name qcplot_samqc_total
-#' @param object   sampleQC object
+#' @param object sampleQC object
+#' @param qc_type qc type for plot
 #' @param plot_dir the output plot directory
+#' @return a ggplot object
 setMethod(
     "qcplot_samqc_total",
     signature = "sampleQC",
     definition = function(object,
+                          qc_type = c("plasmid", "screen"),
                           plot_dir = NULL) {
+
+        qc_type <- match.arg(qc_type)
+
+        # Extract accepted/excluded reads
         df_total <- object@stats[, c("excluded_reads", "accepted_reads")]
         df_total$samples <- rownames(df_total)
-        dt_total <- reshape2::melt(as.data.table(df_total), id.vars = "samples", variable.name = "types", value.name = "counts")
 
-        dt_total$samples <- factor(dt_total$samples, levels = mixedsort(levels(factor(dt_total$samples))))
+        # How many bars per facet panel
+        bars_per_facet <- ifelse(qc_type == "plasmid", 20, nrow(df_total))
 
+        # Generate filler samples for barplot (so that that all bars have equal width)
+        filler_list <- add_filler_samples(df_total, bars_per_facet)
+        df_total_with_filler <- filler_list[[1]]
+        filler_names <- filler_list[[2]]
+
+        # Reshape for plotting
+        df_transformed <- melt(as.data.table(df_total_with_filler),
+                               id.vars = c("samples", "facet_group"),
+                               variable.name = "types",
+                               value.name = "counts") %>%
+                            rename(plot_samples = samples)
+
+        # Sort factors (mixedsort with filler samples at the end)
+        sample_names <- unique(df_transformed$plot_samples)
+        sample_names <- sample_names[!(sample_names %in% names(filler_names))]
+        df_transformed$plot_samples <- factor(df_transformed$plot_samples,
+                                         levels = c(mixedsort(sample_names), names(filler_names)))
+
+        # Colours
         select_colors <- select_colorblind("col8")[1:2]
         fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
 
-        p1 <- ggplot(dt_total,  aes(x = samples, y = counts, fill = types)) +
-                geom_bar(stat = "identity") +
-                scale_fill_manual(values = fill_colors) +
-                scale_color_manual(values = select_colors) +
-                labs(x = "samples", y = "counts", title = "Sample QC Stats") +
-                scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
-                theme(legend.position = "right", legend.title = element_blank()) +
-                theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 8, face = "bold")) +
-                theme(axis.text.x = element_text(angle = 90))
-
-        pwidth <- 150 * nrow(df_total)
+        # Plot
+        p1 <- ggplot(df_transformed, aes(x = plot_samples, y = counts, fill = types)) +
+            geom_bar(stat = "identity") +
+            facet_wrap(~ facet_group, ncol = 1, scales = "free_x") +
+            scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+            scale_x_discrete(guide = guide_axis(angle = 90), labels = filler_names) +
+            scale_fill_manual(values = fill_colors) +
+            labs(x = "Samples", y = "Counts", title = "Sample QC Stats") +
+            theme(legend.position = "right",
+                  legend.margin = margin(0, 0, 0, 25),
+                  legend.key.spacing.y = unit(5, "pt"),
+                  legend.text = element_text(size = 16),
+                  legend.title = element_blank(),
+                  panel.background = element_rect(fill = "ivory", colour = "white"),
+                  panel.spacing = unit(5, "lines"),
+                  plot.title = element_text(size = 24, face = "bold.italic", family = "Arial",
+                                            vjust = 1.5, margin = margin(b = 20)),
+                  axis.text = element_text(size = 14, face = "bold"),
+                  axis.title = element_text(size = 18, face = "bold", family = "Arial"),
+                  axis.title.x = element_text(margin = margin(t = 20)),
+                  axis.title.y = element_text(margin = margin(r = 20)),
+                  axis.ticks.x = element_blank(),
+                  strip.text.x = element_blank())
 
         if (is.null(plot_dir)) {
-            ggplotly(p1)
+          ggplotly(p1)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_stats_total.png"), width = pwidth, height = 1200, res = 200)
-            print(p1)
-            dev.off()
+          pheight <- 2000 * max(df_transformed$facet_group)
+
+          png(file.path(plot_dir, "sample_qc_stats_total.png"), width = 3000, height = pheight, res = 200)
+          print(p1)
+          dev.off()
         }
+
+        return(p1)
     }
 )
 
@@ -265,51 +304,127 @@ setGeneric("qcplot_samqc_accepted", function(object, ...) {
 #'
 #' @export
 #' @name qcplot_samqc_accepted
-#' @param object   sampleQC object
+#' @param object sampleQC object
+#' @param qc_type qc type for plot
 #' @param plot_dir the output plot directory
+#' @return a ggplot object
 setMethod(
     "qcplot_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
+                          qc_type = c("plasmid", "screen"),
                           plot_dir = NULL) {
-        df_accepted <- object@stats[, c("per_unmapped_reads", "per_ref_reads", "per_pam_reads", "per_library_reads")]
-        colnames(df_accepted) <- c("unmapped_reads", "ref_reads", "pam_reads", "library_reads")
-        df_accepted <- round(df_accepted * 100, 1)
-        df_accepted$samples <- rownames(df_accepted)
-        dt_filtered <- reshape2::melt(as.data.table(df_accepted), id.vars = "samples", variable.name = "types", value.name = "percent")
 
-        dt_filtered$samples <- factor(dt_filtered$samples, levels = mixedsort(levels(factor(dt_filtered$samples))))
+        qc_type <- match.arg(qc_type)
 
-        df_cov <- object@stats[, c("total_reads", "library_reads", "library_cov")]
-        colnames(df_cov) <- c("num_total_reads", "num_library_reads", "library_cov")
-        df_cov$samples <- rownames(df_cov)
-        df_cov$type <- "coverage"
+        # Extract read %
+        df_percent <- object@stats[, c("per_unmapped_reads", "per_ref_reads",
+                                      "per_pam_reads", "per_library_reads")]
+        colnames(df_percent) <- c("unmapped_reads", "ref_reads", "pam_reads", "library_reads")
+        df_percent <- round(df_percent * 100, 1)
+        df_percent$samples <- rownames(df_percent)
+        rownames(df_percent) <- NULL
 
+        # How many bars per facet panels
+        bars_per_facet <- ifelse(qc_type == "plasmid", 20, nrow(df_percent))
+
+        # Generate filler samples for barplot (so that that all bars have equal width)
+        filler_list <- add_filler_samples(df_percent, bars_per_facet)
+        df_percent_with_filler <- filler_list[[1]]
+        filler_names <- filler_list[[2]]
+
+        # Reshape for plotting
+        df_transformed <- melt(as.data.table(df_percent_with_filler),
+                               id.vars = c("samples", "facet_group"),
+                                           variable.name = "types",
+                                           value.name = "percent") %>%
+                        rename(plot_samples = samples)
+
+        # Sort factors (mixedsort with filler samples at the end)
+        sample_names <- unique(df_transformed$plot_samples)
+        sample_names <- sample_names[!(sample_names %in% names(filler_names))]
+        df_transformed$plot_samples <- factor(df_transformed$plot_samples,
+                                         levels = c(mixedsort(sample_names), names(filler_names)))
+
+        # Repel labels that overlap (small percentages)
+        REPEL_THRESHOLD <- 2.5
+        df_flagged <- df_transformed %>%
+            arrange(plot_samples, types) %>%
+            group_by(plot_samples) %>%
+            mutate(
+                    percent_next = dplyr::lead(percent),
+                    flag_pair = dplyr::coalesce((percent + percent_next) < REPEL_THRESHOLD, FALSE)
+                  ) %>%
+            mutate(
+                   flag_repel = flag_pair | dplyr::lag(flag_pair, default = FALSE)
+                  ) %>%
+            select(-percent_next, -flag_pair) %>%
+            ungroup()
+
+        # Rows that need repelling
+        df_flagged$percent_repel <- ifelse(df_flagged$flag_repel & df_flagged$percent != 0,
+                                           as.character(df_flagged$percent), "")
+        df_flagged$percent_normal <- ifelse(df_flagged$flag_repel | df_flagged$percent == 0,
+                                            "", as.character(df_flagged$percent))
+
+        # Extract reads coverage
+        df_coverage <- object@stats[, c("total_reads", "library_reads", "library_cov")]
+        colnames(df_coverage) <- c("num_total_reads", "num_library_reads", "library_cov")
+        df_coverage$samples <- rownames(df_coverage)
+        df_coverage$type <- "coverage"
+
+        # Assign facet group to df_coverage
+        facet_map <- unique(df_flagged[, c("plot_samples", "facet_group")])
+        df_coverage$facet_group <- facet_map$facet_group[match(df_coverage$samples, facet_map$plot_samples)]
+
+        # Colours
         select_colors <- select_colorblind("col8")[1:4]
         fill_colors <- sapply(select_colors, function(x) t_col(x, 0.5), USE.NAMES = FALSE)
 
-        y_scale <- max(df_cov$library_cov) * 2
+        # Library coverage scale
+        y_scale <- max(df_coverage$library_cov) * 2
 
-        p1 <- ggplot(dt_filtered,  aes(x = samples, y = percent, fill = types)) +
-                geom_bar(stat = "identity", position = "fill") +
-                geom_line(data = df_cov, aes(x = samples, y = library_cov / y_scale, group = 1), linetype = "dashed", color = "red", inherit.aes = FALSE) +
-                geom_point(data = df_cov, aes(x = samples, y = library_cov / y_scale, color = type), shape = 18, size = 3, inherit.aes = FALSE) +
-                scale_y_continuous(labels = scales::percent, sec.axis = sec_axis(~. * y_scale, name = "library coverage")) +
-                scale_fill_manual(values = fill_colors) +
-                scale_color_manual(values = "red") +
-                labs(x = "samples", y = "percent", title = "Sample QC Stats") +
-                theme(legend.position = "right", legend.title = element_blank()) +
-                theme(panel.background = element_rect(fill = "ivory", colour = "white")) +
-                theme(axis.title = element_text(size = 16, face = "bold", family = "Arial")) +
-                theme(plot.title = element_text(size = 16, face = "bold.italic", family = "Arial")) +
-                theme(axis.text = element_text(size = 8, face = "bold")) +
-                theme(axis.text.x = element_text(angle = 90)) +
-                geom_text(aes(label = percent), position = position_fill(vjust = 0.5), size = 3)
-
-        pwidth <- 150 * nrow(df_accepted)
+        # Plot
+        p1 <- ggplot(df_flagged, aes(x = plot_samples, y = percent, fill = types)) +
+            geom_bar(stat = "identity", position = "fill") +
+            geom_line(data = df_coverage,
+                      aes(x = samples, y = library_cov / y_scale, group = 1),
+                      linetype = "dashed", color = "red", inherit.aes = FALSE) +
+            geom_point(data = df_coverage, aes(x = samples, y = library_cov / y_scale, color = type),
+                       shape = 18, size = 3, inherit.aes = FALSE) +
+            facet_wrap(~ facet_group, ncol = 1, scales = "free_x") +
+            scale_y_continuous(labels = scales::percent,
+                               sec.axis = sec_axis(~. * y_scale, name = "Library Coverage"),
+                               expand = c(0, 0)) +
+            scale_x_discrete(guide = guide_axis(angle = 90), labels = filler_names) +
+            scale_fill_manual(values = fill_colors) +
+            scale_color_manual(values = "red") +
+            labs(x = "Samples", y = "Percentage", title = "Sample QC Stats") +
+            theme(legend.position = "right",
+                  legend.margin = margin(0, 0, 0, 25),
+                  legend.key.spacing.y = unit(5, "pt"),
+                  legend.text = element_text(size = 16),
+                  legend.title = element_blank(),
+                  panel.background = element_rect(fill = "ivory", colour = "white"),
+                  panel.spacing = unit(5, "lines"),
+                  plot.title = element_text(size = 24, face = "bold.italic", family = "sans",
+                                            vjust = 1.5, margin = margin(b = 20)),
+                  axis.text = element_text(size = 14, face = "bold"),
+                  axis.title = element_text(size = 18, face = "bold", family = "sans"),
+                  axis.title.x = element_text(margin = margin(t = 20)),
+                  axis.title.y = element_text(margin = margin(r = 20)),
+                  axis.title.y.right = element_text(margin = margin(l = 20)),
+                  axis.ticks.x = element_blank(),
+                  strip.text.x = element_blank()) +
+            geom_text(aes(label = percent_normal),
+                      position = position_fill(vjust = 0.5), size = 4) +
+            ggrepel::geom_text_repel(aes(label = percent_repel),
+                                     position = position_fill(vjust = 0.5), size = 4,
+                                     direction = "y", force = 10e-4,
+                                     box.padding = 0)
 
         if (is.null(plot_dir)) {
-            dt_filtered$types <- factor(dt_filtered$types, levels = rev(levels(dt_filtered$types)))
+            df_flagged$types <- factor(df_flagged$types, levels = rev(levels(df_flagged$types)))
 
             ay <- list(overlaying = "y",
                        side = "right",
@@ -319,12 +434,16 @@ setMethod(
                        symbol = "diamond",
                        color = "red")
 
-            plot_ly(data = dt_filtered, x = ~samples, y = ~percent, color = ~types, type = "bar", colors = rev(fill_colors)) %>%
+            plot_ly(data = df_flagged, x = ~plot_samples, y = ~percent,
+                    color = ~types, type = "bar", colors = rev(fill_colors)) %>%
                 layout(barmode = "stack") %>%
-                add_markers(data = df_cov, x = ~samples, y = ~library_cov, inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
+                add_markers(data = df_coverage, x = ~samples, y = ~library_cov,
+                            inherit = FALSE, yaxis = "y2", marker = mk, name = "library") %>%
                 layout(yaxis2 = ay)
         } else {
-            png(paste0(plot_dir, "/", "sample_qc_stats_accepted.png"), width = pwidth, height = 1200, res = 200)
+            pheight <- 2000 * max(df_flagged$facet_group)
+
+            png(file.path(plot_dir, "sample_qc_stats_accepted.png"), width = 3000, height = pheight, res = 200)
             print(p1)
             dev.off()
         }
@@ -348,6 +467,8 @@ setMethod(
         # png(paste0(plot_dir, "/", "sample_qc_stats_cov.png"), width = 1200, height = 1200, res = 200)
         # print(p2)
         # dev.off()
+
+        return(p1)
     }
 )
 
