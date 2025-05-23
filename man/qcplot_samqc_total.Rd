@@ -6,12 +6,17 @@
 \usage{
 qcplot_samqc_total(object, ...)
 
-\S4method{qcplot_samqc_total}{sampleQC}(object, plot_dir = NULL)
+\S4method{qcplot_samqc_total}{sampleQC}(object, qc_type = c("plasmid", "screen"), plot_dir = NULL)
 }
 \arguments{
 \item{object}{sampleQC object}
 
+\item{qc_type}{qc type for plot}
+
 \item{plot_dir}{the output plot directory}
+}
+\value{
+a ggplot object
 }
 \description{
 initialize function

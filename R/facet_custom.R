@@ -70,3 +70,53 @@ facet_wrap_custom <- function(..., scale_overrides = NULL) {
     facet_super$params$scale_overrides <- scale_overrides
     ggproto(NULL, CustomFacetWrap, shrink = facet_super$shrink, params = facet_super$params)
 }
+
+#' Create barplot filler samples
+#'
+#' Adds filler rows to a data frame to ensure consistent bar counts per facet in a barplot.
+#'
+#' @name add_filler_samples
+#'
+#' @param df A data frame containing the data to be plotted.
+#' @param bars_per_facet An integer specifying the number of bars per facet.
+#'
+#' @return A list with:
+#' \describe{
+#'   \item{df:}{A data frame including the original and any filler samples.}
+#'   \item{filler_names:}{A named character vector with blank labels for filler samples.}
+#' }
+
+add_filler_samples <- function(df, bars_per_facet) {
+
+    # How many facets in plot
+    facet_groups <- ceiling(nrow(df) / bars_per_facet)
+
+    # Number of missing samples
+    n_missing <- bars_per_facet * facet_groups - nrow(df)
+
+    # Create df with filler samples (so that that all bars have equal width)
+    if (n_missing > 0) {
+
+      # DF with only filler samples
+      col_names <- colnames(df)
+      filler_samples <- as.data.frame(matrix(NA, nrow = n_missing, ncol = length(col_names)))
+      colnames(filler_samples) <- col_names
+      filler_samples$samples <- paste("filler", 1:n_missing, sep = "")
+
+      # Combine DFs
+      df <- rbind(df, filler_samples)
+      rownames(df) <- NULL
+
+      # Blank x-label names for filler samples
+      filler_names <- filler_samples$samples
+      filler_names <- setNames(rep("", length(filler_names)), filler_names)
+    } else {
+      filler_names <- setNames(character(0), character(0))
+    }
+
+    # Assign samples to facet groups (rows)
+    df$facet_group <- rep(1:facet_groups, each = bars_per_facet)[1:nrow(df)]
+
+    # Return list
+    list(df = df, filler_names = filler_names)
+}
