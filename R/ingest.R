@@ -110,7 +110,7 @@ import_sge_files <- function(dir_path = NULL,
     }
 
     # read sample sheet and check format
-    qc_samplesheet <<- read.table(paste0(dir_path, "/", sample_sheet), sep = "\t", comment.char = "#", header = TRUE, fill = TRUE)
+    qc_samplesheet <<- read.table(paste0(dir_path, "/", sample_sheet), sep = "\t", comment.char = "", header = TRUE, fill = TRUE)
     require_cols <- c("sample_name",
                       "replicate",
                       "condition",
