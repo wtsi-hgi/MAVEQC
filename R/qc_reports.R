@@ -243,7 +243,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("### 2.1. Sample Sheet", "\n", sep = "")
         cat("\n", sep = "")
         cat("```{r, echo = FALSE}", "\n", sep = "")
-        cat("df <- as.data.frame(read.table(\"", samplesheet, "\", header = TRUE, sep = \"\\t\", check.names = FALSE))", "\n", sep = "")
+        cat("df <- as.data.frame(read.table(\"", samplesheet, "\", header = TRUE, sep = \"\\t\", check.names = FALSE, comment.char = \"\"))", "\n", sep = "")
         cat("min_row <- ifelse(nrow(df) > 10, 10, nrow(df))", "\n", sep = "")
         cat("reactable(df, highlight = TRUE, bordered = TRUE, striped = TRUE, compact = TRUE, wrap = TRUE,", "\n", sep = "")
         cat("          filterable = TRUE, minRows = min_row, defaultColDef = colDef(minWidth = 150, align = \"left\"),", "\n", sep = "")
