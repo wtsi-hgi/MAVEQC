@@ -62,8 +62,12 @@ create_config <- function(config_dir) {
     cat("sqc_ref_per: 0.1", "\n", sep = "")
     cat("\n", sep = "")
 
-    cat("# the sample must have more than 40% of reads aligned to the library", "\n", sep = "")
-    cat("sqc_library_per: 0.4", "\n", sep = "")
+    cat("# the sample must have at least 40% of reads aligned to the library in a screen QC", "\n", sep = "")
+    cat("screen_sqc_library_per: 0.4", "\n", sep = "")
+    cat("\n", sep = "")
+
+    cat("# the sample must have at least 50% of reads aligned to the library in a plasmid QC", "\n", sep = "")
+    cat("plasmid_sqc_library_per: 0.5", "\n", sep = "")
     cat("\n", sep = "")
 
     cat("# the sample must have more than 100x average coverage", "\n", sep = "")

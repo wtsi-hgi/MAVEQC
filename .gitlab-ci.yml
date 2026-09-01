@@ -18,14 +18,9 @@ build-docker:
   stage: build
   image: docker:26.0.1
   tags:
-    - autoscale
+    - autoscale-v2
   services:
     - name: docker:26.0.1-dind
-      alias: dockerhost
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: tcp://dockerhost:2375/
-    DOCKER_DRIVER: overlay2
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:

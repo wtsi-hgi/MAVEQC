@@ -16,7 +16,8 @@ run_sample_qc(object, ...)
   cutoff_accepted = maveqc_config$sqc_accepted,
   cutoff_mapping_per = maveqc_config$sqc_mapping_per,
   cutoff_ref_per = maveqc_config$sqc_ref_per,
-  cutoff_library_per = maveqc_config$sqc_library_per,
+  screen_cutoff_library_per = maveqc_config$screen_sqc_library_per,
+  plasmid_cutoff_library_per = maveqc_config$plasmid_sqc_library_per,
   cutoff_library_cov = maveqc_config$sqc_library_cov,
   cutoff_low_per = maveqc_config$sqc_low_per,
   cutoff_low_lib_per = maveqc_config$sqc_low_lib_per
@@ -41,7 +42,9 @@ run_sample_qc(object, ...)
 
 \item{cutoff_ref_per}{qc cutoff of reference percentage}
 
-\item{cutoff_library_per}{qc cutoff of library reads percentage}
+\item{screen_cutoff_library_per}{qc cutoff of library reads percentage for screen runs}
+
+\item{plasmid_cutoff_library_per}{qc cutoff of library reads percentage for plasmid runs}
 
 \item{cutoff_library_cov}{qc cutoff of library coverage}
 

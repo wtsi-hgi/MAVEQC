@@ -141,7 +141,8 @@
       "num_accepted_reads",
       "per_mapping_reads",
       "per_ref_reads",
-      "per_library_reads",
+      "per_library_reads_screen",
+      "per_library_reads_plasmid",
       "library_cov",
       "low_abundance_per",
       "low_abundance_lib_per"

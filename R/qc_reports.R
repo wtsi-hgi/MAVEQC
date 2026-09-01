@@ -425,9 +425,14 @@ create_qc_reports <- function(samplesheet = NULL,
 
         cat("```{r, echo = FALSE, out.height = \"75%\", out.width = \"75%\"}", "\n", sep = "")
         cat("knitr::include_graphics(paste0(outdir, \"/sample_qc_stats_accepted.png\"), rel_path = FALSE)", "\n", sep = "")
+        if (qc_type == "screen") {
+            cat("library_reads_threshold <- samqc_cutoffs$per_library_reads_screen\n")
+        } else {
+            cat("library_reads_threshold <- samqc_cutoffs$per_library_reads_plasmid\n")
+        }
         cat("```", "\n", sep = "")
 
-        cat("**Pass criterion:** more than 40% of accepted reads are library reads", "\n", sep = "")
+        cat("**Pass criterion:** at least `r library_reads_threshold * 100`% of accepted reads are library reads\n", sep = "")
         cat("\n", sep = "")
         cat("<p style=\"color:red\">Note: Accepted reads are the filtered reads based on 2.2.3</p>", "\n", sep = "")
 
@@ -444,7 +449,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("          columns = list(\"Sample Exon\" = colDef(minWidth = 200),", "\n", sep = "")
         cat("                         \"% Library Reads\" = colDef(filterMethod = JS(\"filterMinValue\"), filterInput = JS(\"rangeMore\"),", "\n", sep = "")
         cat("                                                      style = function(value) {", "\n", sep = "")
-        cat("                                                                  if (value < samqc_cutoffs$per_library_reads * 100) {", "\n", sep = "")
+        cat("                                                                  if (value < library_reads_threshold * 100) {", "\n", sep = "")
         cat("                                                                      bar_style(length = value/100, color = \"red\", fweight = \"bold\")", "\n", sep = "")
         cat("                                                                  } else {", "\n", sep = "")
         cat("                                                                      bar_style(length = value/100, color = \"forestgreen\", fweight = \"bold\") }}),", "\n", sep = "")
@@ -762,7 +767,7 @@ create_qc_reports <- function(samplesheet = NULL,
         cat("             samqc_cutoffs$num_accepted_reads,", "\n", sep = "")
         cat("             \"NA\",", "\n", sep = "")
         cat("             samqc_cutoffs$per_ref_reads,", "\n", sep = "")
-        cat("             samqc_cutoffs$per_library_reads,", "\n", sep = "")
+        cat("             library_reads_threshold,", "\n", sep = "")
         cat("             samqc_cutoffs$library_cov)", "\n", sep = "")
         cat("df[, 3] <- c(\"Sample must have more than [cutoff] total reads\",", "\n", sep = "")
         cat("             \"Missing varaints in the library must be less than [cutoff]\",", "\n", sep = "")

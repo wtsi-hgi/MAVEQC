@@ -16,8 +16,8 @@ test_that("HTML Plasmid QC report is generated", {
 
     writeLines(
         c(
-          "num_total_reads\tper_missing_variants\tseq_low_count\tseq_low_sample_per\tnum_accepted_reads\tper_mapping_reads\tper_ref_reads\tper_library_reads\tlibrary_cov\tlow_abundance_per\tlow_abundance_lib_per",
-          "100\t1\t1\t1\t100\t1\t1\t1\t1\t1\t1"
+          "num_total_reads\tper_missing_variants\tseq_low_count\tseq_low_sample_per\tnum_accepted_reads\tper_mapping_reads\tper_ref_reads\tper_library_reads_screen\tper_library_reads_plasmid\tlibrary_cov\tlow_abundance_per\tlow_abundance_lib_per",
+          "100\t1\t1\t1\t100\t1\t1\t0.4\t0.5\t1\t1\t1"
         ),
     file.path(tempdir(), "sample_qc_cutoffs.tsv"))
 
@@ -122,6 +122,14 @@ test_that("HTML Plasmid QC report is generated", {
     # Check file exists and not empty
     expect_true(file.exists(output_file))
     expect_gt(file.info(output_file)$size, 0)
+
+    # Check library_reads_threshold is set correctly
+    report_html <- paste(readLines(output_file, warn = FALSE), collapse = "\n")
+    expect_match(
+      report_html,
+      "at least 50% of accepted reads are library reads",
+      fixed = TRUE
+    )
 })
 
 
@@ -140,8 +148,8 @@ test_that("HTML Screen QC report is generated", {
 
     writeLines(
         c(
-          "num_total_reads\tper_missing_variants\tseq_low_count\tseq_low_sample_per\tnum_accepted_reads\tper_mapping_reads\tper_ref_reads\tper_library_reads\tlibrary_cov\tlow_abundance_per\tlow_abundance_lib_per",
-          "100\t1\t1\t1\t100\t1\t1\t1\t1\t1\t1"
+          "num_total_reads\tper_missing_variants\tseq_low_count\tseq_low_sample_per\tnum_accepted_reads\tper_mapping_reads\tper_ref_reads\tper_library_reads_screen\tper_library_reads_plasmid\tlibrary_cov\tlow_abundance_per\tlow_abundance_lib_per",
+          "100\t1\t1\t1\t100\t1\t1\t0.4\t0.5\t1\t1\t1"
         ),
     file.path(tempdir(), "sample_qc_cutoffs.tsv"))
 
@@ -280,4 +288,12 @@ test_that("HTML Screen QC report is generated", {
     # Check file exists and not empty
     expect_true(file.exists(output_file))
     expect_gt(file.info(output_file)$size, 0)
+
+    # Check library_reads_threshold is set correctly
+    report_html <- paste(readLines(output_file, warn = FALSE), collapse = "\n")
+    expect_match(
+      report_html,
+      "at least 40% of accepted reads are library reads",
+      fixed = TRUE
+    )
 })

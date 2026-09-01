@@ -7,19 +7,20 @@ setGeneric("run_sample_qc", function(object, ...) {
 #'
 #' @export
 #' @name run_sample_qc
-#' @param object                 sampleQC object
-#' @param qc_type                plasmid or screen
-#' @param cutoff_total           qc cutoff of the total reads
-#' @param cutoff_missing_per     qc cutoff of the missing variant percentage
-#' @param cutoff_low_count       count cutoff of library reads
-#' @param cutoff_low_sample_per  sample percentage cutoff of library reads
-#' @param cutoff_accepted        qc cutoff of the total accepted reads
-#' @param cutoff_mapping_per     qc cutoff of mapping percentage (ref + pam + library)
-#' @param cutoff_ref_per         qc cutoff of reference percentage
-#' @param cutoff_library_per     qc cutoff of library reads percentage
-#' @param cutoff_library_cov     qc cutoff of library coverage
-#' @param cutoff_low_per         qc cutoff of low abundance percentage for LOF plot
-#' @param cutoff_low_lib_per     qc cutoff of the percentage of library sequences with low abundance for LOF plot
+#' @param object                        sampleQC object
+#' @param qc_type                       plasmid or screen
+#' @param cutoff_total                  qc cutoff of the total reads
+#' @param cutoff_missing_per            qc cutoff of the missing variant percentage
+#' @param cutoff_low_count              count cutoff of library reads
+#' @param cutoff_low_sample_per         sample percentage cutoff of library reads
+#' @param cutoff_accepted               qc cutoff of the total accepted reads
+#' @param cutoff_mapping_per            qc cutoff of mapping percentage (ref + pam + library)
+#' @param cutoff_ref_per                qc cutoff of reference percentage
+#' @param screen_cutoff_library_per     qc cutoff of library reads percentage for screen runs
+#' @param plasmid_cutoff_library_per    qc cutoff of library reads percentage for plasmid runs
+#' @param cutoff_library_cov            qc cutoff of library coverage
+#' @param cutoff_low_per                qc cutoff of low abundance percentage for LOF plot
+#' @param cutoff_low_lib_per            qc cutoff of the percentage of library sequences with low abundance for LOF plot
 #' @return object
 setMethod(
     "run_sample_qc",
@@ -33,7 +34,8 @@ setMethod(
                           cutoff_accepted = maveqc_config$sqc_accepted,
                           cutoff_mapping_per = maveqc_config$sqc_mapping_per,
                           cutoff_ref_per = maveqc_config$sqc_ref_per,
-                          cutoff_library_per = maveqc_config$sqc_library_per,
+                          screen_cutoff_library_per = maveqc_config$screen_sqc_library_per,
+                          plasmid_cutoff_library_per = maveqc_config$plasmid_sqc_library_per,
                           cutoff_library_cov = maveqc_config$sqc_library_cov,
                           cutoff_low_per = maveqc_config$sqc_low_per,
                           cutoff_low_lib_per = maveqc_config$sqc_low_lib_per) {
@@ -58,7 +60,8 @@ setMethod(
                   "num_accepted_reads",
                   "per_mapping_reads",
                   "per_ref_reads",
-                  "per_library_reads",
+                  "per_library_reads_screen",
+                  "per_library_reads_plasmid",
                   "library_cov",
                   "low_abundance_per",
                   "low_abundance_lib_per")
@@ -72,7 +75,8 @@ setMethod(
         df_cutoffs$num_accepted_reads <- cutoff_accepted
         df_cutoffs$per_mapping_reads <- cutoff_mapping_per
         df_cutoffs$per_ref_reads <- cutoff_ref_per
-        df_cutoffs$per_library_reads <- cutoff_library_per
+        df_cutoffs$per_library_reads_screen <- screen_cutoff_library_per
+        df_cutoffs$per_library_reads_plasmid <- plasmid_cutoff_library_per
         df_cutoffs$library_cov <- cutoff_library_cov
         df_cutoffs$low_abundance_per <- cutoff_low_per
         df_cutoffs$low_abundance_lib_per <- cutoff_low_lib_per
@@ -309,7 +313,11 @@ setMethod(
         object@stats$qcpass_accepted_reads <- unlist(lapply(object@stats$accepted_reads, function(x) ifelse(x >= cutoff_accepted, TRUE, FALSE)))
         object@stats$qcpass_mapping_per <- unlist(lapply(object@stats$per_unmapped_reads, function(x) ifelse(x < (1 - cutoff_mapping_per), TRUE, FALSE)))
         object@stats$qcpass_ref_per <- unlist(lapply(object@stats$per_ref_reads, function(x) ifelse(x < cutoff_ref_per, TRUE, FALSE)))
-        object@stats$qcpass_library_per <- unlist(lapply(object@stats$per_library_reads, function(x) ifelse(x >= cutoff_library_per, TRUE, FALSE)))
+        if (qc_type == "screen") {
+          object@stats$qcpass_library_per <- unlist(lapply(object@stats$per_library_reads, function(x) ifelse(x >= screen_cutoff_library_per, TRUE, FALSE)))
+        } else {
+          object@stats$qcpass_library_per <- unlist(lapply(object@stats$per_library_reads, function(x) ifelse(x >= plasmid_cutoff_library_per, TRUE, FALSE)))
+        }
         object@stats$qcpass_library_cov <- unlist(lapply(object@stats$library_cov, function(x) ifelse(x >= cutoff_library_cov, TRUE, FALSE)))
 
         qc_lables <- c("qcpass_total_reads",

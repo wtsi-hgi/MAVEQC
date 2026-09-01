@@ -24,8 +24,13 @@ sqc_mapping_per: 0.6
 # the sample must have less than 10% of reads aligned to reference sequence
 sqc_ref_per: 0.1
 
-# the sample must have more than 40% of reads aligned to the library
-sqc_library_per: 0.4
+# the sample must have at least 40% of reads aligned to the library in a screen QC
+# NOTE: this variable (alongside plasmid_sqc_library_per) replaces sqc_library_per
+screen_sqc_library_per: 0.4
+
+# the sample must have at least 50% of reads aligned to the library in a plasmid QC
+# NOTE: this variable (alongside screen_sqc_library_per) replaces sqc_library_per
+plasmid_sqc_library_per: 0.5
 
 # the sample must have more than 100x average coverage
 # the number of library reads divided by the number of sequences

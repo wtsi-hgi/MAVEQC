@@ -27,7 +27,7 @@ setMethod(
         qcout_samqc_readlens(object = object, out_dir = out_dir)
         qcout_samqc_total(object = object, out_dir = out_dir)
         qcout_samqc_missing(object = object, out_dir = out_dir)
-        qcout_samqc_accepted(object = object, out_dir = out_dir)
+        qcout_samqc_accepted(object = object, qc_type = qc_type, out_dir = out_dir)
         qcout_samqc_libcov(object = object, out_dir = out_dir)
         qcout_samqc_pos_cov(object = object, qc_type = qc_type, out_dir = out_dir)
         qcout_samqc_results(object = object, qc_type = qc_type, out_dir = out_dir)
@@ -466,12 +466,16 @@ setGeneric("qcout_samqc_accepted", function(object, ...) {
 #' @export
 #' @name qcout_samqc_accepted
 #' @param object   sampleQC object
+#' @param qc_type  screen or plasmid
 #' @param out_dir  the output directory
 setMethod(
     "qcout_samqc_accepted",
     signature = "sampleQC",
     definition = function(object,
+                          qc_type = c("plasmid", "screen"),
                           out_dir = NULL) {
+        qc_type <- match.arg(qc_type)
+
         cols <- c("Group",
                   "Sample",
                   "Sample Info",
@@ -484,6 +488,12 @@ setMethod(
                   "Pass")
         df_outs <- data.frame(matrix(NA, nrow(object@stats), length(cols)))
         colnames(df_outs) <- cols
+
+        if (qc_type == "screen") {
+          library_reads_threshold <- object@cutoffs$per_library_reads_screen * 100
+        } else {
+          library_reads_threshold <- object@cutoffs$per_library_reads_plasmid * 100
+        }
 
         df_outs[, 1] <- object@samples[[1]]@libname
         df_outs[, 2] <- rownames(object@stats)
@@ -501,7 +511,7 @@ setMethod(
         tmp_out <- object@stats$per_unmapped_reads * 100
         tmp_out <- sapply(tmp_out, function(x) round(x, 1))
         df_outs[, 8] <- tmp_out
-        df_outs[, 9] <- object@cutoffs$per_library_reads * 100
+        df_outs[, 9] <- library_reads_threshold
         df_outs[, 10] <- object@stats$qcpass_library_per
 
         df_outs <- df_outs[match(mixedsort(df_outs$Sample), df_outs$Sample), ]
@@ -514,7 +524,7 @@ setMethod(
                           "Group" = colDef(minWidth = 100),
                           "Sample" = colDef(minWidth = 100),
                           "% Library Reads" = colDef(style = function(value) {
-                                                                 if (value < object@cutoffs$per_library_reads * 100) {
+                                                                 if (value < library_reads_threshold) {
                                                                     color <- "red"
                                                                     fweight <- "bold"
                                                                 } else {
